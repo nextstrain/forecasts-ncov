@@ -1,0 +1,17 @@
+#!/bin/bash
+set -euo pipefail
+
+# Fetch CSV from Our World in Data
+curl https://covid.ourworldindata.org/data/owid-covid-data.csv \
+    --fail --silent --show-error \
+    --header 'User-Agent: https://github.com/nextstrain/counts (hello@nextstrain.org)' |
+    # Only keep the date, location, and new_cases columns
+    csvtk cut -f date,location,new_cases |
+    # Rename new_cases to cases
+    csvtk rename -f new_cases -n cases |
+    # Only keep rows that have more than 0 cases
+    csvtk filter -f "cases>0" |
+    # Remove decimals from case counts
+    csvtk round -f cases -n 0 |
+    # Convert to TSV
+    csvtk csv2tab
