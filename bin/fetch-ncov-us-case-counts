@@ -1,0 +1,22 @@
+#!/bin/bash
+set -euo pipefail
+
+bin="$(dirname "$0")"
+base="$(realpath --relative-to . "$bin/..")"
+
+# Fetch CSV from Socrata Open Data API for CDC dataset 9mfq-cb36
+# Only includes the submission_date, state, and new_cases columns
+# Only keeps rows that have more than 0 cases
+curl 'https://data.cdc.gov/resource/9mfq-cb36.csv?$select=submission_date,state,new_case&$where=new_case>0' \
+    --fail --silent --show-error \
+    --header 'User-Agent: https://github.com/nextstrain/counts (hello@nextstrain.org)' |
+    # Rename columns
+    csvtk rename -f submission_date,state,new_case -n date,location,cases |
+    # Replace state abbreviations with full name
+    csvtk replace -f location -p '([A-Z]{2,3})' -k $base/source-data/us-states.tsv -r '{kv}' --keep-key |
+    # Remove time stamp from date column
+    csvtk replace -f date -p '([\d]{4}-[\d]{2}-[\d]{2})(.+)' -r '$1' |
+    # Remove decimals from case counts
+    csvtk round -f cases -n 0 |
+    # Convert to TSV
+    csvtk csv2tab
