@@ -5,6 +5,7 @@ on:
     types:
       - clade-counts
       - open/clade-counts
+      - genbank/clade-counts
   workflow_dispatch:
     inputs:
       slack_channel:
