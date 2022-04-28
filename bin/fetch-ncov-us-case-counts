@@ -4,10 +4,19 @@ set -euo pipefail
 bin="$(dirname "$0")"
 base="$(realpath --relative-to . "$bin/..")"
 
+# Fetch total count of records from Socrata OpenData API for CDC dataset 9mfq-cb36
+# to set as the fetch limit in the API call below
+total_count=$(
+    curl 'https://data.cdc.gov/resource/9mfq-cb36.json?$select=count(*)' \
+        --fail --silent --show-error \
+        --header 'User-Agent: https://github.com/nextstrain/counts (hello@nextstrain.org)' |
+        jq --raw-output .[].count
+)
+
 # Fetch CSV from Socrata Open Data API for CDC dataset 9mfq-cb36
 # Only includes the submission_date, state, and new_cases columns
 # Only keeps rows that have more than 0 cases
-curl 'https://data.cdc.gov/resource/9mfq-cb36.csv?$select=submission_date,state,new_case&$where=new_case>0' \
+curl 'https://data.cdc.gov/resource/9mfq-cb36.csv?$select=submission_date,state,new_case&$where=new_case>0&$limit='+$total_count \
     --fail --silent --show-error \
     --header 'User-Agent: https://github.com/nextstrain/counts (hello@nextstrain.org)' |
     # Rename columns
