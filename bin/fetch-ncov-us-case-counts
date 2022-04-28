@@ -19,13 +19,13 @@ total_count=$(
 curl 'https://data.cdc.gov/resource/9mfq-cb36.csv?$select=submission_date,state,new_case&$where=new_case>0&$limit='+$total_count \
     --fail --silent --show-error \
     --header 'User-Agent: https://github.com/nextstrain/counts (hello@nextstrain.org)' |
-    # Rename columns
-    csvtk rename -f submission_date,state,new_case -n date,location,cases |
     # Replace state abbreviations with full name
-    csvtk replace -f location -p '([A-Z]{2,3})' -k $base/source-data/us-states.tsv -r '{kv}' --keep-key |
+    csvtk replace -f state -p '([A-Z]{2,3})' -k $base/source-data/us-states.tsv -r '{kv}' --keep-key |
+    # Sum case counts grouped by date and state - added to sum separate case counts for NYC and NY state
+    csvtk summary -n 0 -f new_case:sum -g submission_date,state |
+    # Rename columns
+    csvtk rename -f submission_date,state,new_case:sum -n date,location,cases |
     # Remove time stamp from date column
     csvtk replace -f date -p '([\d]{4}-[\d]{2}-[\d]{2})(.+)' -r '$1' |
-    # Remove decimals from case counts
-    csvtk round -f cases -n 0 |
     # Convert to TSV
     csvtk csv2tab
