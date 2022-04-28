@@ -13,5 +13,7 @@ curl https://covid.ourworldindata.org/data/owid-covid-data.csv \
     csvtk filter -f "cases>0" |
     # Remove decimals from case counts
     csvtk round -f cases -n 0 |
+    # Replace "United States" with "USA" to match ncov metadata
+    csvtk replace -f location -p 'United States' -r 'USA' |
     # Convert to TSV
     csvtk csv2tab
