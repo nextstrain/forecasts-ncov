@@ -32,7 +32,7 @@ jobs:
         activate-environment: counts
 
     - name: setup
-      run: mamba install "pandas>=1.0.0"
+      run: mamba install "pandas>=1.0.0" "tsv-utils"
 
     - name: download metadata
       run: ./bin/download-from-s3 s3://nextstrain-ncov-private/metadata.tsv.gz metadata.tsv
@@ -40,6 +40,14 @@ jobs:
         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    - name: subset metadata columns
+      run: |
+        tsv-select -H \
+          -f strain,date,country,division,QC_overall_status,Nextstrain_clade \
+          metadata.tsv > metadata_pruned.tsv
+
+        mv metadata_pruned.tsv metadata.tsv
 
     - name: summarize global clade counts
       run: |
