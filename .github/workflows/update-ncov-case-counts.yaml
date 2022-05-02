@@ -15,6 +15,9 @@ on:
 jobs:
   case_counts:
     runs-on: ubuntu-latest
+    env:
+      SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+      SLACK_CHANNELS: ${{ github.event.inputs.slack_channel || 'nextstrain-counts-updates' }}
     defaults:
       run:
         # Login shell is required to include changes by conda init bash.
@@ -37,6 +40,10 @@ jobs:
         ./bin/fetch-ncov-global-case-counts > global_case_counts.tsv
         ./bin/fetch-ncov-us-case-counts > us_case_counts.tsv
 
+    - name: notify new us locations
+      run: |
+        ./bin/notify-on-new-location us_case_counts.tsv source-data/us-states.tsv
+
     - name: upload to S3
       run: |
         S3_DSTS=(
@@ -57,6 +64,4 @@ jobs:
         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-        SLACK_CHANNELS: ${{ github.event.inputs.slack_channel || 'nextstrain-counts-updates' }}
         TRIAL_NAME: ${{ github.event.inputs.trial_name }}
