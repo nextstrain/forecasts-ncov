@@ -39,14 +39,20 @@ jobs:
 
     - name: upload to S3
       run: |
-        S3_DST=s3://nextstrain-data/files/ncov/open/counts
+        S3_DSTS=(
+          s3://nextstrain-data/files/ncov/open/counts
+          s3://nextstrain-ncov-private/counts
+        )
 
-        if [[ "$TRIAL_NAME" ]]; then
-          S3_DST+=/trial/"$TRIAL_NAME"
-        fi
+        for S3_DST in ${S3_DSTS[@]}; do
 
-        ./bin/upload-to-s3 global_case_counts.tsv "$S3_DST"/global/cases.tsv.gz
-        ./bin/upload-to-s3 us_case_counts.tsv "$S3_DST"/usa/cases.tsv.gz
+          if [[ "$TRIAL_NAME" ]]; then
+            S3_DST+=/trial/"$TRIAL_NAME"
+          fi
+
+          ./bin/upload-to-s3 global_case_counts.tsv "$S3_DST"/global/cases.tsv.gz
+          ./bin/upload-to-s3 us_case_counts.tsv "$S3_DST"/usa/cases.tsv.gz
+        done
       env:
         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
