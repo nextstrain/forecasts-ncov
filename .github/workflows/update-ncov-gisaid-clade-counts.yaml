@@ -12,7 +12,7 @@ on:
         required: false
       trial_name:
         description: 'Short name for a trial run. WARNING: without this we will overwrite files in s3://nextstrain-ncov-private/counts/'
-        requird: false
+        required: false
 
 jobs:
   gisaid_clade_counts:

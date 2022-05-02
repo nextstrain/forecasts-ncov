@@ -10,7 +10,7 @@ on:
         required: false
       trial_name:
         description: 'Short name for a trial run. WARNING: without this we will overwrite files in s3://nextstrain-data/files/ncov/open/counts/'
-        requird: false
+        required: false
 
 jobs:
   case_counts:
