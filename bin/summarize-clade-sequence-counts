@@ -133,9 +133,9 @@ if __name__ == '__main__':
     # Count of sequences grouped by date, location, clade
     counts_by_date_location_clade = metadata.groupby(
         [
-            "date",
             "location",
             "clade",
+            "date",
         ],
         observed=True,
         as_index=False,
