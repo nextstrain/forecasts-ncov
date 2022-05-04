@@ -1,0 +1,67 @@
+name: COVID-19 case counts
+
+on:
+  schedule:
+    - cron: '0 16 * * *'
+  workflow_dispatch:
+    inputs:
+      slack_channel:
+        description: 'Slack channel to push update alerts. Default channel is nextstrain-counts-updates.'
+        required: false
+      trial_name:
+        description: 'Short name for a trial run. WARNING: without this we will overwrite files in s3://nextstrain-data/files/ncov/open/counts/'
+        required: false
+
+jobs:
+  case_counts:
+    runs-on: ubuntu-latest
+    env:
+      SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+      SLACK_CHANNELS: ${{ github.event.inputs.slack_channel || 'nextstrain-counts-updates' }}
+    defaults:
+      run:
+        # Login shell is required to include changes by conda init bash.
+        shell: bash -l -eo pipefail {0}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: conda-incubator/setup-miniconda@v2
+      with:
+        python-version: 3.9
+        mamba-version: "*"
+        channels: conda-forge,bioconda
+        channel-priority: true
+        activate-environment: counts
+
+    - name: setup
+      run: mamba install "csvtk>=0.23.0"
+
+    - name: download case counts
+      run: |
+        ./bin/fetch-ncov-global-case-counts > global_case_counts.tsv
+        ./bin/fetch-ncov-us-case-counts > us_case_counts.tsv
+
+    - name: notify new us locations
+      run: |
+        ./bin/notify-on-new-location us_case_counts.tsv source-data/us-states.tsv
+
+    - name: upload to S3
+      run: |
+        S3_DSTS=(
+          s3://nextstrain-data/files/ncov/open/counts
+          s3://nextstrain-ncov-private/counts
+        )
+
+        for S3_DST in ${S3_DSTS[@]}; do
+
+          if [[ "$TRIAL_NAME" ]]; then
+            S3_DST+=/trial/"$TRIAL_NAME"
+          fi
+
+          ./bin/upload-to-s3 global_case_counts.tsv "$S3_DST"/global/cases.tsv.gz
+          ./bin/upload-to-s3 us_case_counts.tsv "$S3_DST"/usa/cases.tsv.gz
+        done
+      env:
+        AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        TRIAL_NAME: ${{ github.event.inputs.trial_name }}
