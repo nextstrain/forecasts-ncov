@@ -10,6 +10,8 @@ Internal tooling for the Nextstrain team to curate and standardize various count
 
 ## Outputs
 
+> :warning: **WARNING: This is an alpha release.** Output file format and address may change at any time
+
 This repository produces multiple TSVs that are routinely uploaded to AWS S3 buckets.
 
 The GISAID data is stored at `s3://nextstrain-ncov-private/counts/` and is not publicly available.
