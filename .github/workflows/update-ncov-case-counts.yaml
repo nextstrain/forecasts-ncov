@@ -50,6 +50,7 @@ jobs:
           s3://nextstrain-data/files/workflows/forecasts-ncov
           s3://nextstrain-data-private/files/workflows/forecasts-ncov
         )
+        CLOUDFRONT_DOMAIN=""
 
         for S3_DST in ${S3_DSTS[@]}; do
 
@@ -57,8 +58,12 @@ jobs:
             S3_DST+=/trial/"$TRIAL_NAME"
           fi
 
-          ./ingest/bin/upload-to-s3 global_case_counts.tsv "$S3_DST"/global/cases.tsv.gz
-          ./ingest/bin/upload-to-s3 us_case_counts.tsv "$S3_DST"/usa/cases.tsv.gz
+          if [[ $S3_DST == s3://nextstrain-data/* ]]; then
+            CLOUDFRONT_DOMAIN="data.nextstrain.org"
+          fi
+
+          ./ingest/bin/upload-to-s3 global_case_counts.tsv "$S3_DST"/global/cases.tsv.gz $CLOUDFRONT_DOMAIN
+          ./ingest/bin/upload-to-s3 us_case_counts.tsv "$S3_DST"/usa/cases.tsv.gz $CLOUDFRONT_DOMAIN
         done
       env:
         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
