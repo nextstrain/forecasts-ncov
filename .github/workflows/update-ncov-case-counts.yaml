@@ -9,7 +9,7 @@ on:
         description: 'Slack channel to push update alerts. Default channel is nextstrain-counts-updates.'
         required: false
       trial_name:
-        description: 'Short name for a trial run. WARNING: without this we will overwrite files in s3://nextstrain-data/files/ncov/open/counts/'
+        description: 'Short name for a trial run. WARNING: without this we will overwrite files in s3://nextstrain-data/files/workflows/forecasts-ncov and s3://nextstrain-data-private/files/workflows/forecasts-ncov'
         required: false
 
 jobs:
@@ -47,8 +47,8 @@ jobs:
     - name: upload to S3
       run: |
         S3_DSTS=(
-          s3://nextstrain-data/files/ncov/open/counts
-          s3://nextstrain-ncov-private/counts
+          s3://nextstrain-data/files/workflows/forecasts-ncov
+          s3://nextstrain-data-private/files/workflows/forecasts-ncov
         )
 
         for S3_DST in ${S3_DSTS[@]}; do

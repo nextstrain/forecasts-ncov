@@ -14,10 +14,10 @@ Internal tooling for the Nextstrain team to curate and standardize various count
 
 This repository produces multiple TSVs that are routinely uploaded to AWS S3 buckets.
 
-The GISAID data is stored at `s3://nextstrain-ncov-private/counts/` and is not publicly available.
-The open (GenBank) data is stored at `s3://nextstrain-data/files/ncov/open/counts/` and is publicly available.
+The GISAID data is stored at `s3://nextstrain-data-private/files/workflows/forecasts-ncov/` and is not publicly available.
+The open (GenBank) data is stored at `s3://nextstrain-data/files/workflows/forecasts-ncov` and is publicly available.
 
-Within `counts/`, files are organized by geographic resolution and count type.
+Within `forecasts-ncov/`, files are organized by geographic resolution and count type.
 Within TSVs at the global resolution, the `location` column contains countries.
 Within TSVs at the country resolution, the `location` column contains divisions (e.g. states for US).
 
@@ -25,10 +25,10 @@ Within TSVs at the country resolution, the `location` column contains divisions 
 
 | Geographic Resolution  | Type | Address |
 | --- | --- | --- |
-| Global | Cases | https://data.nextstrain.org/files/ncov/open/counts/global/cases.tsv.gz |
-|        | Nextstrain clades | https://data.nextstrain.org/files/ncov/open/counts/global/nextstrain_clades.tsv.gz |
-| USA    | Cases | https://data.nextstrain.org/files/ncov/open/counts/usa/cases.tsv.gz |
-|        | Nextstrain clades | https://data.nextstrain.org/files/ncov/open/counts/usa/nextstrain_clades.tsv.gz |
+| Global | Cases | https://data.nextstrain.org/files/workflows/forecasts-ncov/global/cases.tsv.gz |
+|        | Nextstrain clades | https://data.nextstrain.org/files/workflows/forecasts-ncov/global/nextstrain_clades.tsv.gz |
+| USA    | Cases | https://data.nextstrain.org/files/workflows/forecasts-ncov/usa/cases.tsv.gz |
+|        | Nextstrain clades | https://data.nextstrain.org/files/workflows/forecasts-ncov/usa/nextstrain_clades.tsv.gz |
 
 ## Running locally
 
