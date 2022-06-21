@@ -35,7 +35,7 @@ jobs:
       run: mamba install "pandas>=1.0.0" "tsv-utils"
 
     - name: download metadata
-      run: ./bin/download-from-s3 s3://nextstrain-ncov-private/metadata.tsv.gz metadata.tsv
+      run: ./ingest/bin/download-from-s3 s3://nextstrain-ncov-private/metadata.tsv.gz metadata.tsv
       env:
         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -51,7 +51,7 @@ jobs:
 
     - name: summarize global clade counts
       run: |
-        ./bin/summarize-clade-sequence-counts \
+        ./ingest/bin/summarize-clade-sequence-counts \
           --metadata metadata.tsv \
           --clade-column Nextstrain_clade \
           --filter-columns QC_overall_status \
@@ -60,7 +60,7 @@ jobs:
 
     - name: summarize us clade counts
       run: |
-        ./bin/summarize-clade-sequence-counts \
+        ./ingest/bin/summarize-clade-sequence-counts \
           --metadata metadata.tsv \
           --location-column division \
           --clade-column Nextstrain_clade \
@@ -76,8 +76,8 @@ jobs:
           S3_DST+=/trial/"$TRIAL_NAME"
         fi
 
-        ./bin/upload-to-s3 global_clade_counts.tsv "$S3_DST"/global/nextstrain_clades.tsv.gz
-        ./bin/upload-to-s3 us_clade_counts.tsv "$S3_DST"/usa/nextstrain_clades.tsv.gz
+        ./ingest/bin/upload-to-s3 global_clade_counts.tsv "$S3_DST"/global/nextstrain_clades.tsv.gz
+        ./ingest/bin/upload-to-s3 us_clade_counts.tsv "$S3_DST"/usa/nextstrain_clades.tsv.gz
       env:
         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

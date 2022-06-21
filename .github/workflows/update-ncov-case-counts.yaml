@@ -37,12 +37,12 @@ jobs:
 
     - name: download case counts
       run: |
-        ./bin/fetch-ncov-global-case-counts > global_case_counts.tsv
-        ./bin/fetch-ncov-us-case-counts > us_case_counts.tsv
+        ./ingest/bin/fetch-ncov-global-case-counts > global_case_counts.tsv
+        ./ingest/bin/fetch-ncov-us-case-counts > us_case_counts.tsv
 
     - name: notify new us locations
       run: |
-        ./bin/notify-on-new-location us_case_counts.tsv source-data/us-states.tsv
+        ./ingest/bin/notify-on-new-location us_case_counts.tsv ingest/source-data/us-states.tsv
 
     - name: upload to S3
       run: |
@@ -57,8 +57,8 @@ jobs:
             S3_DST+=/trial/"$TRIAL_NAME"
           fi
 
-          ./bin/upload-to-s3 global_case_counts.tsv "$S3_DST"/global/cases.tsv.gz
-          ./bin/upload-to-s3 us_case_counts.tsv "$S3_DST"/usa/cases.tsv.gz
+          ./ingest/bin/upload-to-s3 global_case_counts.tsv "$S3_DST"/global/cases.tsv.gz
+          ./ingest/bin/upload-to-s3 us_case_counts.tsv "$S3_DST"/usa/cases.tsv.gz
         done
       env:
         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
