@@ -1,3 +1,5 @@
+if not config:
+    configfile: "config/config.yaml"
 
 if not config.get("data_provenances"):
     print("ERROR: config must include 'data_provenances'.")
