@@ -17,7 +17,7 @@ nextstrain build --docker .
 To run the pipeline for specific data provenance and geo resolution (e.g. private and global only):
 
 ```
-nextstrain build --docker . --configfile config/config.yaml --config data_provenances=private geo_resolution=global
+nextstrain build --docker . --configfile config/config.yaml --config data_provenances=private geo_resolutions=global
 ```
 
 Edit the `prepare_data` params in `config/config.yaml` if you want to change any data preparation options.
