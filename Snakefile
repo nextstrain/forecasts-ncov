@@ -22,13 +22,13 @@ rule all:
             geo_resolution=config["geo_resolutions"]
         )
 
-rule download_public_data:
+rule download_open_data:
     message: "Downloading case counts and Nextstrain clade counts from data.nextstrain.org"
     wildcard_constraints:
         geo_resolution = "global|usa"
     output:
-        cases = "data/public/{geo_resolution}/cases.tsv.gz",
-        nextstrain_clades = "data/public/{geo_resolution}/nextstrain_clades.tsv.gz"
+        cases = "data/open/{geo_resolution}/cases.tsv.gz",
+        nextstrain_clades = "data/open/{geo_resolution}/nextstrain_clades.tsv.gz"
     params:
         cases_url = "https://data.nextstrain.org/files/workflows/forecasts-ncov/{geo_resolution}/cases.tsv.gz",
         nextstrain_clades_url = "https://data.nextstrain.org/files/workflows/forecasts-ncov/{geo_resolution}/nextstrain_clades.tsv.gz"
@@ -38,13 +38,13 @@ rule download_public_data:
         curl -fsSL --compressed {params.nextstrain_clades_url:q} --output {output.nextstrain_clades}
         """
 
-rule download_private_data:
+rule download_gisaid_data:
     message: "Downloading case counts and Nextstrain clade counts from s3://nextstrain-data-private"
     wildcard_constraints:
         geo_resolution = "global|usa"
     output:
-        cases = "data/private/{geo_resolution}/cases.tsv.gz",
-        nextstrain_clades = "data/private/{geo_resolution}/nextstrain_clades.tsv.gz"
+        cases = "data/gisaid/{geo_resolution}/cases.tsv.gz",
+        nextstrain_clades = "data/gisaid/{geo_resolution}/nextstrain_clades.tsv.gz"
     params:
         cases_url = "s3://nextstrain-data-private/files/workflows/forecasts-ncov/{geo_resolution}/cases.tsv.gz",
         nextstrain_clades_url = "s3://nextstrain-data-private/files/workflows/forecasts-ncov/{geo_resolution}/nextstrain_clades.tsv.gz"
