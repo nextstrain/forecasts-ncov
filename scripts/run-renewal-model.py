@@ -5,7 +5,6 @@ import argparse
 import pandas as pd
 import os
 import yaml
-import json
 import evofr as ef
 
 
@@ -150,7 +149,7 @@ class RenewalConfig:
             raw_seq = pd.read_csv(data_cf["seq_path"])
 
         # Load locations
-        if "locations" in raw_cases:
+        if "locations" in data_cf:
             locations = data_cf["locations"]
         else:
             # Check if raw_seq has location column
@@ -220,8 +219,8 @@ def fit_models(rc, rs, locations, model, inference_method, path, save):
 
     for location in locations:
         # Subset to data of interest
-        raw_cases = rc[rc.location == location]
-        raw_seq = rs[rs.location == location]
+        raw_cases = rc[rc.location == location].copy()
+        raw_seq = rs[rs.location == location].copy()
         data = ef.CaseFrequencyData(raw_cases=raw_cases, raw_seq=raw_seq)
 
         # Fit model
@@ -232,7 +231,7 @@ def fit_models(rc, rs, locations, model, inference_method, path, save):
 
         # if save, save
         if save:
-            posterior.save_posterior(f"{path}/{location}.json")
+            posterior.save_posterior(f"{path}/models/{location}.json")
 
     return multi_posterior
 
@@ -242,13 +241,13 @@ def load_models(rc, rs, locations, model, path=None):
 
     for location in locations:
         # Subset to data of interest
-        raw_cases = rc[rc.location == location]
-        raw_seq = rs[rs.location == location]
+        raw_cases = rc[rc.location == location].copy()
+        raw_seq = rs[rs.location == location].copy()
         data = ef.CaseFrequencyData(raw_cases=raw_cases, raw_seq=raw_seq)
 
         # Load samples
         posterior = ef.PosteriorHandler(data=data, name=location)
-        posterior.load_posterior(f"{path}/{location}.json")
+        posterior.load_posterior(f"{path}/models/{location}.json")
 
         # Add posterior to group
         multi_posterior.add_posterior(posterior=posterior)
@@ -281,11 +280,7 @@ def export_results(multi_posterior, ps, path, data_name):
         results[location] = ef.get_sites_quantiles_json(
             posterior.samples, posterior.data, EXPORT_SITES, ps
         )
-
-    # These would overlap if running in parallel
-    # DUMP JSON
-    with open(f"{path}/{data_name}_results.json", "w") as file:
-        json.dump(results, file)
+    ef.save_json(results, path=f"{path}/{data_name}_results.json")
 
 
 if __name__ == "__main__":
