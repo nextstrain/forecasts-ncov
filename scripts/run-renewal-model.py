@@ -221,6 +221,13 @@ def fit_models(rc, rs, locations, model, inference_method, path, save):
         # Subset to data of interest
         raw_cases = rc[rc.location == location].copy()
         raw_seq = rs[rs.location == location].copy()
+
+        # Check to see if location available
+        if len(raw_cases) == 0 or len(raw_seq) == 0:
+            print(f'Location {location} not in data')
+            continue
+
+        # Define data object
         data = ef.CaseFrequencyData(raw_cases=raw_cases, raw_seq=raw_seq)
 
         # Fit model
@@ -277,7 +284,7 @@ def export_results(multi_posterior, ps, path, data_name):
     # Combine jsons from multiple model runs
     results = dict()
     for location, posterior in multi_posterior.locator.items():
-        results[location] = ef.get_sites_quantiles_json(
+        results[location] = ef.get_sites_variants_json(
             posterior.samples, posterior.data, EXPORT_SITES, ps
         )
     ef.save_json(results, path=f"{path}/{data_name}_results.json")
