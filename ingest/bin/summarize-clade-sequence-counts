@@ -28,7 +28,7 @@ def format_date(date_string, expected_format):
     """
     try:
         return datetime.strptime(date_string, expected_format).strftime('%Y-%m-%d')
-    except ValueError:
+    except (TypeError, ValueError):
         return None
 
 
