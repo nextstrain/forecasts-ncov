@@ -22,7 +22,7 @@ curl 'https://data.cdc.gov/resource/9mfq-cb36.csv?$select=state,submission_date,
     # Replace state abbreviations with full name
     csvtk replace -f state -p '([A-Z]{2,3})' -k $base/source-data/us-states.tsv -r '{kv}' --keep-key |
     # Sum case counts grouped by date and state - added to sum separate case counts for NYC and NY state
-    csvtk summary -n 0 -f new_case:sum -g state,submission_date |
+    csvtk summary --decimal-width 0 -f new_case:sum -g state,submission_date |
     # Rename columns
     csvtk rename -f state,submission_date,new_case:sum -n location,date,cases |
     # Remove time stamp from date column
