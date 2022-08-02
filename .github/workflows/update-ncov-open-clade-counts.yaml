@@ -18,6 +18,9 @@ on:
 jobs:
   open_clade_counts:
     runs-on: ubuntu-latest
+    env:
+      SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+      SLACK_CHANNELS: ${{ github.event.inputs.slack_channel || 'nextstrain-counts-updates' }}
     defaults:
       run:
         # Login shell is required to include changes by conda init bash.
@@ -84,6 +87,8 @@ jobs:
         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-        SLACK_CHANNELS: ${{ github.event.inputs.slack_channel || 'nextstrain-counts-updates' }}
         TRIAL_NAME: ${{ github.event.inputs.trial_name }}
+
+    - name: notify_pipeline_failed
+      if: ${{ failure() }}
+      run: ./ingest/bin/notify-on-job-fail

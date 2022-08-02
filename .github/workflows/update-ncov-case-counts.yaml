@@ -70,3 +70,7 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         TRIAL_NAME: ${{ github.event.inputs.trial_name }}
+
+    - name: notify_pipeline_failed
+      if: ${{ failure() }}
+      run: ./ingest/bin/notify-on-job-fail
