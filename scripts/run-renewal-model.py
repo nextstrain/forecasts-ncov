@@ -214,8 +214,19 @@ class RenewalConfig:
         return fit, save, load, export_json, export_path
 
 
+def check_generation_times(rs, model):
+
+    # If not all variants use same gen time
+    if model.v_names is not None:
+        # Check to see if all are present
+        assert rs.variant.isin(model.v_names).all(), "All variants must be present in config or have same gen time."
+    return None
+
+
 def fit_models(rc, rs, locations, model, inference_method, path, save):
     multi_posterior = ef.MultiPosterior()
+
+    check_generation_times(rs, model)
 
     for location in locations:
         # Subset to data of interest
