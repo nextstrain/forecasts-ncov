@@ -9,17 +9,20 @@ The output should include all clade counts, but create a subset of the case coun
   > --clades ../data/nextstrain_clades.tsv \
   > --cases ../data/cases.tsv \
   > --max-date 2022-01-10 \
-  > --output-clades "$TMP/prepared_nextstrain_clades.tsv" \
+  > --output-variants "$TMP/prepared_variants.tsv" \
   > --output-cases "$TMP/prepared_cases.tsv"
   Setting max date (inclusive) as '2022-01-10'.
   No min date was set, including all dates up to the max date.
   Only including locations that have at least 1 sequence(s) in the analysis date range.
   Locations that will be included: ['Argentina', 'Japan', 'USA', 'United Kingdom'].
-  Clades that will be included: ['19A', '20A', '20B', '20C', '20I (Alpha, V1)', '21A (Delta)', '21I (Delta)', '21J (Delta)', '21K (Omicron)', '21L (Omicron)', '21M (Omicron)', 'recombinant'].
+  Variants that will be included: ['19A', '20A', '20B', '20C', '20I (Alpha, V1)', '21A (Delta)', '21I (Delta)', '21J (Delta)', '21K (Omicron)', '21L (Omicron)', '21M (Omicron)', 'recombinant'].
 
-Verify that the output clade counts is the same as the original clade counts.
+Verify the header "clade" has been replaced by "variant".
+Verify that the output variants counts is the same as the original clade counts.
 
-  $ cmp ../data/nextstrain_clades.tsv "$TMP/prepared_nextstrain_clades.tsv"
+  $ head -n 1 "$TMP/prepared_variants.tsv" | tr '\t' ' '
+  location variant date sequences
+  $ cmp <(tail -n +2 ../data/nextstrain_clades.tsv) <(tail -n +2 "$TMP/prepared_variants.tsv")
 
 Verify that the output case counts is a subset with expected locations and dates.
 

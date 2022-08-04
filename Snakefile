@@ -16,8 +16,8 @@ rule all:
             data_provenance=config["data_provenances"],
             geo_resolution=config["geo_resolutions"]
         ),
-        prepared_nextstrain_clades = expand(
-            "data/{data_provenance}/{geo_resolution}/prepared_nextstrain_clades.tsv",
+        prepared_variants = expand(
+            "data/{data_provenance}/{geo_resolution}/prepared_variants.tsv",
             data_provenance=config["data_provenances"],
             geo_resolution=config["geo_resolutions"]
         )
@@ -82,7 +82,7 @@ rule prepare_data:
         nextstrain_clades = "data/{data_provenance}/{geo_resolution}/nextstrain_clades.tsv.gz"
     output:
         cases = "data/{data_provenance}/{geo_resolution}/prepared_cases.tsv",
-        nextstrain_clades = "data/{data_provenance}/{geo_resolution}/prepared_nextstrain_clades.tsv"
+        variants = "data/{data_provenance}/{geo_resolution}/prepared_variants.tsv"
     log:
         "logs/{data_provenance}/{geo_resolution}/prepare_data.txt"
     params:
@@ -107,6 +107,6 @@ rule prepare_data:
             {params.prune_seq_days} \
             {params.clade_min_seq} \
             {params.clade_min_seq_days} \
-            --output-clades {output.nextstrain_clades} \
+            --output-variants {output.variants} \
             --output-cases {output.cases} 2>&1 | tee {log}
         """
