@@ -81,6 +81,7 @@ rule prepare_data:
         cases = "data/{data_provenance}/{geo_resolution}/cases.tsv.gz",
         nextstrain_clades = "data/{data_provenance}/{geo_resolution}/nextstrain_clades.tsv.gz"
     output:
+        clade_without_variant = "data/{data_provenance}/{geo_resolution}/clade_without_variant.txt",
         cases = "data/{data_provenance}/{geo_resolution}/prepared_cases.tsv",
         variants = "data/{data_provenance}/{geo_resolution}/prepared_variants.tsv"
     log:
@@ -109,6 +110,7 @@ rule prepare_data:
             {params.clade_min_seq} \
             {params.clade_min_seq_days} \
             {params.clade_to_variant} \
+            --output-clade-without-variant {output.clade_without_variant} \
             --output-variants {output.variants} \
             --output-cases {output.cases} 2>&1 | tee {log}
         """

@@ -71,6 +71,8 @@ if __name__ == '__main__':
              "If not provided, will count sequences from all dates included in analysis date range.")
     parser.add_argument("--clade-to-variant", required=True,
         help="Path to TSV file that is a map of clade names to variant names with two columns: 'clade', 'variant'")
+    parser.add_argument("--output-clade-without-variant",
+        help="Path to output txt file for clade names that do not have a matching variant name.")
     parser.add_argument("--output-variants", required=True,
         help="Path to output TSV file for the prepared variants data.")
     parser.add_argument("--output-cases", required=True,
@@ -184,6 +186,13 @@ if __name__ == '__main__':
 
         # Replace variant with 'other' if they do not meet the clade_min_seq requirement
         clades.loc[~clades['clade'].isin(clades_with_min_seq), 'variant'] = 'other'
+
+    # If requested, output clades that do not have a matching variant
+    if args.output_clade_without_variant:
+        clade_without_variant = sorted(clades.loc[pd.isna(clades['variant']), 'clade'].unique())
+        with open(args.output_clade_without_variant, 'w') as fh:
+            for clade in clade_without_variant:
+                fh.write(f"{clade}\n")
 
     # Add clades with unknown variants to 'other' variant group
     clades.loc[pd.isna(clades['variant']), 'variant'] = 'other'
