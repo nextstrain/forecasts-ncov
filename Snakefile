@@ -96,6 +96,7 @@ rule prepare_data:
         clade_min_seq = lambda wildcards: _get_prepare_data_option(wildcards, 'clade_min_seq'),
         clade_min_seq_days = lambda wildcards: _get_prepare_data_option(wildcards, 'clade_min_seq_days'),
         clade_to_variant = lambda wildcards: _get_prepare_data_option(wildcards, 'clade_to_variant'),
+        force_include_clades = lambda wildcards: _get_prepare_data_option(wildcards, 'force_include_clades'),
     shell:
         """
         python ./scripts/prepare-data.py \
@@ -110,6 +111,7 @@ rule prepare_data:
             {params.clade_min_seq} \
             {params.clade_min_seq_days} \
             {params.clade_to_variant} \
+            {params.force_include_clades} \
             --output-clade-without-variant {output.clade_without_variant} \
             --output-variants {output.variants} \
             --output-cases {output.cases} 2>&1 | tee {log}

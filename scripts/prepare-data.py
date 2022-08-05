@@ -71,6 +71,9 @@ if __name__ == '__main__':
              "If not provided, will count sequences from all dates included in analysis date range.")
     parser.add_argument("--clade-to-variant", required=True,
         help="Path to TSV file that is a map of clade names to variant names with two columns: 'clade', 'variant'")
+    parser.add_argument("--force-include-clades", nargs="*",
+        help="Clades to force include in the output regardless of sequences counts. " +
+             "Must be formatted as <clade_name>=<variant_name>")
     parser.add_argument("--output-clade-without-variant",
         help="Path to output txt file for clade names that do not have a matching variant name.")
     parser.add_argument("--output-variants", required=True,
@@ -153,6 +156,21 @@ if __name__ == '__main__':
     clade_to_variant = pd.read_csv(args.clade_to_variant, sep='\t', dtype='string', usecols=['clade', 'variant'])
     clades = clades.merge(clade_to_variant, how='left', on='clade')
 
+    # Keep track of clades that are force included so that they can bypass the sequence counts check
+    force_included_clades = set()
+    if args.force_include_clades:
+        for force_include_clade in args.force_include_clades:
+            force_include = force_include_clade.split('=')
+            if len(force_include) != 2:
+                print(f"ERROR: Unable to parse force include clade {force_include_clade!r}.")
+                sys.exit(1)
+
+            clade, variant = force_include
+            clades.loc[clades['clade'] == clade, 'variant'] = variant
+            force_included_clades.add(clade)
+
+        print(f"Force including the following clades/variants: {args.force_include_clades}")
+
     # Collapse small clades into "other" if clades-min-seq is provided
     if args.clade_min_seq:
         # Set the min_date as the default min date for counting sequences per clade
@@ -184,8 +202,8 @@ if __name__ == '__main__':
         # Get a set of clades that meet the clade_min_seq requirement
         clades_with_min_seq = set(seqs_per_clade.loc[seqs_per_clade['sequences'] >= args.clade_min_seq, 'clade'])
 
-        # Replace variant with 'other' if they do not meet the clade_min_seq requirement
-        clades.loc[~clades['clade'].isin(clades_with_min_seq), 'variant'] = 'other'
+        # Replace variant with 'other' if they are not force included and do not meet the clade_min_seq requirement
+        clades.loc[~clades['clade'].isin(force_included_clades | clades_with_min_seq), 'variant'] = 'other'
 
     # If requested, output clades that do not have a matching variant
     if args.output_clade_without_variant:
