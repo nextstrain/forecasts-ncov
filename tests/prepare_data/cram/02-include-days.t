@@ -11,6 +11,7 @@ The outputs should be subsets of the variants counts and case counts.
   > --cases ../data/cases.tsv \
   > --max-date 2022-01-10 \
   > --included-days 5 \
+  > --clade-to-variant ../data/clade_to_variant.tsv \
   > --output-variants "$TMP/prepared_variants.tsv" \
   > --output-cases "$TMP/prepared_cases.tsv"
   Setting max date (inclusive) as '2022-01-10'.

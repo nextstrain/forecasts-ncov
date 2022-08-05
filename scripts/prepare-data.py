@@ -69,6 +69,8 @@ if __name__ == '__main__':
         help="The number fo days (counting back from the cutoff date) to use as the date range "
              "for counting the number of sequences per clade to determine if a clade is included as its own variant.\n"
              "If not provided, will count sequences from all dates included in analysis date range.")
+    parser.add_argument("--clade-to-variant", required=True,
+        help="Path to TSV file that is a map of clade names to variant names with two columns: 'clade', 'variant'")
     parser.add_argument("--output-variants", required=True,
         help="Path to output TSV file for the prepared variants data.")
     parser.add_argument("--output-cases", required=True,
@@ -145,8 +147,9 @@ if __name__ == '__main__':
     ############## Rules for collapsing clades to variants ####################
     ###########################################################################
 
-    # Default variant name is the clade name
-    clades['variant'] = clades['clade']
+    # Map clade names to variant names
+    clade_to_variant = pd.read_csv(args.clade_to_variant, sep='\t', dtype='string', usecols=['clade', 'variant'])
+    clades = clades.merge(clade_to_variant, how='left', on='clade')
 
     # Collapse small clades into "other" if clades-min-seq is provided
     if args.clade_min_seq:
@@ -181,6 +184,9 @@ if __name__ == '__main__':
 
         # Replace variant with 'other' if they do not meet the clade_min_seq requirement
         clades.loc[~clades['clade'].isin(clades_with_min_seq), 'variant'] = 'other'
+
+    # Add clades with unknown variants to 'other' variant group
+    clades.loc[pd.isna(clades['variant']), 'variant'] = 'other'
 
     # Collapse the variants of the same location and date
     # Note: This also removes the "clade" column from the dataframe

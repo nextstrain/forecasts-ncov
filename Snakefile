@@ -94,6 +94,7 @@ rule prepare_data:
         prune_seq_days = lambda wildcards: _get_prepare_data_option(wildcards, 'prune_seq_days'),
         clade_min_seq = lambda wildcards: _get_prepare_data_option(wildcards, 'clade_min_seq'),
         clade_min_seq_days = lambda wildcards: _get_prepare_data_option(wildcards, 'clade_min_seq_days'),
+        clade_to_variant = lambda wildcards: _get_prepare_data_option(wildcards, 'clade_to_variant'),
     shell:
         """
         python ./scripts/prepare-data.py \
@@ -107,6 +108,7 @@ rule prepare_data:
             {params.prune_seq_days} \
             {params.clade_min_seq} \
             {params.clade_min_seq_days} \
+            {params.clade_to_variant} \
             --output-variants {output.variants} \
             --output-cases {output.cases} 2>&1 | tee {log}
         """

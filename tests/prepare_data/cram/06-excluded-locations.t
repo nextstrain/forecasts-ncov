@@ -18,6 +18,7 @@ The outputs should be subsets of the clade counts and case counts.
   > --location-min-seq 5000 \
   > --location-min-seq-days 2 \
   > --excluded-locations ../data/excluded_locations.txt \
+  > --clade-to-variant ../data/clade_to_variant.tsv \
   > --output-variants "$TMP/prepared_variants.tsv" \
   > --output-cases "$TMP/prepared_cases.tsv"
   Setting max date (inclusive) as '2022-01-10'.
