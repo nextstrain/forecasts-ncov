@@ -42,6 +42,20 @@ def _get_all_input(w):
             geo_resolution=geo_resolutions
         ))
 
+    if config.get("renewal_config"):
+        all_input.extend(expand(
+            "results/{data_provenance}/{geo_resolution}/renewal_model",
+            data_provenance=data_provenances,
+            geo_resolution=geo_resolutions
+        ))
+
+    if config.get("mlr_config"):
+        all_input.extend(expand(
+            "results/{data_provenance}/{geo_resolution}/mlr_model",
+            data_provenance=data_provenances,
+            geo_resolution=geo_resolutions
+        ))
+
     return all_input
 
 
@@ -50,6 +64,7 @@ rule all:
 
 
 include: "workflow/snakemake_rules/prepare_data.smk"
+include: "workflow/snakemake_rules/models.smk"
 
 if config.get("send_slack_notifications"):
     include: "workflow/snakemake_rules/slack_notifications.smk"
