@@ -44,14 +44,15 @@ class MLRConfig:
             config = yaml.safe_load(file)
         return config
 
-    def load_data(self):
+    def load_data(self, override_seq_path=None):
         data_cf = self.config["data"]
 
         # Load sequence count data
-        if data_cf["seq_path"].endswith(".tsv"):
-            raw_seq = pd.read_csv(data_cf["seq_path"], sep="\t")
+        seq_path = override_seq_path or data_cf["seq_path"]
+        if seq_path.endswith(".tsv"):
+            raw_seq = pd.read_csv(seq_path, sep="\t")
         else:
-            raw_seq = pd.read_csv(data_cf["seq_path"])
+            raw_seq = pd.read_csv(seq_path)
 
         # Load locations
         if "locations" in data_cf:
@@ -87,7 +88,7 @@ class MLRConfig:
         )
         return inference_method
 
-    def load_settings(self):
+    def load_settings(self, override_export_path=None):
         settings_cf = self.config["settings"]
         fit = parse_with_default(settings_cf, "fit", dflt=False)
         save = parse_with_default(settings_cf, "save", dflt=False)
@@ -95,7 +96,7 @@ class MLRConfig:
         export_json = parse_with_default(
             settings_cf, "export_json", dflt=False
         )
-        export_path = parse_with_default(settings_cf, "export_path", dflt=None)
+        export_path = override_export_path or parse_with_default(settings_cf, "export_path", dflt=None)
         return fit, save, load, export_json, export_path
 
 
@@ -178,13 +179,15 @@ if __name__ == "__main__":
         description="Estimating variant growth rates."
     )
     parser.add_argument("--config", help="path to config file")
+    parser.add_argument("--seq-path", help="File path to sequence data. Overrides data.seq_path in config.")
+    parser.add_argument("--export-path", help="Path to export directory. Overrides settings.export_path in config.")
     args = parser.parse_args()
 
     # Load configuration, data, and create model
     config = MLRConfig(args.config)
     print(f"Config loaded: {config.path}")
 
-    raw_seq, locations = config.load_data()
+    raw_seq, locations = config.load_data(args.seq_path)
     print("Data loaded sucessfuly")
 
     mlr_model = config.load_model()
@@ -193,7 +196,7 @@ if __name__ == "__main__":
     inference_method = config.load_optim()
     print("Inference method defined.")
 
-    fit, save, load, export_json, export_path = config.load_settings()
+    fit, save, load, export_json, export_path = config.load_settings(args.export_path)
     print("Settings loaded")
 
     # Find export path
