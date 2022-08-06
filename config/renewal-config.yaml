@@ -28,27 +28,27 @@ model:
       sd: 1.2
       family: "Gamma" # Options: Gamma and LogNormal
     O21L:
-      name: "Omicron 21L"
+      name: "21L (Omicron)"
       mean: 3.1
       sd: 1.2
       family: "Gamma" # Options: Gamma and LogNormal
     O21K:
-      name: "Omicron 21K"
+      name: "21K (Omicron)"
       mean: 3.1
       sd: 1.2
       family: "Gamma" # Options: Gamma and LogNormal
     O22A:
-      name: "Omicron 22A"
+      name: "22A (Omicron)"
       mean: 3.1
       sd: 1.2
       family: "Gamma" # Options: Gamma and LogNormal
     O22B:
-      name: "Omicron 22B"
+      name: "22B (Omicron)"
       mean: 3.1
       sd: 1.2
       family: "Gamma" # Options: Gamma and LogNormal
     O22C:
-      name: "Omicron 22C"
+      name: "22C (Omicron)"
       mean: 3.1
       sd: 1.2
       family: "Gamma" # Options: Gamma and LogNormal
