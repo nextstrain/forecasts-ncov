@@ -14,7 +14,7 @@ rule renewal_model:
         renewal_config = config.get("renewal_config")
     shell:
         """
-        python ./scripts/run-renewal-model.py \
+        python -u ./scripts/run-renewal-model.py \
             --config {params.renewal_config} \
             --case-path {input.cases} \
             --seq-path {input.variants} \
@@ -33,7 +33,7 @@ rule mlr_model:
         renewal_config = config.get("mlr_config")
     shell:
         """
-        python ./scripts/run-mlr-model.py \
+        python -u ./scripts/run-mlr-model.py \
             --config {params.renewal_config} \
             --seq-path {input.variants} \
             --export-path {output.export} 2>&1 | tee {log}
