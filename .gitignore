@@ -2,6 +2,7 @@
 data/*
 logs/
 results/
+benchmarks/
 
 # Errors from tests
 *.err

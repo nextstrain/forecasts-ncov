@@ -10,6 +10,8 @@ rule renewal_model:
         export = directory("results/{data_provenance}/{geo_resolution}/renewal_model")
     log:
         "logs/{data_provenance}/{geo_resolution}/renewal_model.txt"
+    benchmark:
+        "benchmarks/{data_provenance}/{geo_resolution}/renewal_model.txt"
     params:
         renewal_config = config.get("renewal_config")
     shell:
@@ -29,6 +31,8 @@ rule mlr_model:
         export = directory("results/{data_provenance}/{geo_resolution}/mlr_model")
     log:
         "logs/{data_provenance}/{geo_resolution}/mlr_model.txt"
+    benchmark:
+        "benchmarks/{data_provenance}/{geo_resolution}/mlr_model.txt"
     params:
         renewal_config = config.get("mlr_config")
     shell:
