@@ -290,16 +290,22 @@ def make_model_directories(path):
 
 
 def export_results(multi_posterior, ps, path, data_name):
-    EXPORT_SITES = ["freq", "freq_forecast", "R", "R_forecast"]
+    EXPORT_SITES = ["freq", "freq_forecast", "R", "R_forecast", "I_smooth", "ga"]
     # Make directories
     make_model_directories(path)
 
     # Combine jsons from multiple model runs
-    results = dict()
+    results = []
     for location, posterior in multi_posterior.locator.items():
-        results[location] = ef.get_sites_variants_json(
-            posterior.samples, posterior.data, EXPORT_SITES, ps
-        )
+        results.append(
+            ef.posterior.get_sites_variants_tidy(
+                posterior.samples,
+                posterior.data,
+                EXPORT_SITES,
+                ps,
+                location
+        ))
+    results = ef.posterior.combine_sites_tidy(results)
     ef.save_json(results, path=f"{path}/{data_name}_results.json")
 
 
