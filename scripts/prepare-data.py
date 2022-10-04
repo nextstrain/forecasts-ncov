@@ -216,8 +216,9 @@ if __name__ == '__main__':
     clades.loc[pd.isna(clades['variant']), 'variant'] = 'other'
 
     # Collapse the variants of the same location and date
-    # Note: This also removes the "clade" column from the dataframe
-    clades = clades.groupby(['location', 'variant', 'date'], as_index=False).sum()
+    clades = clades.groupby(['location', 'variant', 'date'], as_index=False).sum(numeric_only=False)
+    clades.drop(columns=['clade'], inplace=True)
+
 
     ###########################################################################
     ##################### Rules for pruning sequence counts ###################
