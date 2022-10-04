@@ -14,6 +14,8 @@ rule renewal_model:
         "benchmarks/{data_provenance}/{geo_resolution}/renewal_model.txt"
     params:
         renewal_config = config.get("renewal_config")
+    resources:
+        mem_mb=4000
     shell:
         """
         python -u ./scripts/run-renewal-model.py \
@@ -35,6 +37,8 @@ rule mlr_model:
         "benchmarks/{data_provenance}/{geo_resolution}/mlr_model.txt"
     params:
         renewal_config = config.get("mlr_config")
+    resources:
+        mem_mb=4000
     shell:
         """
         python -u ./scripts/run-mlr-model.py \
