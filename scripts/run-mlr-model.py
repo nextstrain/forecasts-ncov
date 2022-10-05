@@ -96,7 +96,9 @@ class MLRConfig:
         export_json = parse_with_default(
             settings_cf, "export_json", dflt=False
         )
-        export_path = override_export_path or parse_with_default(settings_cf, "export_path", dflt=None)
+        export_path = override_export_path or parse_with_default(
+            settings_cf, "export_path", dflt=None
+        )
         return fit, save, load, export_json, export_path
 
 
@@ -109,7 +111,7 @@ def fit_models(rs, locations, model, inference_method, path, save):
 
         # Check to see if location available
         if len(raw_seq) == 0:
-            print(f'Location {location} not in data')
+            print(f"Location {location} not in data")
             continue
 
         data = ef.VariantFrequencies(raw_seq=raw_seq)
@@ -160,16 +162,25 @@ def make_model_directories(path):
 
 
 def export_results(multi_posterior, ps, path, data_name):
-    EXPORT_SITES = ["freq"]
+    EXPORT_SITES = ["freq", "ga"]
+    EXPORT_DATED = [True, False]
     # Make directories
     make_model_directories(path)
 
     # Combine jsons from multiple model runs
-    results = dict()
+    results = []
     for location, posterior in multi_posterior.locator.items():
-        results[location] = ef.get_sites_variants_json(
-            posterior.samples, posterior.data, EXPORT_SITES, ps
+        results.append(
+            ef.posterior.get_sites_variants_tidy(
+                posterior.samples,
+                posterior.data,
+                EXPORT_SITES,
+                EXPORT_DATED,
+                ps,
+                location,
+            )
         )
+    results = ef.posterior.combine_sites_tidy(results)
     ef.save_json(results, path=f"{path}/{data_name}_results.json")
 
 
@@ -179,8 +190,14 @@ if __name__ == "__main__":
         description="Estimating variant growth rates."
     )
     parser.add_argument("--config", help="path to config file")
-    parser.add_argument("--seq-path", help="File path to sequence data. Overrides data.seq_path in config.")
-    parser.add_argument("--export-path", help="Path to export directory. Overrides settings.export_path in config.")
+    parser.add_argument(
+        "--seq-path",
+        help="File path to sequence data. Overrides data.seq_path in config.",
+    )
+    parser.add_argument(
+        "--export-path",
+        help="Path to export directory. Overrides settings.export_path in config.",
+    )
     args = parser.parse_args()
 
     # Load configuration, data, and create model
@@ -196,7 +213,9 @@ if __name__ == "__main__":
     inference_method = config.load_optim()
     print("Inference method defined.")
 
-    fit, save, load, export_json, export_path = config.load_settings(args.export_path)
+    fit, save, load, export_json, export_path = config.load_settings(
+        args.export_path
+    )
     print("Settings loaded")
 
     # Find export path

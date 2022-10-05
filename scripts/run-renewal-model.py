@@ -290,7 +290,8 @@ def make_model_directories(path):
 
 
 def export_results(multi_posterior, ps, path, data_name):
-    EXPORT_SITES = ["freq", "freq_forecast", "R", "R_forecast", "I_smooth", "ga"]
+    EXPORT_SITES = ["freq", "R", "I_smooth", "ga"]
+    EXPORT_DATED = [True, True, True, True]
     # Make directories
     make_model_directories(path)
 
@@ -302,6 +303,7 @@ def export_results(multi_posterior, ps, path, data_name):
                 posterior.samples,
                 posterior.data,
                 EXPORT_SITES,
+                EXPORT_DATED,
                 ps,
                 location
         ))
@@ -372,4 +374,4 @@ if __name__ == "__main__":
             config.config["settings"], "ps", dflt=[0.5, 0.8, 0.95]
         )
         data_name = config.config["data"]["name"]
-        export_results(multi_posterior, ps, export_path, data_name)
+        export_results(multi_posterior, ps[1:], export_path, data_name)
