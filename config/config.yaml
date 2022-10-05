@@ -19,6 +19,7 @@ prepare_data:
       prune_seq_days: 12
       clade_min_seq: 5000
       clade_min_seq_days: 150
+      clade_to_variant: "defaults/clade_to_variant.tsv"
     usa:
       included_days: 150
       location_min_seq: 500
@@ -27,6 +28,7 @@ prepare_data:
       prune_seq_days: 12
       clade_min_seq: 5000
       clade_min_seq_days: 150
+      clade_to_variant: "defaults/clade_to_variant.tsv"
   open:
     global:
       included_days: 150
@@ -36,6 +38,7 @@ prepare_data:
       prune_seq_days: 12
       clade_min_seq: 5000
       clade_min_seq_days: 150
+      clade_to_variant: "defaults/clade_to_variant.tsv"
     usa:
       included_days: 150
       location_min_seq: 500
@@ -44,3 +47,8 @@ prepare_data:
       prune_seq_days: 12
       clade_min_seq: 5000
       clade_min_seq_days: 150
+      clade_to_variant: "defaults/clade_to_variant.tsv"
+
+# Model configs
+renewal_config: "config/renewal-config.yaml"
+mlr_config: "config/mlr-config.yaml"

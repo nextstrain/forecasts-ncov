@@ -1,6 +1,8 @@
 # Files created by the pipeline, which we want to keep out of git
 data/*
 logs/
+results/
+benchmarks/
 
 # Errors from tests
 *.err

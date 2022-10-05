@@ -16,24 +16,25 @@ The outputs should be subsets of the clade counts and case counts.
   > --prune-seq-days 1 \
   > --location-min-seq 5000 \
   > --location-min-seq-days 2 \
-  > --output-clades "$TMP/prepared_nextstrain_clades.tsv" \
+  > --clade-to-variant ../data/clade_to_variant.tsv \
+  > --output-variants "$TMP/prepared_variants.tsv" \
   > --output-cases "$TMP/prepared_cases.tsv"
   Setting max date (inclusive) as '2022-01-10'.
   Setting min date (inclusive) as '2022-01-06'.
   Only including locations that have at least 5000 sequence(s) in the last 2 days of the analysis date range.
   Locations that will be included: ['USA', 'United Kingdom'].
-  Pruning clade counts in the last 1 day(s) to exclude recent dates that may be overly enriched for variants.
-  Clades that will be included: ['19A', '20A', '20B', '20C', '20I (Alpha, V1)', '21A (Delta)', '21I (Delta)', '21J (Delta)', '21K (Omicron)', '21L (Omicron)', '21M (Omicron)', 'recombinant'].
+  Pruning variants counts in the last 1 day(s) to exclude recent dates that may be overly enriched for variants.
+  Variants that will be included: ['19A', '20A', '20B', '20C', '20I (Alpha, V1)', '21A (Delta)', '21I (Delta)', '21J (Delta)', '21K (Omicron)', '21L (Omicron)', '21M (Omicron)', 'recombinant'].
 
 Verify that the output clade counts is a subset with expected locations, clades, and dates.
 
-  $ wc -l < "$TMP/prepared_nextstrain_clades.tsv" | sed 's/^[[:space:]]*//'
+  $ wc -l < "$TMP/prepared_variants.tsv" | sed 's/^[[:space:]]*//'
   47
-  $ echo $(tsv-select -H -f location "$TMP/prepared_nextstrain_clades.tsv" | tsv-uniq -H | tail -n +2 | sort)
+  $ echo $(tsv-select -H -f location "$TMP/prepared_variants.tsv" | tsv-uniq -H | tail -n +2 | sort)
   USA United Kingdom
-  $ echo $(tsv-select -H -f clade "$TMP/prepared_nextstrain_clades.tsv" | tsv-uniq -H | tail -n +2 | sort)
+  $ echo $(tsv-select -H -f variant "$TMP/prepared_variants.tsv" | tsv-uniq -H | tail -n +2 | sort)
   19A 20A 20B 20C 20I (Alpha, V1) 21A (Delta) 21I (Delta) 21J (Delta) 21K (Omicron) 21L (Omicron) 21M (Omicron) recombinant
-  $ echo $(tsv-select -H -f date "$TMP/prepared_nextstrain_clades.tsv" | tsv-uniq -H | tail -n +2 | sort | tsv-summarize --first 1 --last 1)
+  $ echo $(tsv-select -H -f date "$TMP/prepared_variants.tsv" | tsv-uniq -H | tail -n +2 | sort | tsv-summarize --first 1 --last 1)
   2022-01-06 2022-01-09
 
 Verify that the output case counts is a subset with expected locations and dates.

@@ -2,11 +2,20 @@ Setup
 
   $ pushd "$TESTDIR" > /dev/null
 
+Create subset of clade to variants mapping for testing clades without variants.
+
+  $ cat >$TMP/clade_to_variant.tsv <<~~
+  > clade	variant
+  > 21K (Omicron)	21K (Omicron)
+  > 21L (Omicron)	21L (Omicron)
+  > ~~
+
 Prepared data with the max date 2022-01-10, which is the last date of the test data.
 Only include 5 days in analysis.
 Prune the sequences in last day of clade counts.
 Require a location to have a minimum of 5000 sequences in the last 2 days.
 Exclude specific locations.
+Collapse clades that have less than 50 sequences in the last 3 days into 'other'.
 The outputs should be subsets of the clade counts and case counts.
 
   $ python3 ../../../scripts/prepare-data.py \
@@ -18,7 +27,10 @@ The outputs should be subsets of the clade counts and case counts.
   > --location-min-seq 5000 \
   > --location-min-seq-days 2 \
   > --excluded-locations ../data/excluded_locations.txt \
-  > --clade-to-variant ../data/clade_to_variant.tsv \
+  > --clade-min-seq 50 \
+  > --clade-min-seq-days 3 \
+  > --clade-to-variant "$TMP/clade_to_variant.tsv" \
+  > --output-clade-without-variant "$TMP/clade_without_variant.txt" \
   > --output-variants "$TMP/prepared_variants.tsv" \
   > --output-cases "$TMP/prepared_cases.tsv"
   Setting max date (inclusive) as '2022-01-10'.
@@ -26,17 +38,18 @@ The outputs should be subsets of the clade counts and case counts.
   Only including locations that have at least 5000 sequence(s) in the last 2 days of the analysis date range.
   Excluding the following requested locations: ['Japan', 'United Kingdom'].
   Locations that will be included: ['USA'].
+  Collapsing clades that have less than 50 sequence(s) in the last 3 days of the analysis date range into a single 'other' variant.
   Pruning variants counts in the last 1 day(s) to exclude recent dates that may be overly enriched for variants.
-  Variants that will be included: ['19A', '20A', '20B', '20C', '21A (Delta)', '21I (Delta)', '21J (Delta)', '21K (Omicron)', '21L (Omicron)'].
+  Variants that will be included: ['21K (Omicron)', '21L (Omicron)', 'other'].
 
 Verify that the output clade counts is a subset with expected locations, clades, and dates.
 
   $ wc -l < "$TMP/prepared_variants.tsv" | sed 's/^[[:space:]]*//'
-  30
+  13
   $ echo $(tsv-select -H -f location "$TMP/prepared_variants.tsv" | tsv-uniq -H | tail -n +2 | sort)
   USA
   $ echo $(tsv-select -H -f variant "$TMP/prepared_variants.tsv" | tsv-uniq -H | tail -n +2 | sort)
-  19A 20A 20B 20C 21A (Delta) 21I (Delta) 21J (Delta) 21K (Omicron) 21L (Omicron)
+  21K (Omicron) 21L (Omicron) other
   $ echo $(tsv-select -H -f date "$TMP/prepared_variants.tsv" | tsv-uniq -H | tail -n +2 | sort | tsv-summarize --first 1 --last 1)
   2022-01-06 2022-01-09
 
@@ -50,3 +63,8 @@ Verify that the output case counts is a subset with expected locations and dates
   $ echo $(tsv-select -H -f date "$TMP/prepared_cases.tsv" | tsv-uniq -H | tail -n +2 | sort | tsv-summarize --first 1 --last 1)
   2022-01-06 2022-01-10
 
+
+Verify that we get the expected clades without variants.
+
+  $ cat "$TMP/clade_without_variant.txt"
+  21J (Delta)

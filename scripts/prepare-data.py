@@ -63,14 +63,21 @@ if __name__ == '__main__':
     parser.add_argument("--excluded-locations",
         help="File with a list locations to exclude from analysis.")
     parser.add_argument("--clade-min-seq", type=positive_int,
-        help="The minimum number of sequences a clades must have to be included as it's own clade.\n"
-             "All clades with less than the minimum will be collapsed as 'Other'.")
+        help="The minimum number of sequences a clades must have to be included as it's own variant.\n"
+             "All clades with less than the minimum will be collapsed as 'other'.")
     parser.add_argument("--clade-min-seq-days", type=positive_int,
         help="The number fo days (counting back from the cutoff date) to use as the date range "
-             "for counting the number of sequences per clade to determine if a clade is included as its own clade.\n"
+             "for counting the number of sequences per clade to determine if a clade is included as its own variant.\n"
              "If not provided, will count sequences from all dates included in analysis date range.")
-    parser.add_argument("--output-clades", required=True,
-        help="Path to output TSV file for the prepared clades data.")
+    parser.add_argument("--clade-to-variant", required=True,
+        help="Path to TSV file that is a map of clade names to variant names with two columns: 'clade', 'variant'")
+    parser.add_argument("--force-include-clades", nargs="*",
+        help="Clades to force include in the output regardless of sequences counts. " +
+             "Must be formatted as <clade_name>=<variant_name>")
+    parser.add_argument("--output-clade-without-variant",
+        help="Path to output txt file for clade names that do not have a matching variant name.")
+    parser.add_argument("--output-variants", required=True,
+        help="Path to output TSV file for the prepared variants data.")
     parser.add_argument("--output-cases", required=True,
         help="Path to output TSV file for the prepared cases data.")
 
@@ -142,8 +149,27 @@ if __name__ == '__main__':
     print(f"Locations that will be included: {sorted(locations_to_include)}.")
 
     ###########################################################################
-    ###################### Rules for collapsing clades ########################
+    ############## Rules for collapsing clades to variants ####################
     ###########################################################################
+
+    # Map clade names to variant names
+    clade_to_variant = pd.read_csv(args.clade_to_variant, sep='\t', dtype='string', usecols=['clade', 'variant'])
+    clades = clades.merge(clade_to_variant, how='left', on='clade')
+
+    # Keep track of clades that are force included so that they can bypass the sequence counts check
+    force_included_clades = set()
+    if args.force_include_clades:
+        for force_include_clade in args.force_include_clades:
+            force_include = force_include_clade.split('=')
+            if len(force_include) != 2:
+                print(f"ERROR: Unable to parse force include clade {force_include_clade!r}.")
+                sys.exit(1)
+
+            clade, variant = force_include
+            clades.loc[clades['clade'] == clade, 'variant'] = variant
+            force_included_clades.add(clade)
+
+        print(f"Force including the following clades/variants: {args.force_include_clades}")
 
     # Collapse small clades into "other" if clades-min-seq is provided
     if args.clade_min_seq:
@@ -153,7 +179,7 @@ if __name__ == '__main__':
         if args.clade_min_seq_days is not None:
             print(
                 f"Collapsing clades that have less than {args.clade_min_seq} sequence(s)",
-                f"in the last {args.clade_min_seq_days} days of the analysis date range into a single 'other' clade."
+                f"in the last {args.clade_min_seq_days} days of the analysis date range into a single 'other' variant."
             )
             # Calculate the minimum date for sequences per clade as *clade_min_seq_days* before the max date
             # Subtract 1 from days in calculation since we are including the max date
@@ -161,7 +187,7 @@ if __name__ == '__main__':
         else:
             print(
                 f"Collapsing clades that have less than {args.clade_min_seq} sequence(s)",
-                "in the analysis date range (inclusive) into a single 'other' clade."
+                "in the analysis date range (inclusive) into a single 'other' variant."
             )
 
         # Subset to clades and sequences within the date range from min_clades_seq_date to max_date
@@ -176,10 +202,23 @@ if __name__ == '__main__':
         # Get a set of clades that meet the clade_min_seq requirement
         clades_with_min_seq = set(seqs_per_clade.loc[seqs_per_clade['sequences'] >= args.clade_min_seq, 'clade'])
 
-        # Replace clades with 'other' if they do not meet the clade_min_seq requirement
-        clades.loc[~clades['clade'].isin(clades_with_min_seq), 'clade'] = 'other'
-        # Collapse the 'other' clades of the same location and date
-        clades = clades.groupby(['location', 'clade', 'date'], as_index=False).sum()
+        # Replace variant with 'other' if they are not force included and do not meet the clade_min_seq requirement
+        clades.loc[~clades['clade'].isin(force_included_clades | clades_with_min_seq), 'variant'] = 'other'
+
+    # If requested, output clades that do not have a matching variant
+    if args.output_clade_without_variant:
+        clade_without_variant = sorted(clades.loc[pd.isna(clades['variant']), 'clade'].unique())
+        with open(args.output_clade_without_variant, 'w') as fh:
+            for clade in clade_without_variant:
+                fh.write(f"{clade}\n")
+
+    # Add clades with unknown variants to 'other' variant group
+    clades.loc[pd.isna(clades['variant']), 'variant'] = 'other'
+
+    # Collapse the variants of the same location and date
+    clades = clades.groupby(['location', 'variant', 'date'], as_index=False).sum(numeric_only=False)
+    clades.drop(columns=['clade'], inplace=True)
+
 
     ###########################################################################
     ##################### Rules for pruning sequence counts ###################
@@ -190,7 +229,7 @@ if __name__ == '__main__':
     # Set the max date for clade counts to earlier date if prune_seq_days is provided.
     if args.prune_seq_days is not None:
         print(
-            f"Pruning clade counts in the last {args.prune_seq_days} day(s)",
+            f"Pruning variants counts in the last {args.prune_seq_days} day(s)",
             "to exclude recent dates that may be overly enriched for variants."
         )
         # Calculate max clade date as *prune_seq_days* days before the max_date
@@ -207,12 +246,12 @@ if __name__ == '__main__':
         (clades['location'].isin(locations_to_include))
     ]
 
-    print(f"Clades that will be included: {sorted(clades['clade'].unique())}.")
+    print(f"Variants that will be included: {sorted(clades['variant'].unique())}.")
 
-    # Sort clades subset and print to output file
-    clades.sort_values(['location', 'clade', 'date']) \
+    # Sort variants subset and print to output file
+    clades.sort_values(['location', 'variant', 'date']) \
           .to_csv(
-              args.output_clades,
+              args.output_variants,
               sep='\t',
               index=False,
           )

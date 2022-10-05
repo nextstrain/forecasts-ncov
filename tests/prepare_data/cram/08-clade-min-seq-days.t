@@ -21,26 +21,27 @@ The outputs should be subsets of the clade counts and case counts.
   > --excluded-locations ../data/excluded_locations.txt \
   > --clade-min-seq 50 \
   > --clade-min-seq-days 3 \
-  > --output-clades "$TMP/prepared_nextstrain_clades.tsv" \
+  > --clade-to-variant ../data/clade_to_variant.tsv \
+  > --output-variants "$TMP/prepared_variants.tsv" \
   > --output-cases "$TMP/prepared_cases.tsv"
   Setting max date (inclusive) as '2022-01-10'.
   Setting min date (inclusive) as '2022-01-06'.
   Only including locations that have at least 5000 sequence(s) in the last 2 days of the analysis date range.
   Excluding the following requested locations: ['Japan', 'United Kingdom'].
   Locations that will be included: ['USA'].
-  Collapsing clades that have less than 50 sequence(s) in the last 3 days of the analysis date range into a single 'other' clade.
-  Pruning clade counts in the last 1 day(s) to exclude recent dates that may be overly enriched for variants.
-  Clades that will be included: ['21J (Delta)', '21K (Omicron)', '21L (Omicron)', 'other'].
+  Collapsing clades that have less than 50 sequence(s) in the last 3 days of the analysis date range into a single 'other' variant.
+  Pruning variants counts in the last 1 day(s) to exclude recent dates that may be overly enriched for variants.
+  Variants that will be included: ['21J (Delta)', '21K (Omicron)', '21L (Omicron)', 'other'].
 
 Verify that the output clade counts is a subset with expected locations, clades, and dates.
 
-  $ wc -l < "$TMP/prepared_nextstrain_clades.tsv" | sed 's/^[[:space:]]*//'
+  $ wc -l < "$TMP/prepared_variants.tsv" | sed 's/^[[:space:]]*//'
   17
-  $ echo $(tsv-select -H -f location "$TMP/prepared_nextstrain_clades.tsv" | tsv-uniq -H | tail -n +2 | sort)
+  $ echo $(tsv-select -H -f location "$TMP/prepared_variants.tsv" | tsv-uniq -H | tail -n +2 | sort)
   USA
-  $ echo $(tsv-select -H -f clade "$TMP/prepared_nextstrain_clades.tsv" | tsv-uniq -H | tail -n +2 | sort)
+  $ echo $(tsv-select -H -f variant "$TMP/prepared_variants.tsv" | tsv-uniq -H | tail -n +2 | sort)
   21J (Delta) 21K (Omicron) 21L (Omicron) other
-  $ echo $(tsv-select -H -f date "$TMP/prepared_nextstrain_clades.tsv" | tsv-uniq -H | tail -n +2 | sort | tsv-summarize --first 1 --last 1)
+  $ echo $(tsv-select -H -f date "$TMP/prepared_variants.tsv" | tsv-uniq -H | tail -n +2 | sort | tsv-summarize --first 1 --last 1)
   2022-01-06 2022-01-09
 
 
