@@ -7,7 +7,7 @@ rule renewal_model:
         cases = "data/{data_provenance}/{geo_resolution}/prepared_cases.tsv",
         variants = "data/{data_provenance}/{geo_resolution}/prepared_variants.tsv"
     output:
-        export = directory("results/{data_provenance}/{geo_resolution}/renewal_model")
+        export = directory("results/{data_provenance}/{geo_resolution}/renewal")
     log:
         "logs/{data_provenance}/{geo_resolution}/renewal_model.txt"
     benchmark:
@@ -30,7 +30,7 @@ rule mlr_model:
     input:
         variants = "data/{data_provenance}/{geo_resolution}/prepared_variants.tsv"
     output:
-        export = directory("results/{data_provenance}/{geo_resolution}/mlr_model")
+        export = directory("results/{data_provenance}/{geo_resolution}/mlr")
     log:
         "logs/{data_provenance}/{geo_resolution}/mlr_model.txt"
     benchmark:

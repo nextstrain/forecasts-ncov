@@ -1,5 +1,7 @@
 import os
 
+KNOWN_MODELS = ["mlr", "renewal"]
+
 if not config:
     configfile: "config/config.yaml"
 
@@ -42,18 +44,19 @@ def _get_all_input(w):
             geo_resolution=geo_resolutions
         ))
 
-    if config.get("renewal_config"):
-        all_input.extend(expand(
-            "results/{data_provenance}/{geo_resolution}/renewal_model",
-            data_provenance=data_provenances,
-            geo_resolution=geo_resolutions
-        ))
+    # Check which models to run based on which model configs have been provided
+    models_to_run = [
+        model_name
+        for model_name in KNOWN_MODELS
+        if config.get(f"{model_name}_config")
+    ]
 
-    if config.get("mlr_config"):
+    if models_to_run:
         all_input.extend(expand(
-            "results/{data_provenance}/{geo_resolution}/mlr_model",
+            "results/{data_provenance}/{geo_resolution}/{model}",
             data_provenance=data_provenances,
-            geo_resolution=geo_resolutions
+            geo_resolution=geo_resolutions,
+            model=models_to_run
         ))
 
     return all_input
