@@ -20,6 +20,14 @@ if config.get("send_slack_notifications"):
         print(f"ERROR: Must set the following environment variables to send Slack notifications: {required_envvar}")
         sys.exit(1)
 
+wildcard_constraints:
+    date = r"\d{4}-\d{2}-\d{2}"
+
+def get_todays_date():
+    from datetime import datetime
+    date = datetime.today().strftime('%Y-%m-%d')
+    return date
+
 def _get_all_input(w):
     data_provenances = config["data_provenances"]
     geo_resolutions = config["geo_resolutions"]
@@ -53,10 +61,11 @@ def _get_all_input(w):
 
     if models_to_run:
         all_input.extend(expand(
-            "results/{data_provenance}/{geo_resolution}/{model}",
+            "results/{data_provenance}/{geo_resolution}/{model}/{date}_results.json",
             data_provenance=data_provenances,
             geo_resolution=geo_resolutions,
-            model=models_to_run
+            model=models_to_run,
+            date=config.get("run_date", get_todays_date())
         ))
 
     return all_input
