@@ -1,0 +1,13 @@
+# Optional configs used by the Nextstrain team
+# Upload params for each data provenance
+upload:
+  gisaid:
+    # AWS S3 Bucket with prefix
+    s3_dst: "s3://nextstrain-data-private/files/workflows/forecasts-ncov"
+  open:
+    # AWS S3 Bucket with prefix
+    s3_dst: "s3://nextstrain-data/files/workflows/forecasts-ncov"
+    cloudfront_domain: "data.nextstrain.org"
+
+# Send Slack notifications
+send_slack_notifications: True

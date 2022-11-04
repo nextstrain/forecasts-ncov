@@ -60,13 +60,22 @@ def _get_all_input(w):
     ]
 
     if models_to_run:
+        run_date = config.get("run_date", get_todays_date())
         all_input.extend(expand(
             "results/{data_provenance}/{geo_resolution}/{model}/{date}_results.json",
             data_provenance=data_provenances,
             geo_resolution=geo_resolutions,
             model=models_to_run,
-            date=config.get("run_date", get_todays_date())
+            date=run_date
         ))
+        if config.get("upload"):
+            all_input.extend(expand(
+                "results/{data_provenance}/{geo_resolution}/{model}/{date}_results_s3_upload.done",
+                data_provenance=data_provenances,
+                geo_resolution=geo_resolutions,
+                model=models_to_run,
+                date=run_date
+            ))
 
     return all_input
 
@@ -80,3 +89,6 @@ include: "workflow/snakemake_rules/models.smk"
 
 if config.get("send_slack_notifications"):
     include: "workflow/snakemake_rules/slack_notifications.smk"
+
+if config.get("upload"):
+    include: "workflow/snakemake_rules/upload.smk"
