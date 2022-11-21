@@ -1,5 +1,32 @@
 # Forecasts SARS-CoV-2
 
+> :warning: **WARNING: This is an alpha release.** Output file format and address may change at any time
+
+## Automated pipeline
+The automated pipeline runs daily based on a scheduled jobs and triggers from upstream data ingests.
+* Case counts are fetched from [external data sources](./ingest/README.md#data-sources) daily at 8 AM PST
+* Raw metadata/sequences are fetched and cleaned via [nextstrain/ncov-ingest].
+    * See [GISAID](https://github.com/nextstrain/ncov-ingest/blob/master/.github/workflows/fetch-and-ingest-gisaid-master.yml) and [open](https://github.com/nextstrain/ncov-ingest/blob/master/.github/workflows/fetch-and-ingest-genbank-master.yml) data workflows for their daily scheduled times
+* The [nextstrain/ncov-ingest] pipelines trigger the clade counts jobs once the latest curated data has been uploaded to S3
+    * The GISAID and open data ingest pipelines have different run times, so their clade counts jobs are triggered at different times.
+* Clade counts jobs trigger the model runs once the counts data has been uploaded to S3
+* Model results are uploaded to S3 as dated files where the date indicates the ***run*** date
+
+### Inputs
+See [available counts files](./ingest/README.md#outputs) for the input case counts and clade counts files.
+
+### Outputs
+The model results for GISAID data are stored at `s3://nextstrain-data-private/files/workflows/forecasts-ncov/` and are not publicly available.
+
+The model results for open (GenBank) data are stored at `s3://nextstrain-data/files/workflows/forecasts-ncov` and are publicly available:
+
+| Geographic Resolution | Model | Address |
+| --- | --- | --- |
+| Global | MLR | `https://data.nextstrain.org/files/workflows/forecasts-ncov/global/mlr/<YYYY-MM-DD>_results.json.zst` |
+|        | Renewal |  `https://data.nextstrain.org/files/workflows/forecasts-ncov/global/renewal/<YYYY-MM-DD>_results.json.zst` |
+| USA | MLR |  `https://data.nextstrain.org/files/workflows/forecasts-ncov/usa/mlr/<YYYY-MM-DD>_results.json.zst` |
+|     | Renewal |  `https://data.nextstrain.org/files/workflows/forecasts-ncov/usa/renewal/<YYYY-MM-DD>_results.json.zst` |
+
 ## Installation
 
 Please follow [installation instructions](https://docs.nextstrain.org/en/latest/install.html#installation-steps) for Nextstrain's software tools.
@@ -68,3 +95,5 @@ If running pipeline with uploads to S3, the following environment variables are 
 If running pipeline with Slack notifications, the following environment variables are required:
 - `SLACK_CHANNELS`
 - `SLACK_TOKEN`
+
+[nextstrain/ncov-ingest]: https://github.com/nextstrain/ncov-ingest
