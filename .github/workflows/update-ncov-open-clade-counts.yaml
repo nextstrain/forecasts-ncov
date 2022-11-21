@@ -98,6 +98,6 @@ jobs:
     if: ${{ !github.event.inputs.trial_name }}
     runs-on: ubuntu-latest
     steps:
-      - run: gh workflow run run-models.yaml -f data_provenance=open
+      - run: gh workflow run run-models.yaml --repo nextstrain/forecasts-ncov -f data_provenance=open
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN_NEXTSTRAIN_BOT_WORKFLOW_DISPATCH }}
