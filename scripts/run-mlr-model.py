@@ -198,6 +198,11 @@ if __name__ == "__main__":
         "--export-path",
         help="Path to export directory. Overrides settings.export_path in config.",
     )
+    parser.add_argument(
+        "--data-name",
+        help="Name of the data set to include in the results filename as <data_name>_results.json. " +
+             "Overrides data.name in config."
+    )
     args = parser.parse_args()
 
     # Load configuration, data, and create model
@@ -251,5 +256,5 @@ if __name__ == "__main__":
         ps = parse_with_default(
             config.config["settings"], "ps", dflt=[0.5, 0.8, 0.95]
         )
-        data_name = config.config["data"]["name"]
+        data_name = args.data_name or config.config["data"]["name"]
         export_results(multi_posterior, ps, export_path, data_name)

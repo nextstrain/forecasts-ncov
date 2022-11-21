@@ -1,5 +1,7 @@
 import os
 
+KNOWN_MODELS = ["mlr", "renewal"]
+
 if not config:
     configfile: "config/config.yaml"
 
@@ -17,6 +19,14 @@ if config.get("send_slack_notifications"):
     if any(envvar not in os.environ for envvar in required_envvar):
         print(f"ERROR: Must set the following environment variables to send Slack notifications: {required_envvar}")
         sys.exit(1)
+
+wildcard_constraints:
+    date = r"\d{4}-\d{2}-\d{2}"
+
+def get_todays_date():
+    from datetime import datetime
+    date = datetime.today().strftime('%Y-%m-%d')
+    return date
 
 def _get_all_input(w):
     data_provenances = config["data_provenances"]
@@ -42,19 +52,30 @@ def _get_all_input(w):
             geo_resolution=geo_resolutions
         ))
 
-    if config.get("renewal_config"):
-        all_input.extend(expand(
-            "results/{data_provenance}/{geo_resolution}/renewal_model",
-            data_provenance=data_provenances,
-            geo_resolution=geo_resolutions
-        ))
+    # Check which models to run based on which model configs have been provided
+    models_to_run = [
+        model_name
+        for model_name in KNOWN_MODELS
+        if config.get(f"{model_name}_config")
+    ]
 
-    if config.get("mlr_config"):
+    if models_to_run:
+        run_date = config.get("run_date", get_todays_date())
         all_input.extend(expand(
-            "results/{data_provenance}/{geo_resolution}/mlr_model",
+            "results/{data_provenance}/{geo_resolution}/{model}/{date}_results.json",
             data_provenance=data_provenances,
-            geo_resolution=geo_resolutions
+            geo_resolution=geo_resolutions,
+            model=models_to_run,
+            date=run_date
         ))
+        if config.get("upload"):
+            all_input.extend(expand(
+                "results/{data_provenance}/{geo_resolution}/{model}/{date}_results_s3_upload.done",
+                data_provenance=data_provenances,
+                geo_resolution=geo_resolutions,
+                model=models_to_run,
+                date=run_date
+            ))
 
     return all_input
 
@@ -68,3 +89,6 @@ include: "workflow/snakemake_rules/models.smk"
 
 if config.get("send_slack_notifications"):
     include: "workflow/snakemake_rules/slack_notifications.smk"
+
+if config.get("upload"):
+    include: "workflow/snakemake_rules/upload.smk"
