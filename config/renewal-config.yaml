@@ -52,6 +52,21 @@ model:
       mean: 3.1
       sd: 1.2
       family: "Gamma" # Options: Gamma and LogNormal
+    O22D:
+      name: "22D (Omicron)"
+      mean: 3.1
+      sd: 1.2
+      family: "Gamma" # Options: Gamma and LogNormal
+    O22E:
+      name: "22E (Omicron)"
+      mean: 3.1
+      sd: 1.2
+      family: "Gamma" # Options: Gamma and LogNormal
+    O22F:
+      name: "22F (Omicron)"
+      mean: 3.1
+      sd: 1.2
+      family: "Gamma" # Options: Gamma and LogNormal
     other:
       name: "other"
       mean: 4.4
