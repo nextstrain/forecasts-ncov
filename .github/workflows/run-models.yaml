@@ -50,7 +50,7 @@ jobs:
           cat config/optional.yaml > optional.yaml
         fi
 
-        declare -a config
+        declare -a override_config
         if [[ "$DATA_PROVENANCE" ]]; then
           override_config=(--config data_provenances="$DATA_PROVENANCE")
         fi
@@ -67,4 +67,4 @@ jobs:
             envdir env.d snakemake \
               --configfile config/config.yaml optional.yaml \
               --printshellcmds \
-              "${config[@]}"
+              "${override_config[@]}"
