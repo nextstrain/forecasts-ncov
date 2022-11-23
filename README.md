@@ -4,7 +4,7 @@
 
 ## Automated pipeline
 The automated pipeline runs daily based on a scheduled jobs and triggers from upstream data ingests.
-* Case counts are fetched from [external data sources](./ingest/README.md#data-sources) daily at 8 AM PST
+* Case counts are fetched from [external data sources](#data-sources) daily at 8 AM PST
 * Raw metadata/sequences are fetched and cleaned via [nextstrain/ncov-ingest].
     * See [GISAID](https://github.com/nextstrain/ncov-ingest/blob/master/.github/workflows/fetch-and-ingest-gisaid-master.yml) and [open](https://github.com/nextstrain/ncov-ingest/blob/master/.github/workflows/fetch-and-ingest-genbank-master.yml) data workflows for their daily scheduled times
 * The [nextstrain/ncov-ingest] pipelines trigger the clade counts jobs once the latest curated data has been uploaded to S3
@@ -12,20 +12,34 @@ The automated pipeline runs daily based on a scheduled jobs and triggers from up
 * Clade counts jobs trigger the model runs once the counts data has been uploaded to S3
 * Model results are uploaded to S3 as dated files where the date indicates the ***run*** date
 
-### Inputs
-See [available counts files](./ingest/README.md#outputs) for the input case counts and clade counts files.
+### Data Sources
+
+- Global COVID-19 case counts: [Our World in Data](https://covid.ourworldindata.org/data/owid-covid-data.csv), originally from [JHU CSSE COVID-19 Data](https://github.com/CSSEGISandData/COVID-19)
+- USA state COVID-19 case counts: [United States COVID-19 Cases and Deaths by State over Time](https://data.cdc.gov/Case-Surveillance/United-States-COVID-19-Cases-and-Deaths-by-State-o/9mfq-cb36)
+- SARS-CoV-2 sequences: Nextstrain-curated metadata TSVs for GISAID and GenBank produced by [nextstrain/ncov-ingest](https://github.com/nextstrain/ncov-ingest)
 
 ### Outputs
-The model results for GISAID data are stored at `s3://nextstrain-data-private/files/workflows/forecasts-ncov/` and are not publicly available.
 
-The model results for open (GenBank) data are stored at `s3://nextstrain-data/files/workflows/forecasts-ncov` and are publicly available:
+This repository produces multiple TSVs that are routinely uploaded to AWS S3 buckets.
 
-| Geographic Resolution | Model | Address |
+The GISAID data is stored at `s3://nextstrain-data-private/files/workflows/forecasts-ncov/` and is not publicly available.
+The open (GenBank) data is stored at `s3://nextstrain-data/files/workflows/forecasts-ncov` and is publicly available.
+
+Within `forecasts-ncov/`, files are organized by geographic resolution and count type.
+Within TSVs at the global resolution, the `location` column contains countries.
+Within TSVs at the country resolution, the `location` column contains divisions (e.g. states for US).
+
+### Summary of Available open (GenBank) files
+| Geographic Resolution  | Type | Address |
 | --- | --- | --- |
-| Global | MLR | `https://data.nextstrain.org/files/workflows/forecasts-ncov/global/mlr/<YYYY-MM-DD>_results.json.zst` |
-|        | Renewal |  `https://data.nextstrain.org/files/workflows/forecasts-ncov/global/renewal/<YYYY-MM-DD>_results.json.zst` |
-| USA | MLR |  `https://data.nextstrain.org/files/workflows/forecasts-ncov/usa/mlr/<YYYY-MM-DD>_results.json.zst` |
-|     | Renewal |  `https://data.nextstrain.org/files/workflows/forecasts-ncov/usa/renewal/<YYYY-MM-DD>_results.json.zst` |
+| Global | Cases | https://data.nextstrain.org/files/workflows/forecasts-ncov/global/cases.tsv.gz |
+|        | Nextstrain clades | https://data.nextstrain.org/files/workflows/forecasts-ncov/global/nextstrain_clades.tsv.gz |
+|        | MLR results | `https://data.nextstrain.org/files/workflows/forecasts-ncov/global/mlr/<YYYY-MM-DD>_results.json.zst` |
+|        | Renewal results |  `https://data.nextstrain.org/files/workflows/forecasts-ncov/global/renewal/<YYYY-MM-DD>_results.json.zst` |
+| USA    | Cases | https://data.nextstrain.org/files/workflows/forecasts-ncov/usa/cases.tsv.gz |
+|        | Nextstrain clades | https://data.nextstrain.org/files/workflows/forecasts-ncov/usa/nextstrain_clades.tsv.gz |
+|        | MLR results |  `https://data.nextstrain.org/files/workflows/forecasts-ncov/usa/mlr/<YYYY-MM-DD>_results.json.zst` |
+|        | Renewal |  `https://data.nextstrain.org/files/workflows/forecasts-ncov/usa/renewal/<YYYY-MM-DD>_results.json.zst` |
 
 ## Installation
 
