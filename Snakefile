@@ -54,6 +54,18 @@ def _get_all_input(w):
             geo_resolution=geo_resolutions
         ))
 
+    if config.get("upload"):
+        all_input.extend(expand(
+            "data/{data_provenance}/{geo_resolution}_case_counts_upload.done",
+            data_provenance=data_provenances,
+            geo_resolution=geo_resolutions
+        ))
+        all_input.extend(expand(
+            "data/{data_provenance}/{geo_resolution}/nextstrain_clade_counts_upload.done",
+            data_provenance=data_provenances,
+            geo_resolution=geo_resolutions
+        ))
+
     # Check which models to run based on which model configs have been provided
     models_to_run = [
         model_name
