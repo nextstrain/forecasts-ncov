@@ -2,36 +2,86 @@
 This part of the workflow downloads and prepares the data necessary to run models
 """
 
-rule download_open_data:
-    message: "Downloading case counts and Nextstrain clade counts from data.nextstrain.org"
-    wildcard_constraints:
-        geo_resolution = "global|usa"
+rule fetch_global_case_counts:
+    message: "Fetching global case counts"
     output:
-        cases = "data/open/{geo_resolution}/cases.tsv.gz",
-        nextstrain_clades = "data/open/{geo_resolution}/nextstrain_clades.tsv.gz"
-    params:
-        cases_url = "https://data.nextstrain.org/files/workflows/forecasts-ncov/{geo_resolution}/cases.tsv.gz",
-        nextstrain_clades_url = "https://data.nextstrain.org/files/workflows/forecasts-ncov/{geo_resolution}/nextstrain_clades.tsv.gz"
+        global_case_counts = "data/global_case_counts.tsv"
     shell:
         """
-        curl -fsSL --compressed {params.cases_url:q} --output {output.cases}
-        curl -fsSL --compressed {params.nextstrain_clades_url:q} --output {output.nextstrain_clades}
+        ./bin/fetch-ncov-global-case-counts > {output.global_case_counts}
         """
 
-rule download_gisaid_data:
-    message: "Downloading case counts and Nextstrain clade counts from s3://nextstrain-data-private"
-    wildcard_constraints:
-        geo_resolution = "global|usa"
+rule fetch_us_case_counts:
+    message: "Fetching US case counts"
     output:
-        cases = "data/gisaid/{geo_resolution}/cases.tsv.gz",
-        nextstrain_clades = "data/gisaid/{geo_resolution}/nextstrain_clades.tsv.gz"
-    params:
-        cases_url = "s3://nextstrain-data-private/files/workflows/forecasts-ncov/{geo_resolution}/cases.tsv.gz",
-        nextstrain_clades_url = "s3://nextstrain-data-private/files/workflows/forecasts-ncov/{geo_resolution}/nextstrain_clades.tsv.gz"
+        us_case_counts = "data/usa_case_counts.tsv"
     shell:
         """
-        aws s3 cp --no-progress {params.cases_url:q} {output.cases}
-        aws s3 cp --no-progress {params.nextstrain_clades_url:q} {output.nextstrain_clades}
+        ./bin/fetch-ncov-us-case-counts > {output.us_case_counts}
+        """
+
+rule fetch_metadata:
+    message: "Fetching clean metadata produced by ncov-ingest"
+    output:
+        metadata = temp("data/{data_provenance}/metadata.tsv")
+    params:
+        s3_src = lambda w: config["data_provenances"][w.data_provenance]
+    shell:
+        """
+        ./bin/download-from-s3 {params.s3_src} {output.metadata}
+        """
+
+
+rule subset_metadata:
+    message: "Subsetting metadata to only required columns"
+    input:
+        metadata = "data/{data_provenance}/metadata.tsv"
+    output:
+        subset_metadata = "data/{data_provenance}/subset_metadata.tsv"
+    params:
+        subset_cols = "strain,date,country,division,QC_overall_status,Nextstrain_clade"
+    shell:
+        """
+        tsv-select -H \
+            -f {params.subset_cols} \
+            {input.metadata} > {output.subset_metadata}
+        """
+
+def _get_clade_filter_columns(wildcards):
+    filter_columns = "QC_overall_status"
+
+    if wildcards.geo_resolution != "global":
+        filter_columns += " country"
+
+    return filter_columns
+
+
+def _get_clade_filter_query(wildcards):
+    filter_query = "QC_overall_status != 'bad'"
+
+    if wildcards.geo_resolution == "usa":
+        filter_query += " & country == 'USA'"
+
+    return filter_query
+
+
+rule summarize_clade_counts:
+    message: "Summarizing clade counts"
+    input:
+        subset_metadata = "data/{data_provenance}/subset_metadata.tsv"
+    output:
+        clade_counts = "data/{data_provenance}/{geo_resolution}/nextstrain_clade_counts.tsv"
+    params:
+        filter_cols = _get_clade_filter_columns,
+        filter_query = _get_clade_filter_query
+    shell:
+        """
+        ./bin/summarize-clade-sequence-counts \
+            --metadata {input.subset_metadata} \
+            --clade-column Nexstrain_clade \
+            --filter-columns {params.filter_cols} \
+            --filter-query "{params.filter_query}" \
+            --output {output.clade_counts}
         """
 
 def _get_prepare_data_option(wildcards, option_name):
@@ -58,8 +108,8 @@ def _get_prepare_data_option(wildcards, option_name):
 rule prepare_data:
     message: "Preparing counts data for analysis"
     input:
-        cases = "data/{data_provenance}/{geo_resolution}/cases.tsv.gz",
-        nextstrain_clades = "data/{data_provenance}/{geo_resolution}/nextstrain_clades.tsv.gz"
+        cases = "data/{geo_resolution}_case_counts.tsv",
+        nextstrain_clades = "data/{data_provenance}/{geo_resolution}/nextstrain_clade_counts.tsv"
     output:
         clade_without_variant = "data/{data_provenance}/{geo_resolution}/clade_without_variant.txt",
         cases = "data/{data_provenance}/{geo_resolution}/prepared_cases.tsv",

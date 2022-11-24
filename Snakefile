@@ -21,7 +21,8 @@ if config.get("send_slack_notifications"):
         sys.exit(1)
 
 wildcard_constraints:
-    date = r"\d{4}-\d{2}-\d{2}"
+    date = r"\d{4}-\d{2}-\d{2}",
+    geo_resolution = "global|usa"
 
 def get_todays_date():
     from datetime import datetime
