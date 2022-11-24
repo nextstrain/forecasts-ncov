@@ -47,6 +47,7 @@ def _get_all_input(w):
     ]
 
     if config.get("send_slack_notifications"):
+        all_input.append("data/notify_on_new_usa_locations.done")
         all_input.extend(expand(
             "data/{data_provenance}/{geo_resolution}/notify/clade_without_variant.done",
             data_provenance=data_provenances,
