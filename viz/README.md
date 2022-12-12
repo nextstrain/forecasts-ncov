@@ -23,6 +23,8 @@ aws s3 cp s3://nextstrain-data-private/files/workflows/forecasts-ncov/global/ren
 aws s3 cp s3://nextstrain-data-private/files/workflows/forecasts-ncov/global/mlr/2022-12-05_results.json.zst src/data/mlr.json.zst
 unzstd src/data/*.zst
 rm src/data/*.zst
+curl https://raw.githubusercontent.com/blab/rt-from-frequency-dynamics/master/data/omicron-countries-split/omicron-countries-split_location-case-counts.tsv --output src/data/omicron-countries-split_location-case-counts.tsv
+cat src/data/omicron-countries-split_location-case-counts.tsv | jq --raw-input --slurp 'split("\n") | map(split("\t")) | .[1:-1] | map( {"date": .[0], "location": .[1], "cases": .[2]} )' > src/data/caseCounts.json
 ```
 
 ### Prior art

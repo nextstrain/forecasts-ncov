@@ -22,8 +22,9 @@ const cladeToLineage = {
   "22F (Omicron)": "XBB",
 };
 
-export const parseModelData = (raw) => {
+export const parseModelData = (raw, caseCounts) => {
   
+  /* frequencies: "freq" → location → variant (clade) → frequencyValue */
   const freq = Object.fromEntries(raw.metadata.location.map((loc) => [
     loc,
     Object.fromEntries(raw.metadata.variants.map((variant) => [
@@ -34,6 +35,7 @@ export const parseModelData = (raw) => {
 
   /* TODO - we censor data which is based on few data points! */
   /* TODO - we're drawing a line through these, can we guarantee they're date-sorted? */
+  /* frequencies: "r_t" → location → variant (clade) → r_tValue */
   const r_t = Object.fromEntries(raw.metadata.location.map((loc) => [
     loc,
     Object.fromEntries(raw.metadata.variants.map((variant) => [
@@ -41,6 +43,35 @@ export const parseModelData = (raw) => {
       raw.data.filter((el) => el.location===loc && el.variant===variant && el.ps==="median" && el.site==="R")
     ]))
   ]))
+
+
+  /* case counts partitioned by (modelled) frequencies.
+     NOTE THIS IS NOT SMOOTHED */
+  /* This should be part of the model output! */
+  const stackedCases = Object.fromEntries(Object.keys(freq).map((loc) => [
+    loc,
+    Object.fromEntries(raw.metadata.variants.map((variant) => [variant, []]))
+  ]));
+  Object.entries(freq).forEach(([loc, locData]) => {
+    let previousCaseTotals = {}
+    Object.entries(locData).forEach(([variant, dataPts]) => {
+      dataPts.forEach((d, i) => {
+        const freq = d.value;
+        const cases = caseCounts?.[loc]?.[d.date]
+        if (cases===undefined) return;
+        const previousCaseTotal = previousCaseTotals?.[d.date] || 0;
+        const newCaseTotal = previousCaseTotal + parseInt(cases*freq, 10)
+        // update & store
+        previousCaseTotals[d.date] = newCaseTotal;
+        stackedCases[loc][variant].push({
+          date: d.date,
+          variant,
+          previousCaseTotal,
+          newCaseTotal
+        })
+      })
+    })
+  })
 
   // variants in the JSON are nextstrain clades
   const expectedVariants = new Set(Object.keys(cladeToLineage));
@@ -50,12 +81,14 @@ export const parseModelData = (raw) => {
   const cladeColours = Object.fromEntries(Object.entries(cladeToLineage).map(([clade, lineage]) => [clade, lineageColours[lineage]]))
 
   const data = {
+    variants: raw.metadata.variants,
     dates: raw.metadata.dates,
     freq,
     locations: raw.metadata.location,
     cladeColours,
     cladeToLineage,
-    r_t
+    r_t,
+    stackedCases
   }
   console.log("Parsed model data:", data)
 

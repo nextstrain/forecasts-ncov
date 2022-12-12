@@ -54,6 +54,18 @@ export const Panels = ({modelData}) => {
           ))
         }
       </PanelSectionContainer>
+
+      <PanelSectionHeaderContainer>
+        {`Cases partitioned by modelled frequencies. Note that this is not smoothed!`}
+      </PanelSectionHeaderContainer>
+      <PanelSectionContainer>
+      {modelData.locations
+          .map((location) => ({location, graph: "stackedCases", sizes}))
+          .map((param) => (
+            <SmallMultiple {...param} key={`${param.graph}_${param.location}`} modelData={modelData}/>
+          ))
+        }
+      </PanelSectionContainer>
     </div>
   )
 }
