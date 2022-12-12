@@ -34,6 +34,6 @@ rm src/data/*.zst
 ### Todo
 
 * finish (static-ish) viz
-* export a react component we can use in gatsby
+* export a react component we can use in gatsby, or render / serve SVG server-side?
 * png + pdf export
 * run on schedule, somewhere, to generate at each model run

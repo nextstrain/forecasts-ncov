@@ -9,4 +9,5 @@ export const Container = styled.div`
   text-align: center;
   font-family: Consolas, courier;
   font-size: 16px;
+  color: #444;
 `

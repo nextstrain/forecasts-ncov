@@ -32,6 +32,16 @@ export const parseModelData = (raw) => {
     ]))
   ]))
 
+  /* TODO - we censor data which is based on few data points! */
+  /* TODO - we're drawing a line through these, can we guarantee they're date-sorted? */
+  const r_t = Object.fromEntries(raw.metadata.location.map((loc) => [
+    loc,
+    Object.fromEntries(raw.metadata.variants.map((variant) => [
+      variant, 
+      raw.data.filter((el) => el.location===loc && el.variant===variant && el.ps==="median" && el.site==="R")
+    ]))
+  ]))
+
   // variants in the JSON are nextstrain clades
   const expectedVariants = new Set(Object.keys(cladeToLineage));
   if (!(raw.metadata.variants.length === expectedVariants.size && raw.metadata.variants.every(value => expectedVariants.has(value)))) {
@@ -44,7 +54,8 @@ export const parseModelData = (raw) => {
     freq,
     locations: raw.metadata.location,
     cladeColours,
-    cladeToLineage
+    cladeToLineage,
+    r_t
   }
   console.log("Parsed model data:", data)
 
