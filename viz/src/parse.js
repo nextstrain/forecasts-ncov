@@ -22,7 +22,7 @@ const cladeToLineage = {
   "22F (Omicron)": "XBB",
 };
 
-export const parseModelData = (raw, caseCounts) => {
+export const parseModelData = (raw) => {
   
   /* frequencies: "freq" → location → variant (clade) → frequencyValue */
   const freq = Object.fromEntries(raw.metadata.location.map((loc) => [
@@ -44,39 +44,57 @@ export const parseModelData = (raw, caseCounts) => {
     ]))
   ]))
 
+  /* stacked incidence vis I_smooth */
 
-  /* case counts partitioned by (modelled) frequencies.
-     NOTE THIS IS NOT SMOOTHED */
-  /* This should be part of the model output! */
-  const stackedCases = Object.fromEntries(Object.keys(freq).map((loc) => [
+  const stackedIncidence = Object.fromEntries(raw.metadata.location.map((loc) => [
     loc,
     Object.fromEntries(raw.metadata.variants.map((variant) => [variant, []]))
   ]));
-  Object.entries(freq).forEach(([loc, locData]) => {
-    let previousCaseTotals = {}
-    Object.entries(locData).forEach(([variant, dataPts]) => {
-      dataPts.forEach((d, i) => {
-        const freq = d.value;
-        const cases = caseCounts?.[loc]?.[d.date]
-        if (cases===undefined) return;
-        const previousCaseTotal = previousCaseTotals?.[d.date] || 0;
-        const newCaseTotal = previousCaseTotal + parseInt(cases*freq, 10)
-        // update & store
-        previousCaseTotals[d.date] = newCaseTotal;
-        stackedCases[loc][variant].push({
-          date: d.date,
+  const incidenceKeyed = Object.fromEntries(raw.metadata.location.map((loc) => [
+    loc,
+    Object.fromEntries(raw.metadata.variants.map((variant) => [variant, {}]))
+  ]));
+  raw.data.filter((el) => el.ps==="median" && el.site==="I_smooth").forEach((el) => {
+    incidenceKeyed[el.location][el.variant][el.date] = parseInt(el.value, 10);
+  })
+
+  raw.metadata.location.forEach((loc) => {
+    const datesToIgnore = new Set();
+    let previousIncidence = {} // per day
+    raw.metadata.variants.forEach((variant) => {
+      raw.metadata.dates.forEach((date) => {
+        const pv = parseInt(previousIncidence[date] || 0, 10);
+        const newIncidence = parseInt(pv + incidenceKeyed[loc][variant][date]);
+        if (isNaN(newIncidence)) {
+          // console.log(`[debug] ${loc} ${variant} ${date} ps=median site=I_smooth doesn't exist!`)
+          datesToIgnore.add(date)
+        }
+        // update previous incidence to the new incidence
+        previousIncidence[date] = newIncidence;
+        // store this data point, which will form a slice of area in the stacked graph
+        if (previousIncidence === newIncidence) {
+          return;
+        }
+        stackedIncidence[loc][variant].push({
+          date: date,
           variant,
-          previousCaseTotal,
-          newCaseTotal
+          previousIncidence: pv,
+          newIncidence
         })
       })
     })
+    if (datesToIgnore.size>0) {
+      console.error(`I_smooth: Ignoring ${[...datesToIgnore]} for ${loc}`)
+      raw.metadata.variants.forEach((variant) => {
+        stackedIncidence[loc][variant] = stackedIncidence[loc][variant].filter((el) => !datesToIgnore.has(el.date))
+      });
+    }
   })
 
   // variants in the JSON are nextstrain clades
   const expectedVariants = new Set(Object.keys(cladeToLineage));
   if (!(raw.metadata.variants.length === expectedVariants.size && raw.metadata.variants.every(value => expectedVariants.has(value)))) {
-    console.log("New variants / clades! Please update colors. Data has:", new Set(raw.metadata.variants), "but code has", expectedVariants);
+    console.error("New variants / clades! Please update colors. Data has:", new Set(raw.metadata.variants), "but code has", expectedVariants);
   }
   const cladeColours = Object.fromEntries(Object.entries(cladeToLineage).map(([clade, lineage]) => [clade, lineageColours[lineage]]))
 
@@ -88,9 +106,9 @@ export const parseModelData = (raw, caseCounts) => {
     cladeColours,
     cladeToLineage,
     r_t,
-    stackedCases
+    stackedIncidence
   }
-  console.log("Parsed model data:", data)
+  console.log("[debugging] Parsed model data:", data)
 
   return data;
 

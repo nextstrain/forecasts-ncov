@@ -167,14 +167,7 @@ const rtPlot = (dom, sizes, location, modelData) => {
   title(svg, sizes, location)
 }
 
-
-const stackedCases = (dom, sizes, location, modelData) => {
-
-  if (Object.values(modelData.stackedCases[location]).some((el) => el.length===0)) {
-    console.log(`${location} skipped due to empty arrays`)
-    return;
-  }
-
+const stackedIncidence = (dom, sizes, location, modelData) => {
   const svg = svgSetup(dom, sizes);
 
   const x = d3.scalePoint()
@@ -184,8 +177,8 @@ const stackedCases = (dom, sizes, location, modelData) => {
   svg.append("g")
       .call(temporalXAxis(x, sizes));
 
-  const valuesPerVariant = Object.values(modelData.stackedCases[location]);
-  const maxCaseCount = d3.max(valuesPerVariant[valuesPerVariant.length-1].map((d) => d.newCaseTotal))
+  const valuesPerVariant = Object.values(modelData.stackedIncidence[location]);
+  const maxCaseCount = d3.max(valuesPerVariant[valuesPerVariant.length-1].map((d) => d.newIncidence))
   const y = d3.scaleLinear()
     .domain([0, maxCaseCount]) // should be data-driven
     .range([sizes.height-sizes.margin.bottom, sizes.margin.top]); // y=0 is @ top. Range is [bottom_y, top_y] which maps 0 to the bottom and 1 to the top (of the graph)
@@ -194,18 +187,18 @@ const stackedCases = (dom, sizes, location, modelData) => {
     .call(simpleYAxis(y, sizes, d3.format("~s")));
 
   svg.append('g')
-    .selectAll("stakedLayer")
-    .data(Object.values(modelData.stackedCases[location]))
+    .selectAll("stackedLayer")
+    .data(valuesPerVariant)
     .enter()
     .append("path")
       .style("fill", (d) => modelData.cladeColours[d[0].variant] ||  modelData.cladeColours.other)
-      .style("fill-opacity", "0.5")
+      .style("fill-opacity", 0.5)
       .style("stroke", (d) => modelData.cladeColours[d[0].variant] ||  modelData.cladeColours.other)
-      .style("stroke-width", 1.5)
+      .style("stroke-width", 0.5)
       .attr("d", d3.area()
         .x((el) => x(el.date))
-        .y0((el) => y(el.previousCaseTotal))
-        .y1((el) => y(el.newCaseTotal))
+        .y0((el) => y(el.previousIncidence))
+        .y1((el) => y(el.newIncidence))
     )
   title(svg, sizes, location)
 }
@@ -215,7 +208,6 @@ export const SmallMultiple = ({location, graph, sizes, modelData}) => {
 
   const d3Container = useRef(null);
 
-  console.log("<SmallMultiple/>")
   useEffect(
     () => {
       const dom = d3.select(d3Container.current);
@@ -227,8 +219,8 @@ export const SmallMultiple = ({location, graph, sizes, modelData}) => {
         case 'r_t':
           rtPlot(dom, sizes, location, modelData);
           break;
-        case 'stackedCases':
-          stackedCases(dom, sizes, location, modelData);
+        case 'stackedIncidence':
+          stackedIncidence(dom, sizes, location, modelData);
           break;
         default:
           console.error(`Unknown graph type ${graph}`)
