@@ -67,7 +67,7 @@ export const Panels = ({modelData, sidebar}) => {
   useLegend(legendContainer, modelData); // renders the legend
 
   return (
-    <Container>
+    <Container id="mainPanelsContainer" >
 
       <PanelSectionHeaderContainer>
         {`Modelled variant frequencies per country, split by nextstrain clade`}
@@ -75,9 +75,9 @@ export const Panels = ({modelData, sidebar}) => {
 
       {/* To do - the only appears once, however the intention is that on small screens
       it should appear above _every_ <PanelSectionContainer/> */}
-      <LegendContainer ref={legendContainer}/>
+      <LegendContainer id="legend" ref={legendContainer}/>
 
-      <PanelSectionContainer>
+      <PanelSectionContainer id="frequenciesPanel">
         {modelData.locations
           .map((location) => ({location, graph: "freq", sizes}))
           .map((param) => (
@@ -89,7 +89,7 @@ export const Panels = ({modelData, sidebar}) => {
       <PanelSectionHeaderContainer>
         {`Modelled R_t per country, split by nextstrain clade`}
       </PanelSectionHeaderContainer>
-      <PanelSectionContainer>
+      <PanelSectionContainer id="rtPanel">
       {modelData.locations
           .map((location) => ({location, graph: "r_t", sizes}))
           .map((param) => (
@@ -101,7 +101,7 @@ export const Panels = ({modelData, sidebar}) => {
       <PanelSectionHeaderContainer>
         {`Smoothed Incidence`}
       </PanelSectionHeaderContainer>
-      <PanelSectionContainer>
+      <PanelSectionContainer id="smoothedIncidencePanel">
       {modelData.locations
           .map((location) => ({location, graph: "stackedIncidence", sizes}))
           .map((param) => (

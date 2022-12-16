@@ -3,6 +3,9 @@
 # temporary store of data imported by the app (prior to implementing proper fetch calls)
 /src/data
 
+# puppeteer generated images etc
+/figures
+
 # dependencies
 /node_modules
 /.pnp

@@ -25,15 +25,18 @@ unzstd src/data/*.zst
 rm src/data/*.zst
 ```
 
+### Regenerating the png images in `figures`
+
+`node scripts/static-images.js`
+
+These images are referenced in `./report.md`
+
 ### Prior art
 
 * https://github.com/blab/rt-from-frequency-dynamics/tree/master/results/omicron-countries-split
 * https://github.com/blab/rt-from-frequency-dynamics/tree/master/results/pango-countries
 
-
 ### Todo
 
-* finish (static-ish) viz
 * export a react component we can use in gatsby, or render / serve SVG server-side?
-* png + pdf export
 * run on schedule, somewhere, to generate at each model run
