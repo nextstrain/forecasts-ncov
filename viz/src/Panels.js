@@ -1,17 +1,52 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import styled from 'styled-components';
 import { SmallMultiple } from "./SmallMultiple.js";
+import {useLegend} from "./Legend.js"
 
+const WINDOW_WIDTH_FOR_SIDEBAR_LEGEND = 1200;
 
-export const PanelSectionContainer = styled.div`
+const Container = styled.div`
+  @media screen and (min-width: ${WINDOW_WIDTH_FOR_SIDEBAR_LEGEND}px) {
+    margin-right: 100px; // + the 100px from <App> Container
+  }
+`;
+
+const PanelSectionContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
 `;
 
-export const PanelSectionHeaderContainer = styled.div`
+const PanelSectionHeaderContainer = styled.div`
   margin-bottom: 30px;
   margin-top: 50px;
+`;
+
+const LegendContainer = styled.div`
+  /* border: solid red; */
+  display: flex;
+  
+  /* legend-inline styles (which will be overridden by a media query if necessary) */
+  position: block;
+  flex-wrap: wrap;
+  flex-direction: row;
+  margin: 10px 0px;
+  & > div {
+    padding-right: 10px;
+  }
+
+  @media screen and (min-width: ${WINDOW_WIDTH_FOR_SIDEBAR_LEGEND}px) {
+    position: fixed;
+    right: 0px;
+    max-width: 200px;
+    min-width: 200px;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    & > div {
+      padding-right: 0px;
+    }
+  }
+
 `;
 
 const useResponsiveSizing = () => {
@@ -25,15 +60,23 @@ const useResponsiveSizing = () => {
   return {width, height, margin, fontSize};
 }
 
-export const Panels = ({modelData}) => {
+export const Panels = ({modelData, sidebar}) => {
 
   const sizes = useResponsiveSizing();
+  const legendContainer = useRef(null);
+  useLegend(legendContainer, modelData); // renders the legend
 
   return (
-    <div>
+    <Container>
+
       <PanelSectionHeaderContainer>
         {`Modelled variant frequencies per country, split by nextstrain clade`}
       </PanelSectionHeaderContainer>
+
+      {/* To do - the only appears once, however the intention is that on small screens
+      it should appear above _every_ <PanelSectionContainer/> */}
+      <LegendContainer ref={legendContainer}/>
+
       <PanelSectionContainer>
         {modelData.locations
           .map((location) => ({location, graph: "freq", sizes}))
@@ -67,6 +110,6 @@ export const Panels = ({modelData}) => {
         }
       </PanelSectionContainer>
 
-    </div>
+    </Container>
   )
 }
