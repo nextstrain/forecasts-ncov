@@ -31,6 +31,6 @@ rule upload_model_results_to_s3:
         ./ingest/bin/upload-to-s3 \
             {params.quiet} \
             {input.model_results:q} \
-            {params.s3_dst:q}/{wildcards.geo_resolution:q}/{wildcards.model:q}/{wildcards.date}_results.json.zst \
+            {params.s3_dst:q}/{wildcards.geo_resolution:q}/{wildcards.model:q}/{wildcards.date}_results.json.gz \
             {params.cloudfront_domain} 2>&1 | tee {output.upload_flag}
         """
