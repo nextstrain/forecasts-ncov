@@ -12,10 +12,17 @@
 ```sh
 npm install 
 npm run start # dev mode
-npm run build
 ```
 
-Make local data available (temporary). (This is in `src/` because of a create-react-app restriction, BTW.)
+### Where are model data sourced from?
+
+By default, the model data is fetched from `https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/trial/2022-12-18_results.json` (TODO - this is temporary, until we have a latest endpoint). This can be changed via the following options:
+
+* If you wish to use a local JSON, provision the files (see below) and run `REACT_APP_MODEL_ENDPOINT=local npm run start`
+
+* If you wish to use some other HTTPS endpoint, run `REACT_APP_MODEL_ENDPOINT="https://..." npm run start`. Browser-compatible MIME types will be used but note this doesn't yet include zstd.
+
+How to make local data available: (P.S. This is in `src/` because of a create-react-app restriction.)
 
 ```
 mkdir -p src/data/
@@ -24,6 +31,8 @@ aws s3 cp s3://nextstrain-data-private/files/workflows/forecasts-ncov/global/mlr
 unzstd src/data/*.zst
 rm src/data/*.zst
 ```
+
+> Note that we cannot currently use the zstd encodings. There is a library to decompress this in the browser (https://github.com/bokuweb/zstd-wasm) but it requires webpack modifications. For the time being, I've chosen to use gzip encodings. 
 
 ### Regenerating the png images in `figures`
 
@@ -40,3 +49,5 @@ These images are referenced in `./report.md`
 
 * export a react component we can use in gatsby, or render / serve SVG server-side?
 * run on schedule, somewhere, to generate at each model run
+* URL inspection to choose model JSON path
+
