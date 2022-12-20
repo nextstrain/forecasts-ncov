@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# temporary store of data imported by the app (prior to implementing proper fetch calls)
-/src/data
+# for dev purposes we may store data locally
+/data
 
 # puppeteer generated images etc
 /figures

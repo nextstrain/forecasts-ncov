@@ -16,20 +16,25 @@ npm run start # dev mode
 
 ### Where are model data sourced from?
 
-By default, the model data is fetched from `https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/trial/2022-12-18_results.json` (TODO - this is temporary, until we have a latest endpoint). This can be changed via the following options:
+By default, the model data is fetched from `https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/trial/2022-12-18_results.json` (TODO - this is temporary, until we have a latest endpoint).
+This can be changed via the following environment variable:
 
-* If you wish to use a local JSON, provision the files (see below) and run `REACT_APP_MODEL_ENDPOINT=local npm run start`
+* If you wish to use a HTTPS endpoint, run `REACT_APP_MODEL_ENDPOINT="https://..." npm run start`. Browser-compatible MIME types will be used but note this doesn't yet include zstd.
 
-* If you wish to use some other HTTPS endpoint, run `REACT_APP_MODEL_ENDPOINT="https://..." npm run start`. Browser-compatible MIME types will be used but note this doesn't yet include zstd.
+* If you wish to use a local JSON, provision the files and serve them via a simple server (see below), then use `REACT_APP_MODEL_ENDPOINT="http://localhost:8000/renewal.json" npm run start`
 
-How to make local data available: (P.S. This is in `src/` because of a create-react-app restriction.)
+How to make local data available (note that `/data` is gitignored):
 
-```
-mkdir -p src/data/
+```sh
+# provision the files
+mkdir -p data/
 aws s3 cp s3://nextstrain-data-private/files/workflows/forecasts-ncov/global/renewal/2022-12-05_results.json.zst src/data/renewal.json.zst
 aws s3 cp s3://nextstrain-data-private/files/workflows/forecasts-ncov/global/mlr/2022-12-05_results.json.zst src/data/mlr.json.zst
-unzstd src/data/*.zst
-rm src/data/*.zst
+unzstd data/*.zst
+rm data/*.zst
+# serve them over localhost (port 8000 by default)
+cd data
+python -m http.server
 ```
 
 > Note that we cannot currently use the zstd encodings. There is a library to decompress this in the browser (https://github.com/bokuweb/zstd-wasm) but it requires webpack modifications. For the time being, I've chosen to use gzip encodings. 

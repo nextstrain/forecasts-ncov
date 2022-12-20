@@ -7,27 +7,19 @@ export const useDataFetch = () => {
   const [status, setStatus] = useState("Initialising");
   const [modelData, setModelData] = useState(undefined);
 
-  // todo - fetch the data!!!!!
   useEffect( () => {
-    let renewalJson;
+    const endpoint = process.env.REACT_APP_MODEL_ENDPOINT || DEFAULT_ENDPOINT;
+    const renewalJson = fetch(endpoint)
+      .then((res) => res.json())
 
-    if (process.env.REACT_APP_MODEL_ENDPOINT === "local") {
-      renewalJson = new Promise((resolve) => {
-        resolve(require("./data/renewal.json"))
-      });
-    } else {
-      const endpoint = process.env.REACT_APP_MODEL_ENDPOINT || DEFAULT_ENDPOINT;
-      renewalJson = fetch(endpoint)
-        .then((res) => res.json())
-    }
     async function fetchAndParse() {
       const renewalData = await renewalJson;
       setModelData(parseModelData(renewalData));
       setStatus("ready")
     }
+
     setStatus("Fetching data...")
     fetchAndParse();
-
   }, []);
 
 
