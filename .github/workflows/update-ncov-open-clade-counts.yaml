@@ -12,7 +12,7 @@ on:
         description: 'Slack channel to push update alerts. Default channel is nextstrain-counts-updates.'
         required: false
       trial_name:
-        description: 'Short name for a trial run. WARNING: without this we will overwrite files in s3://nextstrain-data/files/workflows/forecasts-ncov'
+        description: 'Short name for a trial run. WARNING: without this we will overwrite files in s3://nextstrain-data/files/workflows/forecasts-ncov/open'
         required: false
 
 jobs:
@@ -74,7 +74,7 @@ jobs:
 
     - name: upload clade counts
       run: |
-        S3_DST=s3://nextstrain-data/files/workflows/forecasts-ncov
+        S3_DST=s3://nextstrain-data/files/workflows/forecasts-ncov/open
         CLOUDFRONT_DOMAIN=data.nextstrain.org
 
         if [[ "$TRIAL_NAME" ]]; then
