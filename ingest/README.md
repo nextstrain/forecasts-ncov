@@ -12,23 +12,31 @@ Internal tooling for the Nextstrain team to curate and standardize various count
 
 > :warning: **WARNING: This is an alpha release.** Output file format and address may change at any time
 
-This repository produces multiple TSVs that are routinely uploaded to AWS S3 buckets.
+This repository produces multiple TSVs that are routinely uploaded to a public AWS S3 bucket: `s3://nextstrain-data/files/workflows/forecasts-ncov`.
 
-The GISAID data is stored at `s3://nextstrain-data-private/files/workflows/forecasts-ncov/` and is not publicly available.
-The open (GenBank) data is stored at `s3://nextstrain-data/files/workflows/forecasts-ncov` and is publicly available.
+The case counts are stored at `s3://nextstrain-data/files/workflows/forecasts-ncov/cases/`.
+The GISAID outputs are stored at `s3://nextstrain-data/files/workflows/forecasts-ncov/gisaid/`.
+The open (GenBank) outputs are stored at `s3://nextstrain-data/files/workflows/forecasts-ncov/open/`.
 
-Within `forecasts-ncov/`, files are organized by geographic resolution and count type.
+Within each data provenance, the files are split by clade type and geographic resolution.
 Within TSVs at the global resolution, the `location` column contains countries.
 Within TSVs at the country resolution, the `location` column contains divisions (e.g. states for US).
 
-### Summary of Available open (GenBank) files
+### Summary of Available files
 
-| Geographic Resolution  | Type | Address |
-| --- | --- | --- |
-| Global | Cases | https://data.nextstrain.org/files/workflows/forecasts-ncov/global/cases.tsv.gz |
-|        | Nextstrain clades | https://data.nextstrain.org/files/workflows/forecasts-ncov/global/nextstrain_clades.tsv.gz |
-| USA    | Cases | https://data.nextstrain.org/files/workflows/forecasts-ncov/usa/cases.tsv.gz |
-|        | Nextstrain clades | https://data.nextstrain.org/files/workflows/forecasts-ncov/usa/nextstrain_clades.tsv.gz |
+#### Case Counts
+| Geographic Resolution | Address                                                                        |
+| --------------------- | ------------------------------------------------------------------------------ |
+| Global                | https://data.nextstrain.org/files/workflows/forecasts-ncov/cases/global.tsv.gz |
+| USA                   | https://data.nextstrain.org/files/workflows/forecasts-ncov/cases/usa.tsv.gz    |
+
+#### Sequence Counts
+| Data Provenance | Clade Type        | Geographic Resolution | Address                                                                                           |
+| --------------- | ----------------- | --------------------- | ------------------------------------------------------------------------------------------------- |
+| GISAID          | Nextstrain clades | Global                | https://data.nextstrain.org/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/global.tsv.gz |
+|                 |                   | USA                   | https://data.nextstrain.org/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/usa.tsv.gz    |
+| open (GenBank)  | Nextstrain clades | Global                | https://data.nextstrain.org/files/workflows/forecasts-ncov/open/nextstrain_clades/global.tsv.gz   |
+|                 |                   | USA                   | https://data.nextstrain.org/files/workflows/forecasts-ncov/open/nextstrain_clades/usa.tsv.gz      |
 
 ## Running locally
 

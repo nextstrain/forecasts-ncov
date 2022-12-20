@@ -16,16 +16,23 @@ The automated pipeline runs daily based on a scheduled jobs and triggers from up
 See [available counts files](./ingest/README.md#outputs) for the input case counts and clade counts files.
 
 ### Outputs
-The model results for GISAID data are stored at `s3://nextstrain-data-private/files/workflows/forecasts-ncov/` and are not publicly available.
+The model results for GISAID data are stored at `s3://nextstrain-data/files/workflows/forecasts-ncov/gisaid`.
+The model results for open (GenBank) data are stored at `s3://nextstrain-data/files/workflows/forecasts-ncov/open`.
 
-The model results for open (GenBank) data are stored at `s3://nextstrain-data/files/workflows/forecasts-ncov` and are publicly available:
+The latest results are stored as `latest_results.json.gz` and previously uploaded results can be found as `<YYYY-MM-DD>_results.json.gz`.
 
-| Geographic Resolution | Model | Address |
-| --- | --- | --- |
-| Global | MLR | `https://data.nextstrain.org/files/workflows/forecasts-ncov/global/mlr/<YYYY-MM-DD>_results.json.zst` |
-|        | Renewal |  `https://data.nextstrain.org/files/workflows/forecasts-ncov/global/renewal/<YYYY-MM-DD>_results.json.zst` |
-| USA | MLR |  `https://data.nextstrain.org/files/workflows/forecasts-ncov/usa/mlr/<YYYY-MM-DD>_results.json.zst` |
-|     | Renewal |  `https://data.nextstrain.org/files/workflows/forecasts-ncov/usa/renewal/<YYYY-MM-DD>_results.json.zst` |
+#### Summary of Available files:
+
+| Data Provenance | Clade Type        | Geographic Resolution | Model   | Address |
+| --------------- | ----------------- | --------------------- | ------- | ------- |
+| GISAID          | Nextstrain clades | Global                | MLR     | `https://data.nextstrain.org/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/global/mlr/latest_results.json.gz`    |
+|                 |                   |                       | Renewal | `https://data.nextstrain.org/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/global/renewal/latest_results.json.gz`|
+|                 |                   | USA                   | MLR     | `https://data.nextstrain.org/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/usa/mlr/latest_results.json.gz`       |
+|                 |                   |                       | Renewal | `https://data.nextstrain.org/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/usa/renewal/latest_results.json.gz`   |
+| open (GenBank)  | Nextstrain clades | Global                | MLR     | `https://data.nextstrain.org/files/workflows/forecasts-ncov/open/nextstrain_clades/global/mlr/latest_results.json.gz`      |
+|                 |                   |                       | Renewal | `https://data.nextstrain.org/files/workflows/forecasts-ncov/open/nextstrain_clades/global/renewal/latest_results.json.gz`  |
+|                 |                   | USA                   | MLR     | `https://data.nextstrain.org/files/workflows/forecasts-ncov/open/nextstrain_clades/usa/mlr/latest_results.json.gz`         |
+|                 |                   |                       | Renewal | `https://data.nextstrain.org/files/workflows/forecasts-ncov/open/nextstrain_clades/usa/renewal/latest_results.json.gz`     |
 
 ## Installation
 
