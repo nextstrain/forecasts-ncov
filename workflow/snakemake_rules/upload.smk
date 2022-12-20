@@ -31,7 +31,7 @@ rule upload_model_results_to_s3:
         ./ingest/bin/upload-to-s3 \
             {params.quiet} \
             {input.model_results:q} \
-            {params.s3_dst:q}/{wildcards.geo_resolution:q}/{wildcards.model:q}/{wildcards.date}_results.json.gz \
+            {params.s3_dst:q}/nextstrain_clades/{wildcards.geo_resolution:q}/{wildcards.model:q}/{wildcards.date}_results.json.gz \
             {params.cloudfront_domain} 2>&1 | tee {output.upload_flag}
         """
 
@@ -49,6 +49,6 @@ rule upload_model_results_to_s3_as_latest:
         ./ingest/bin/upload-to-s3 \
             {params.quiet} \
             {input.model_results:q} \
-            {params.s3_dst:q}/{wildcards.geo_resolution:q}/{wildcards.model:q}/latest_results.json.gz \
+            {params.s3_dst:q}/nextstrain_clades/{wildcards.geo_resolution:q}/{wildcards.model:q}/latest_results.json.gz \
             {params.cloudfront_domain} 2>&1 | tee {output.upload_flag}
         """
