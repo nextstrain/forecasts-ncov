@@ -1,7 +1,8 @@
 // require fs and puppeteer
 const fs = require("fs");
 const puppeteer = require("puppeteer");
-
+const path = require('path')
+const express = require('express')
 const dir = 'figures'
 
 const pdfConfig = {
@@ -63,4 +64,21 @@ async function captureScreenshot() {
   }
 }
 
-captureScreenshot();
+async function startServer() {
+  const app = express()
+  app.set('port', 3000);
+  app.use("/", express.static(path.join(__dirname, '..', "build")))
+  app.use('/forecasting-viz-asset', express.static(path.join(__dirname, '..', "build", "forecasting-viz-assets")))
+  const server = await app.listen(app.get('port'));
+  console.log(`Ephemeral server running at port ${app.get('port')}`)
+  return server;
+}
+
+async function main() {
+  const server = await startServer();
+  await captureScreenshot();
+  server.close();
+}
+
+main();
+
