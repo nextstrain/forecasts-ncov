@@ -10,7 +10,7 @@ on:
         description: 'Slack channel to push update alerts. Default channel is nextstrain-counts-updates.'
         required: false
       trial_name:
-        description: 'Short name for a trial run that does not send Slack notifications. WARNING: without this we will overwrite files in s3://nextstrain-data/files/workflows/forecasts-ncov and s3://nextstrain-data-private/files/workflows/forecasts-ncov'
+        description: 'Short name for a trial run that does not send Slack notifications. WARNING: without this we will overwrite files in s3://nextstrain-data/files/workflows/forecasts-ncov'
         required: false
       data_provenance:
         description: 'Data provenance of data inputs for model: gisaid or open. Will run both if left empty.'

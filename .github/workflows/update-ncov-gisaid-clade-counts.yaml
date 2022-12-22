@@ -11,7 +11,7 @@ on:
         description: 'Slack channel to push update alerts. Default channel is nextstrain-counts-updates.'
         required: false
       trial_name:
-        description: 'Short name for a trial run. WARNING: without this we will overwrite files in s3://nextstrain-data-private/files/workflows/forecasts-ncov'
+        description: 'Short name for a trial run. WARNING: without this we will overwrite files in s3://nextstrain-data/files/workflows/forecasts-ncov/gisaid'
         required: false
 
 jobs:
@@ -73,14 +73,14 @@ jobs:
 
     - name: upload clade counts
       run: |
-        S3_DST=s3://nextstrain-data-private/files/workflows/forecasts-ncov
+        S3_DST=s3://nextstrain-data/files/workflows/forecasts-ncov/gisaid
 
         if [[ "$TRIAL_NAME" ]]; then
           S3_DST+=/trial/"$TRIAL_NAME"
         fi
 
-        ./ingest/bin/upload-to-s3 global_clade_counts.tsv "$S3_DST"/global/nextstrain_clades.tsv.gz
-        ./ingest/bin/upload-to-s3 us_clade_counts.tsv "$S3_DST"/usa/nextstrain_clades.tsv.gz
+        ./ingest/bin/upload-to-s3 global_clade_counts.tsv "$S3_DST"/nextstrain_clades/global.tsv.gz
+        ./ingest/bin/upload-to-s3 us_clade_counts.tsv "$S3_DST"/nextstrain_clades/usa.tsv.gz
       env:
         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

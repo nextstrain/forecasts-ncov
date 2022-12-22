@@ -21,16 +21,40 @@ rule upload_model_results_to_s3:
     input:
         model_results = "results/{data_provenance}/{geo_resolution}/{model}/{date}_results.json"
     output:
-        upload_flag = "results/{data_provenance}/{geo_resolution}/{model}/{date}_results_s3_upload.done"
+        touch("results/{data_provenance}/{geo_resolution}/{model}/{date}_results_s3_upload.done")
     params:
         quiet="" if send_notifications else "--quiet",
         s3_dst=lambda wildcards: config["upload"].get(wildcards.data_provenance, {}).get("s3_dst", ""),
-        cloudfront_domain=lambda wildcards: config["upload"].get(wildcards.data_provenance, {}).get("cloudfront_domain", "")
     shell:
         """
-        ./ingest/bin/upload-to-s3 \
+        ./bin/nextstrain-remote-upload-with-slack-notification \
             {params.quiet} \
-            {input.model_results:q} \
-            {params.s3_dst:q}/{wildcards.geo_resolution:q}/{wildcards.model:q}/{wildcards.date}_results.json.zst \
-            {params.cloudfront_domain} 2>&1 | tee {output.upload_flag}
+            {params.s3_dst:q}/nextstrain_clades/{wildcards.geo_resolution:q}/{wildcards.model:q}/ \
+            {input.model_results}
+        """
+
+rule copy_dated_model_results_to_latest:
+    input:
+        dated_model_results = "results/{data_provenance}/{geo_resolution}/{model}/{date}_results.json"
+    output:
+        latest_model_results = "results/{data_provenance}/{geo_resolution}/{model}/{date}/latest_results.json"
+    shell:
+        """
+        cp {input.dated_model_results} {output.latest_model_results}
+        """
+
+rule upload_model_results_to_s3_as_latest:
+    input:
+        model_results = "results/{data_provenance}/{geo_resolution}/{model}/{date}/latest_results.json"
+    output:
+        touch("results/{data_provenance}/{geo_resolution}/{model}/{date}_latest_results_s3_upload.done")
+    params:
+        quiet="" if send_notifications else "--quiet",
+        s3_dst=lambda wildcards: config["upload"].get(wildcards.data_provenance, {}).get("s3_dst", ""),
+    shell:
+        """
+        ./bin/nextstrain-remote-upload-with-slack-notification \
+            {params.quiet} \
+            {params.s3_dst:q}/nextstrain_clades/{wildcards.geo_resolution:q}/{wildcards.model:q}/ \
+            {input.model_results}
         """

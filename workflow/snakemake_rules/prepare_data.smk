@@ -2,36 +2,24 @@
 This part of the workflow downloads and prepares the data necessary to run models
 """
 
-rule download_open_data:
-    message: "Downloading case counts and Nextstrain clade counts from data.nextstrain.org"
-    wildcard_constraints:
-        geo_resolution = "global|usa"
+rule download_case_counts:
     output:
-        cases = "data/open/{geo_resolution}/cases.tsv.gz",
-        nextstrain_clades = "data/open/{geo_resolution}/nextstrain_clades.tsv.gz"
+        cases = "data/cases/{geo_resolution}.tsv.gz"
     params:
-        cases_url = "https://data.nextstrain.org/files/workflows/forecasts-ncov/{geo_resolution}/cases.tsv.gz",
-        nextstrain_clades_url = "https://data.nextstrain.org/files/workflows/forecasts-ncov/{geo_resolution}/nextstrain_clades.tsv.gz"
+        cases_url = "https://data.nextstrain.org/files/workflows/forecasts-ncov/cases/{geo_resolution}.tsv.gz"
     shell:
         """
         curl -fsSL --compressed {params.cases_url:q} --output {output.cases}
-        curl -fsSL --compressed {params.nextstrain_clades_url:q} --output {output.nextstrain_clades}
         """
 
-rule download_gisaid_data:
-    message: "Downloading case counts and Nextstrain clade counts from s3://nextstrain-data-private"
-    wildcard_constraints:
-        geo_resolution = "global|usa"
+rule download_clade_counts:
     output:
-        cases = "data/gisaid/{geo_resolution}/cases.tsv.gz",
-        nextstrain_clades = "data/gisaid/{geo_resolution}/nextstrain_clades.tsv.gz"
+        clades = "data/{data_provenance}/nextstrain_clades/{geo_resolution}.tsv.gz"
     params:
-        cases_url = "s3://nextstrain-data-private/files/workflows/forecasts-ncov/{geo_resolution}/cases.tsv.gz",
-        nextstrain_clades_url = "s3://nextstrain-data-private/files/workflows/forecasts-ncov/{geo_resolution}/nextstrain_clades.tsv.gz"
+        clades_url = "https://data.nextstrain.org/files/workflows/forecasts-ncov/{data_provenance}/nextstrain_clades/{geo_resolution}.tsv.gz"
     shell:
         """
-        aws s3 cp --no-progress {params.cases_url:q} {output.cases}
-        aws s3 cp --no-progress {params.nextstrain_clades_url:q} {output.nextstrain_clades}
+        curl -fsSL --compressed {params.clades_url:q} --output {output.clades}
         """
 
 def _get_prepare_data_option(wildcards, option_name):
@@ -58,8 +46,8 @@ def _get_prepare_data_option(wildcards, option_name):
 rule prepare_data:
     message: "Preparing counts data for analysis"
     input:
-        cases = "data/{data_provenance}/{geo_resolution}/cases.tsv.gz",
-        nextstrain_clades = "data/{data_provenance}/{geo_resolution}/nextstrain_clades.tsv.gz"
+        cases = "data/cases/{geo_resolution}.tsv.gz",
+        nextstrain_clades = "data/{data_provenance}/nextstrain_clades/{geo_resolution}.tsv.gz"
     output:
         clade_without_variant = "data/{data_provenance}/{geo_resolution}/clade_without_variant.txt",
         cases = "data/{data_provenance}/{geo_resolution}/prepared_cases.tsv",

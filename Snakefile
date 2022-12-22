@@ -70,7 +70,10 @@ def _get_all_input(w):
         ))
         if config.get("upload"):
             all_input.extend(expand(
-                "results/{data_provenance}/{geo_resolution}/{model}/{date}_results_s3_upload.done",
+                [
+                    "results/{data_provenance}/{geo_resolution}/{model}/{date}_results_s3_upload.done",
+                    "results/{data_provenance}/{geo_resolution}/{model}/{date}_latest_results_s3_upload.done"
+                ],
                 data_provenance=data_provenances,
                 geo_resolution=geo_resolutions,
                 model=models_to_run,

@@ -3,11 +3,10 @@
 upload:
   gisaid:
     # AWS S3 Bucket with prefix
-    s3_dst: "s3://nextstrain-data-private/files/workflows/forecasts-ncov"
+    s3_dst: "s3://nextstrain-data/files/workflows/forecasts-ncov/gisaid"
   open:
     # AWS S3 Bucket with prefix
-    s3_dst: "s3://nextstrain-data/files/workflows/forecasts-ncov"
-    cloudfront_domain: "data.nextstrain.org"
+    s3_dst: "s3://nextstrain-data/files/workflows/forecasts-ncov/open"
 
 # Send Slack notifications
 send_slack_notifications: True
