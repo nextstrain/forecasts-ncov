@@ -1,15 +1,27 @@
 // require fs and puppeteer
+const argparse = require("argparse");
 const fs = require("fs");
 const puppeteer = require("puppeteer");
 const path = require('path')
 const express = require('express')
-const dir = 'figures'
 
-const pdfConfig = {
-  path: `${dir}/testing.pdf`,
-  format: 'A4',
-  printBackground: false,
-};
+
+function parseArgs() {
+  const parser = new argparse.ArgumentParser({
+    description: `
+      Spin up the Nextstrain forecasts-ncov viz app to capture screenshots of
+      the D3 visualizations for model results.
+    `,
+  });
+
+  parser.add_argument("--output-dir", {
+    default: "figures",
+    dest: "outputDir",
+    help: "Output directory for screenshots."
+  });
+
+  return parser.parse_args();
+}
 
 const elementsToScreenshot = [
   "frequenciesPanel",
@@ -17,7 +29,7 @@ const elementsToScreenshot = [
   "smoothedIncidencePanel"
 ];
 
-async function captureScreenshot() {
+async function captureScreenshot(dir) {
 
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);
@@ -38,7 +50,7 @@ async function captureScreenshot() {
 
     await page.waitForTimeout(5000); // bad - should check the d3 is rendered not this!
     console.log("Page rendered")
-  
+
     /* save each panel (of small multiples) as a .png image */
     for (const id of elementsToScreenshot) {
       console.log(`Finding & saving ${id}`)
@@ -47,6 +59,11 @@ async function captureScreenshot() {
     }
 
     /* proof-of-principle for how to generate the PDF */
+    const pdfConfig = {
+      path: `${dir}/testing.pdf`,
+      format: 'A4',
+      printBackground: false,
+    };
     await page.pdf(pdfConfig);
 
     /* legend is a bit different, as we want to control the layout of it */
@@ -74,11 +91,11 @@ async function startServer() {
   return server;
 }
 
-async function main() {
+async function main({outputDir}) {
   const server = await startServer();
-  await captureScreenshot();
+  await captureScreenshot(outputDir);
   server.close();
 }
 
-main();
+main(parseArgs());
 
