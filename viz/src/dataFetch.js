@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import {parseModelData} from "./parse.js";
 
-const DEFAULT_ENDPOINT = "https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/trial/2022-12-18_results.json";
+const DEFAULT_ENDPOINT = "https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/global/renewal/latest_results.json";
 
 export const useDataFetch = () => {
   const [status, setStatus] = useState("Initialising");
