@@ -28,13 +28,10 @@ How to make local data available (note that `/data` is gitignored):
 ```sh
 # provision the files
 mkdir -p data/
-aws s3 cp s3://nextstrain-data-private/files/workflows/forecasts-ncov/global/renewal/2022-12-05_results.json.zst src/data/renewal.json.zst
-aws s3 cp s3://nextstrain-data-private/files/workflows/forecasts-ncov/global/mlr/2022-12-05_results.json.zst src/data/mlr.json.zst
-unzstd data/*.zst
-rm data/*.zst
-# serve them over localhost (port 8000 by default)
-cd data
-python -m http.server
+curl --compressed "https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/global/renewal/latest_results.json" --output data/renewal.json
+curl --compressed "https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/global/mlr/latest_results.json" --output data/mlr.json
+# serve them over localhost:8000
+node scripts/data-server.js
 ```
 
 > Note that we cannot currently use the zstd encodings. There is a library to decompress this in the browser (https://github.com/bokuweb/zstd-wasm) but it requires webpack modifications. For the time being, I've chosen to use gzip encodings. 
