@@ -9,7 +9,7 @@ export const useLegend = (d3Container, modelData) => {
     dom.selectAll("*").remove();
 
     const containers = dom.selectAll("legendContainers")
-      .data(modelData.variants) // variants are actually nextstrain clades
+      .data(modelData.get('variants'))
       .enter().append("div")
         .style("display", "flex")
         .style("align-items", "center") // legend swatches vertically centered with legend text
@@ -22,10 +22,10 @@ export const useLegend = (d3Container, modelData) => {
         .attr("cx", 15)
         .attr("cy", 15)
         .attr("r", 8)
-        .style("fill", (clade) => modelData.cladeColours[clade] ||  modelData.cladeColours.other)
+        .style("fill", (variant) => modelData.get('variantColors').get(variant) ||  modelData.get('variantColors').get('other'))
     
     containers.append("p")
-      .text((clade) => modelData.cladeToLineage[clade])
+      .text((variant) => modelData.get('variantDisplayNames').get(variant) || variant)
 
   }, [d3Container, modelData])
 }

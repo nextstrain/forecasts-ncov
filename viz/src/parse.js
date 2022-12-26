@@ -1,115 +1,110 @@
+import { variantColors, variantDisplayNames } from "./ncovSpecificSettings";
 
-// following hardcoded for initial simplicity 
-const lineageColours = {
-  "other": "#737373",
-  "BA.2": "#BDBDBD",
-  "BA.4": "#447CCD",
-  "BA.5": "#5EA9A1",
-  "BA.2.12.1": "#8ABB6A",
-  "BA.2.75": "#BEBB48",
-  "BQ.1": "#E29E39",
-  "XBB": "#E2562B"
-};
+/** An "empty" data point.
+ * Map used instead of object as it's (seemingly) faster + consumes less
+ * memory (https://www.zhenghao.io/posts/object-vs-map)
+ */
+const Point = new Map([
+  ['date', undefined],
+  ['freq', NaN],
+  ['I_smooth', NaN],
+  ['I_smooth_y0', NaN], // stacked
+  ['I_smooth_y1', NaN], // stacked
+  ['r_t', NaN],
+]);
 
-const cladeToLineage = {
-  "other": "other",
-  "21L (Omicron)": "BA.2",
-  "22A (Omicron)": "BA.4",
-  "22B (Omicron)": "BA.5",
-  "22C (Omicron)": "BA.2.12.1",
-  "22D (Omicron)": "BA.2.75",
-  "22E (Omicron)": "BQ.1",
-  "22F (Omicron)": "XBB",
-};
+const THRESHOLD_FREQ = 0.005; /* half a percent */
 
+/**
+ * <returned_Object> ["points"] [location] [ variant ][ dateIdx ] : Point
+ *                   ["variants"] : list
+ *                   ["dates"] : list
+ *                   ["locations"] : list
+ *                   ["dateIdx"] : Map (lookup for date string -> idx in dates array)
+ *                   ["variantColors"] : Map
+ *                   ["variantDisplayNames"] : Map
+ */
 export const parseModelData = (raw) => {
-  
-  /* frequencies: "freq" → location → variant (clade) → frequencyValue */
-  const freq = Object.fromEntries(raw.metadata.location.map((loc) => [
-    loc,
-    Object.fromEntries(raw.metadata.variants.map((variant) => [
-      variant, 
-      raw.data.filter((el) => el.location===loc && el.variant===variant && el.ps==="median" && el.site==="freq")
-    ]))
-  ]))
 
-  /* TODO - we censor data which is based on few data points! */
-  /* TODO - we're drawing a line through these, can we guarantee they're date-sorted? */
-  /* frequencies: "r_t" → location → variant (clade) → r_tValue */
-  const r_t = Object.fromEntries(raw.metadata.location.map((loc) => [
-    loc,
-    Object.fromEntries(raw.metadata.variants.map((variant) => [
-      variant, 
-      raw.data.filter((el) => el.location===loc && el.variant===variant && el.ps==="median" && el.site==="R")
-    ]))
-  ]))
+  const dateIdx = new Map(raw.metadata.dates.map((d, i) => [d, i]));
 
-  /* stacked incidence vis I_smooth */
+  const data = new Map([
+    ["locations", raw.metadata.location],
+    ["variants", raw.metadata.variants],
+    ["dates", raw.metadata.dates],
+    ["variantColors", variantColors],
+    ["variantDisplayNames", variantDisplayNames],
+    ["dateIdx", dateIdx],
+    ["points", undefined]
+  ])
 
-  const stackedIncidence = Object.fromEntries(raw.metadata.location.map((loc) => [
-    loc,
-    Object.fromEntries(raw.metadata.variants.map((variant) => [variant, []]))
-  ]));
-  const incidenceKeyed = Object.fromEntries(raw.metadata.location.map((loc) => [
-    loc,
-    Object.fromEntries(raw.metadata.variants.map((variant) => [variant, {}]))
-  ]));
-  raw.data.filter((el) => el.ps==="median" && el.site==="I_smooth").forEach((el) => {
-    incidenceKeyed[el.location][el.variant][el.date] = parseInt(el.value, 10);
-  })
-
-  raw.metadata.location.forEach((loc) => {
-    const datesToIgnore = new Set();
-    let previousIncidence = {} // per day
-    raw.metadata.variants.forEach((variant) => {
-      raw.metadata.dates.forEach((date) => {
-        const pv = parseInt(previousIncidence[date] || 0, 10);
-        const newIncidence = parseInt(pv + incidenceKeyed[loc][variant][date]);
-        if (isNaN(newIncidence)) {
-          // console.log(`[debug] ${loc} ${variant} ${date} ps=median site=I_smooth doesn't exist!`)
-          datesToIgnore.add(date)
-        }
-        // update previous incidence to the new incidence
-        previousIncidence[date] = newIncidence;
-        // store this data point, which will form a slice of area in the stacked graph
-        if (previousIncidence === newIncidence) {
-          return;
-        }
-        stackedIncidence[loc][variant].push({
-          date: date,
+  const points = new Map(
+    data.get('locations').map((location) => [
+      location,
+      new Map(
+        data.get('variants').map((variant) => [
           variant,
-          previousIncidence: pv,
-          newIncidence
-        })
-      })
-    })
-    if (datesToIgnore.size>0) {
-      console.error(`I_smooth: Ignoring ${[...datesToIgnore]} for ${loc}`)
-      raw.metadata.variants.forEach((variant) => {
-        stackedIncidence[loc][variant] = stackedIncidence[loc][variant].filter((el) => !datesToIgnore.has(el.date))
-      });
+          raw.metadata.dates.map((date) => {
+            const pt = new Map(Point);
+            pt.set('date', date);
+            return pt;
+          })
+        ])
+      )
+    ])
+  );
+
+  /* Iterate through each data element & assign to our structure */
+  raw.data.forEach((d) => {
+    if (d.site==="freq") {
+      if (d.ps==="median") {
+        points.get(d.location).get(d.variant)[dateIdx.get(d.date)].set('freq', d.value);
+      }
+    } else if (d.site==="R") {
+      if (d.ps==="median") {
+        points.get(d.location).get(d.variant)[dateIdx.get(d.date)].set('r_t', d.value);
+      }
+    }
+    else if (d.site==="I_smooth") {
+      if (d.ps==="median") {
+        points.get(d.location).get(d.variant)[dateIdx.get(d.date)].set('I_smooth', d.value);
+      }
     }
   })
 
-  // variants in the JSON are nextstrain clades
-  const expectedVariants = new Set(Object.keys(cladeToLineage));
-  if (!(raw.metadata.variants.length === expectedVariants.size && raw.metadata.variants.every(value => expectedVariants.has(value)))) {
-    console.error("New variants / clades! Please update colors. Data has:", new Set(raw.metadata.variants), "but code has", expectedVariants);
+  /* Once everything's been added (including frequencies) - iterate over each point & censor certain frequencies */
+  let [nanCount, censorCount] = [0, 0];
+  for (const variantMap of points.values()) {
+    for (const dateList of variantMap.values()) {
+      dateList.forEach((point, idx) => {
+        if (isNaN(point.get('freq'))) {
+          nanCount++;
+        } else if (point.get('freq')<THRESHOLD_FREQ) {
+          // reset to empty point (including the date)
+          dateList[idx] = new Map(Point);
+          censorCount++;
+        }
+      })
+    }
   }
-  const cladeColours = Object.fromEntries(Object.entries(cladeToLineage).map(([clade, lineage]) => [clade, lineageColours[lineage]]))
 
-  const data = {
-    variants: raw.metadata.variants,
-    dates: raw.metadata.dates,
-    freq,
-    locations: raw.metadata.location,
-    cladeColours,
-    cladeToLineage,
-    r_t,
-    stackedIncidence
+  /* create a stack for I_smooth to help with plotting - this could be in the previous set of
+  loops but it's here for readability */
+  for (const variantMap of points.values()) {
+    let runningTotalPerDay = new Array(raw.metadata.dates.length).fill(0);
+    for (const dateList of variantMap.values()) {
+      dateList.forEach((point, idx) => {
+        point.set('I_smooth_y0', runningTotalPerDay[idx]);
+        runningTotalPerDay[idx] += point.get('I_smooth') || 0; // I_smooth may be NaN
+        point.set('I_smooth_y1', runningTotalPerDay[idx]);
+      })
+    }
   }
-  console.log("[debugging] Parsed model data:", data)
 
+  console.log(`Renewal model data`)
+  console.log(`\t${raw.metadata.location.length} locations x ${raw.metadata.variants.length} variants x ${raw.metadata.dates.length} dates`)
+  console.log(`\t${censorCount} ensored points + ${nanCount} points missing`);
+
+  data.set("points", points);
   return data;
-
 };

@@ -77,7 +77,7 @@ const frequencyPlot = (dom, sizes, location, modelData) => {
   const svg = svgSetup(dom, sizes);
 
   const x = d3.scalePoint()
-    .domain(modelData['dates'])
+    .domain(modelData.get('dates'))
     .range([sizes.margin.left, sizes.width-sizes.margin.right]);
 
   svg.append("g")
@@ -91,16 +91,17 @@ const frequencyPlot = (dom, sizes, location, modelData) => {
     .call(simpleYAxis(y, sizes));
 
   // Add dots - one group per variant
-  Object.entries(modelData.freq[location]).forEach(([variant, points]) => {
+  /* note map.forEach() returns a tuple of (value, key, map) -- perhaps not the order you expect! */
+  modelData.get('points').get(location).forEach((pointsPerDay, variant) => {
     svg.append('g')
       .selectAll("dot")
-      .data(points)
+      .data(pointsPerDay)
       .enter()
       .append("circle")
-        .attr("cx", function (d) { return x(d.date); } )
-        .attr("cy", function (d) { return y(d.value); } )
+        .attr("cx", (d) => x(d.get('date')))
+        .attr("cy", (d) => y(d.get('freq')))
         .attr("r", 1.5)
-        .style("fill", modelData.cladeColours[variant] ||  modelData.cladeColours.other)
+        .style("fill", modelData.get('variantColors').get(variant) ||  modelData.get('variantColors').get('other'))
   });
 
   title(svg, sizes, location)
@@ -114,7 +115,7 @@ const rtPlot = (dom, sizes, location, modelData) => {
   const svg = svgSetup(dom, sizes);
 
   const x = d3.scalePoint()
-    .domain(modelData['dates'])
+    .domain(modelData.get('dates'))
     .range([sizes.margin.left, sizes.width-sizes.margin.right]);
 
   svg.append("g")
@@ -130,29 +131,31 @@ const rtPlot = (dom, sizes, location, modelData) => {
   /* coloured lines for each variant */
   // line path generator
   const line = d3.line()
-    // .defined(i => D[i]) // todo - check for NaN-like values?
+    .defined(d => !isNaN(d.get('r_t')))
     .curve(d3.curveLinear)
-    .x((d) => x(d.date))
-    .y((d) => y(d.value))
+    .x((d) => x(d.get('date')))
+    .y((d) => y(d.get('r_t')))
 
-  Object.entries(modelData.r_t[location]).forEach(([variant, points]) => {
+  modelData.get('points').get(location).forEach((pointsPerDay, variant) => {
+    const color = modelData.get('variantColors').get(variant) || modelData.get('variantColors').get('other');
     const g = svg.append('g');
     g.append('path')
       .attr("fill", "none")
-      .attr("stroke", modelData.cladeColours[variant] ||  modelData.cladeColours.other)
+      .attr("stroke", color)
       .attr("stroke-width", 1.5)
       .attr("stroke-opacity", 0.8)
-      .attr("d", line(points));
-    const finalPt = points[points.length-1]
+      .attr("d", line(pointsPerDay));
+    const finalPt = finalNonValidPoint(pointsPerDay, 'r_t');
+    if (!finalPt) return;
     g.append("text")
-      .text(`${finalPt.value}`)
-      .attr("x", x(finalPt.date))
-      .attr("y", y(finalPt.value))
+      .text(`${finalPt.get('r_t')}`)
+      .attr("x", x(finalPt.get('date')))
+      .attr("y", y(finalPt.get('r_t')))
       .style("text-anchor", "start")
       .style("alignment-baseline", "baseline")
       .style("font-size", "10px")
       .style("font-family", "Lato, courier")
-      .style("fill", modelData.cladeColours[variant] ||  modelData.cladeColours.other)
+      .style("fill", color)
   });
 
   /* dashed horizontal line at r_t=1 */
@@ -171,16 +174,21 @@ const stackedIncidence = (dom, sizes, location, modelData) => {
   const svg = svgSetup(dom, sizes);
 
   const x = d3.scalePoint()
-    .domain(modelData['dates'])
+    .domain(modelData.get('dates'))
     .range([sizes.margin.left, sizes.width-sizes.margin.right]);
 
   svg.append("g")
       .call(temporalXAxis(x, sizes));
 
-  const valuesPerVariant = Object.values(modelData.stackedIncidence[location]);
-  const maxCaseCount = d3.max(valuesPerVariant[valuesPerVariant.length-1].map((d) => d.newIncidence))
+  /* maximum value by looking at final variant (i.e. on top of the stack) */  
+  // const perVariant = [...modelData.get('points').get(location).entries()];
+  // const maxI = d3.max(perVariant[perVariant.length-1][1].map((point) => point.get('I_smooth_y1')))
+  const variants = modelData.get('variants');
+  const dataPerVariant = modelData.get('points').get(location)
+  const maxI = d3.max(dataPerVariant.get(variants[variants.length-1]).map((point) => point.get('I_smooth_y1')));
+
   const y = d3.scaleLinear()
-    .domain([0, maxCaseCount]) // should be data-driven
+    .domain([0, maxI])
     .range([sizes.height-sizes.margin.bottom, sizes.margin.top]); // y=0 is @ top. Range is [bottom_y, top_y] which maps 0 to the bottom and 1 to the top (of the graph)
   
   svg.append("g")
@@ -188,18 +196,20 @@ const stackedIncidence = (dom, sizes, location, modelData) => {
 
   svg.append('g')
     .selectAll("stackedLayer")
-    .data(valuesPerVariant)
+    .data(variants)
     .enter()
     .append("path")
-      .style("fill", (d) => modelData.cladeColours[d[0].variant] ||  modelData.cladeColours.other)
+      .style("fill", (variant) => modelData.get('variantColors').get(variant) || modelData.get('variantColors').get('other'))
       .style("fill-opacity", 0.5)
-      .style("stroke", (d) => modelData.cladeColours[d[0].variant] ||  modelData.cladeColours.other)
+      .style("stroke", (variant) => modelData.get('variantColors').get(variant) || modelData.get('variantColors').get('other'))
       .style("stroke-width", 0.5)
-      .attr("d", d3.area()
-        .x((el) => x(el.date))
-        .y0((el) => y(el.previousIncidence))
-        .y1((el) => y(el.newIncidence))
-    )
+      .attr("d", (variant) => (d3.area()
+        .defined((point) => !!point.get('date'))
+        .x((point) => x(point.get('date')))
+        .y0((point) => y(point.get('I_smooth_y0')))
+        .y1((point) => y(point.get('I_smooth_y1')))
+      )(dataPerVariant.get(variant)))
+
   title(svg, sizes, location)
 }
 
@@ -233,4 +243,11 @@ export const SmallMultiple = ({location, graph, sizes, modelData}) => {
   return (
     <D3Container ref={d3Container}/>
   )
+}
+
+function finalNonValidPoint(points, key) {
+  for (let i=points.length-1; i>0; i--) {
+    if (!isNaN(points[i].get(key))) return points[i];
+  }
+  return null;
 }

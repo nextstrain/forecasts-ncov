@@ -78,7 +78,7 @@ export const Panels = ({modelData, sidebar}) => {
       <LegendContainer id="legend" ref={legendContainer}/>
 
       <PanelSectionContainer id="frequenciesPanel">
-        {modelData.locations
+        {modelData.get('locations')
           .map((location) => ({location, graph: "freq", sizes}))
           .map((param) => (
             <SmallMultiple {...param} key={`${param.graph}_${param.location}`} modelData={modelData}/>
@@ -90,7 +90,7 @@ export const Panels = ({modelData, sidebar}) => {
         {`Modelled R_t per country, split by nextstrain clade`}
       </PanelSectionHeaderContainer>
       <PanelSectionContainer id="rtPanel">
-      {modelData.locations
+      {modelData.get('locations')
           .map((location) => ({location, graph: "r_t", sizes}))
           .map((param) => (
             <SmallMultiple {...param} key={`${param.graph}_${param.location}`} modelData={modelData}/>
@@ -102,7 +102,7 @@ export const Panels = ({modelData, sidebar}) => {
         {`Smoothed Incidence`}
       </PanelSectionHeaderContainer>
       <PanelSectionContainer id="smoothedIncidencePanel">
-      {modelData.locations
+        {modelData.get('locations')
           .map((location) => ({location, graph: "stackedIncidence", sizes}))
           .map((param) => (
             <SmallMultiple {...param} key={`${param.graph}_${param.location}`} modelData={modelData}/>
