@@ -16,12 +16,18 @@ npm run start # dev mode
 
 ### Where are model data sourced from?
 
-By default, the model data is fetched from `https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/trial/2022-12-18_results.json` (TODO - this is temporary, until we have a latest endpoint).
-This can be changed via the following environment variable:
+By default, the two model data JSONs are fetched from `https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/global/<MODEL>/latest_results.json`, where `<MODEL>={renewal,mlr}`;
+Each of these can be changed via the following environment variables:
 
-* If you wish to use a HTTPS endpoint, run `REACT_APP_MODEL_ENDPOINT="https://..." npm run start`. Browser-compatible MIME types will be used but note this doesn't yet include zstd.
+* If you wish to use HTTP endpoints, run `REACT_APP_RENEWAL_ENDPOINT="https://..." REACT_APP_MLR_ENDPOINT="https://" npm run start`. Browser-compatible MIME types will be used but note this doesn't yet include zstd.
 
-* If you wish to use a local JSON, provision the files and serve them via a simple server (see below), then use `REACT_APP_MODEL_ENDPOINT="http://localhost:8000/renewal.json" npm run start`
+* If you wish to use a local JSON, provision the files and serve them via a simple server (see below), then use 
+
+```sh
+REACT_APP_RENEWAL_ENDPOINT="http://localhost:8000/renewal.json" \
+  REACT_APP_MLR_ENDPOINT="http://localhost:8000/mlr.json" \
+  npm run start
+```
 
 How to make local data available (note that `/data` is gitignored):
 
