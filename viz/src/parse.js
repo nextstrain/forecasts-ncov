@@ -153,8 +153,6 @@ export const parseModelData = (renewal, mlr) => {
     ['ga', [ga_min, ga_max]],
   ]));
 
-  console.log("DOMAINS", data.get('domains'))
-
   console.log(`Renewal model data`)
   console.log(`\t${renewal.metadata.location.length} locations x ${renewal.metadata.variants.length} variants x ${renewal.metadata.dates.length} dates`)
   console.log(`\t${censorCount} ensored points + ${nanCount} points missing`);

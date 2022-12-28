@@ -18,8 +18,15 @@ const PanelSectionContainer = styled.div`
 `;
 
 const PanelSectionHeaderContainer = styled.div`
-  margin-bottom: 30px;
+  margin-bottom: 15px;
   margin-top: 50px;
+  margin-left: 10%;
+  margin-right: 10%
+`;
+const PanelAbstract = styled(PanelSectionHeaderContainer)`
+  margin-top: 0px;
+  margin-bottom: 30px;
+  font-size: 14px;
 `;
 
 const LegendContainer = styled.div`
@@ -46,8 +53,8 @@ const LegendContainer = styled.div`
       padding-right: 0px;
     }
   }
-
 `;
+
 
 const useResponsiveSizing = () => {
   /* following are in pixel coordinates */
@@ -69,9 +76,24 @@ export const Panels = ({modelData, sidebar}) => {
   return (
     <Container id="mainPanelsContainer" >
 
+      <PanelAbstract>
+        <>This page visualises the evolution and dynamics of SARS-CoV-2 evolution and dynamics using two models:</>
+        <ul>
+          <li>Multinomial Logistic Regression (MLR) estimates variant frequencies and growth advantages for variants against some baseline using sequence count data</li>
+          <li>The variant renewal model estimates variant frequencies, variant-specific incidence, and growth advantages using a combination of case and sequence count data.</li>
+        </ul>
+        <>Each model uses sequence counts via GISAID and case counts from various sources, collated in our <a href="https://github.com/nextstrain/forecasts-ncov/tree/main/ingest">forecasts-ncov GitHub repo</a>.</>
+        <>{` For more information on the models please see the `}<a href="https://www.github.com/blab/evofr">evofr GitHub repo</a> or the preprint <a href="https://bedford.io/papers/figgins-rt-from-frequency-dynamics/">"SARS-CoV-2 variant dynamics across US states show consistent differences in effective reproduction numbers"</a>.</>
+        <br/><br/>
+        <>Currently we use <a href='https://nextstrain.org/blog/2022-04-29-SARS-CoV-2-clade-naming-2022'>Nextstrain clades</a> to partition the sequences into variants.</>
+      </PanelAbstract>
+
       <PanelSectionHeaderContainer>
-        {`Modelled variant frequencies per country, split by nextstrain clade`}
+        {`Estimated Variant Frequencies over time`}
       </PanelSectionHeaderContainer>
+      <PanelAbstract>
+        {`These estimates are derived from sequence count data using a multinomial logistic regression model.`}
+      </PanelAbstract>
 
       {/* To do - the only appears once, however the intention is that on small screens
       it should appear above _every_ <PanelSectionContainer/> */}
@@ -87,8 +109,13 @@ export const Panels = ({modelData, sidebar}) => {
       </PanelSectionContainer>
 
       <PanelSectionHeaderContainer>
-        {`Modelled R_t per country, split by nextstrain clade`}
+        {`Estimated effective reproduction number over time`}
       </PanelSectionHeaderContainer>
+      <PanelAbstract>
+        {`This is an estimate of the average number of secondary infections expected to be caused by an individual infected with a given variant as estimated by the variant renewal model.
+        In general, we expect the variant to be growing if this number is greater than 1.`}
+      </PanelAbstract>
+
       <PanelSectionContainer id="rtPanel">
       {modelData.get('locations')
           .map((location) => ({location, graph: "r_t", sizes}))
@@ -99,8 +126,12 @@ export const Panels = ({modelData, sidebar}) => {
       </PanelSectionContainer>
 
       <PanelSectionHeaderContainer>
-        {`Smoothed Incidence`}
+        {`Estimated Cases over time`}
       </PanelSectionHeaderContainer>
+      <PanelAbstract>
+        {`As estimated by the variant renewal model.
+        These estimates are smoothed to deal with daily reporting noise and weekend effects present in case data.`}
+      </PanelAbstract>
       <PanelSectionContainer id="smoothedIncidencePanel">
         {modelData.get('locations')
           .map((location) => ({location, graph: "stackedIncidence", sizes}))
@@ -110,9 +141,17 @@ export const Panels = ({modelData, sidebar}) => {
         }
       </PanelSectionContainer>
 
+
       <PanelSectionHeaderContainer>
         {`Growth Advantage`}
       </PanelSectionHeaderContainer>
+      <PanelAbstract>
+        {`
+          These plots show the estimated growth advantage for given variants relative to baseline.
+          This is an estimate of how many more secondary infections this variant causes on average compared the baseline variant as estimated but the multinomial logistic regression model.
+          Vertical bars show the 95% HPD.
+        `}
+      </PanelAbstract>
       <PanelSectionContainer id="smoothedIncidencePanel">
         {modelData.get('locations')
           .map((location) => ({location, graph: "ga", sizes}))
