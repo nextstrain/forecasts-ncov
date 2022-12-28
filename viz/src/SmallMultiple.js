@@ -92,10 +92,11 @@ const frequencyPlot = (dom, sizes, location, modelData) => {
 
   // Add dots - one group per variant
   /* note map.forEach() returns a tuple of (value, key, map) -- perhaps not the order you expect! */
-  modelData.get('points').get(location).forEach((pointsPerDay, variant) => {
+  modelData.get('points').get(location).forEach((variantPoint, variant) => {
+    const temporalPoints = variantPoint.get('temporal');
     svg.append('g')
       .selectAll("dot")
-      .data(pointsPerDay)
+      .data(temporalPoints)
       .enter()
       .append("circle")
         .attr("cx", (d) => x(d.get('date')))
@@ -136,7 +137,8 @@ const rtPlot = (dom, sizes, location, modelData) => {
     .x((d) => x(d.get('date')))
     .y((d) => y(d.get('r_t')))
 
-  modelData.get('points').get(location).forEach((pointsPerDay, variant) => {
+  modelData.get('points').get(location).forEach((variantPoint, variant) => {
+    const temporalPoints = variantPoint.get('temporal');
     const color = modelData.get('variantColors').get(variant) || modelData.get('variantColors').get('other');
     const g = svg.append('g');
     g.append('path')
@@ -144,8 +146,8 @@ const rtPlot = (dom, sizes, location, modelData) => {
       .attr("stroke", color)
       .attr("stroke-width", 1.5)
       .attr("stroke-opacity", 0.8)
-      .attr("d", line(pointsPerDay));
-    const finalPt = finalNonValidPoint(pointsPerDay, 'r_t');
+      .attr("d", line(temporalPoints));
+    const finalPt = finalNonValidPoint(temporalPoints, 'r_t');
     if (!finalPt) return;
     g.append("text")
       .text(`${finalPt.get('r_t')}`)
@@ -181,11 +183,12 @@ const stackedIncidence = (dom, sizes, location, modelData) => {
       .call(temporalXAxis(x, sizes));
 
   /* maximum value by looking at final variant (i.e. on top of the stack) */  
-  // const perVariant = [...modelData.get('points').get(location).entries()];
-  // const maxI = d3.max(perVariant[perVariant.length-1][1].map((point) => point.get('I_smooth_y1')))
   const variants = modelData.get('variants');
   const dataPerVariant = modelData.get('points').get(location)
-  const maxI = d3.max(dataPerVariant.get(variants[variants.length-1]).map((point) => point.get('I_smooth_y1')));
+  const maxI = d3.max(
+    dataPerVariant.get(variants[variants.length-1]).get('temporal')
+      .map((point) => point.get('I_smooth_y1'))
+  );
 
   const y = d3.scaleLinear()
     .domain([0, maxI])
@@ -208,7 +211,7 @@ const stackedIncidence = (dom, sizes, location, modelData) => {
         .x((point) => x(point.get('date')))
         .y0((point) => y(point.get('I_smooth_y0')))
         .y1((point) => y(point.get('I_smooth_y1')))
-      )(dataPerVariant.get(variant)))
+      )(dataPerVariant.get(variant).get('temporal')))
 
   title(svg, sizes, location)
 }

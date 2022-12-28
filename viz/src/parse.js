@@ -4,7 +4,7 @@ import { variantColors, variantDisplayNames } from "./ncovSpecificSettings";
  * Map used instead of object as it's (seemingly) faster + consumes less
  * memory (https://www.zhenghao.io/posts/object-vs-map)
  */
-const Point = new Map([
+const TimePoint = new Map([
   ['date', undefined],
   ['freq', NaN],
   ['I_smooth', NaN],
@@ -12,11 +12,24 @@ const Point = new Map([
   ['I_smooth_y1', NaN], // stacked
   ['r_t', NaN],
 ]);
+const VariantPoint = new Map([
+  ['ga', undefined],
+  ['temporal', undefined]
+])
+const initialisePointsPerVariant = (dates) => {
+  const p = new Map(VariantPoint);
+  p.set('temporal', dates.map((date) => {
+    const tp = new Map(TimePoint);
+    tp.set('date', date);
+    return tp;
+  }));
+  return p;
+}
 
 const THRESHOLD_FREQ = 0.005; /* half a percent */
 
 /**
- * <returned_Object> ["points"] [location] [ variant ][ dateIdx ] : Point
+ * <returned_Object> ["points"] [location] [ variant ] [ dateIdx ] : Point
  *                   ["variants"] : list
  *                   ["dates"] : list
  *                   ["locations"] : list
@@ -24,18 +37,20 @@ const THRESHOLD_FREQ = 0.005; /* half a percent */
  *                   ["variantColors"] : Map
  *                   ["variantDisplayNames"] : Map
  */
-export const parseModelData = (raw) => {
+export const parseModelData = (renewal, mlr) => {
 
-  const dateIdx = new Map(raw.metadata.dates.map((d, i) => [d, i]));
+  compareModels(renewal, mlr); // throws if inconsistent JSONs
+
+  const dateIdx = new Map(renewal.metadata.dates.map((d, i) => [d, i]));
 
   const data = new Map([
-    ["locations", raw.metadata.location],
-    ["variants", raw.metadata.variants],
-    ["dates", raw.metadata.dates],
+    ["locations", renewal.metadata.location],
+    ["variants", renewal.metadata.variants],
+    ["dates", renewal.metadata.dates],
     ["variantColors", variantColors],
     ["variantDisplayNames", variantDisplayNames],
     ["dateIdx", dateIdx],
-    ["points", undefined]
+    ["points", undefined],
   ])
 
   const points = new Map(
@@ -44,30 +59,33 @@ export const parseModelData = (raw) => {
       new Map(
         data.get('variants').map((variant) => [
           variant,
-          raw.metadata.dates.map((date) => {
-            const pt = new Map(Point);
-            pt.set('date', date);
-            return pt;
-          })
+          initialisePointsPerVariant(renewal.metadata.dates)
         ])
       )
     ])
   );
 
   /* Iterate through each data element & assign to our structure */
-  raw.data.forEach((d) => {
-    if (d.site==="freq") {
+  renewal.data.forEach((d) => {
+    if (d.site==="R") {
       if (d.ps==="median") {
-        points.get(d.location).get(d.variant)[dateIdx.get(d.date)].set('freq', d.value);
-      }
-    } else if (d.site==="R") {
-      if (d.ps==="median") {
-        points.get(d.location).get(d.variant)[dateIdx.get(d.date)].set('r_t', d.value);
+        points.get(d.location).get(d.variant).get('temporal')[dateIdx.get(d.date)].set('r_t', d.value);
       }
     }
     else if (d.site==="I_smooth") {
       if (d.ps==="median") {
-        points.get(d.location).get(d.variant)[dateIdx.get(d.date)].set('I_smooth', d.value);
+        points.get(d.location).get(d.variant).get('temporal')[dateIdx.get(d.date)].set('I_smooth', d.value);
+      }
+    }
+  })
+  mlr.data.forEach((d) => {
+    if (d.site==="freq") {
+      if (d.ps==="median") {
+        points.get(d.location).get(d.variant).get('temporal')[dateIdx.get(d.date)].set('freq', d.value);
+      }
+    } else if (d.site==="ga") {
+      if (d.ps==="median") {
+        points.get(d.location).get(d.variant).set('ga', d.value);
       }
     }
   })
@@ -75,13 +93,17 @@ export const parseModelData = (raw) => {
   /* Once everything's been added (including frequencies) - iterate over each point & censor certain frequencies */
   let [nanCount, censorCount] = [0, 0];
   for (const variantMap of points.values()) {
-    for (const dateList of variantMap.values()) {
+    for (const variantPoint of variantMap.values()) {
+      const dateList = variantPoint.get('temporal');
       dateList.forEach((point, idx) => {
+        /* for any timePoint where the frequency is either not provided (NaN) or
+        under our threshold, we don't want to use any model output for this date
+        (for the given variant, location) */
         if (isNaN(point.get('freq'))) {
+          dateList[idx] = new Map(TimePoint);
           nanCount++;
         } else if (point.get('freq')<THRESHOLD_FREQ) {
-          // reset to empty point (including the date)
-          dateList[idx] = new Map(Point);
+          dateList[idx] = new Map(TimePoint);
           censorCount++;
         }
       })
@@ -91,8 +113,9 @@ export const parseModelData = (raw) => {
   /* create a stack for I_smooth to help with plotting - this could be in the previous set of
   loops but it's here for readability */
   for (const variantMap of points.values()) {
-    let runningTotalPerDay = new Array(raw.metadata.dates.length).fill(0);
-    for (const dateList of variantMap.values()) {
+    let runningTotalPerDay = new Array(renewal.metadata.dates.length).fill(0);
+    for (const variantPoint of variantMap.values()) {
+      const dateList = variantPoint.get('temporal');
       dateList.forEach((point, idx) => {
         point.set('I_smooth_y0', runningTotalPerDay[idx]);
         runningTotalPerDay[idx] += point.get('I_smooth') || 0; // I_smooth may be NaN
@@ -102,9 +125,33 @@ export const parseModelData = (raw) => {
   }
 
   console.log(`Renewal model data`)
-  console.log(`\t${raw.metadata.location.length} locations x ${raw.metadata.variants.length} variants x ${raw.metadata.dates.length} dates`)
+  console.log(`\t${renewal.metadata.location.length} locations x ${renewal.metadata.variants.length} variants x ${renewal.metadata.dates.length} dates`)
   console.log(`\t${censorCount} ensored points + ${nanCount} points missing`);
 
   data.set("points", points);
   return data;
 };
+
+
+function compareModels(renewal, mlr) {
+  let errMsg = ''
+  for (const key of ['location', 'variants', 'dates']) {
+    if (renewal.metadata[key].length!==mlr.metadata[key]) {
+      const a = renewal.metadata[key].filter((x) => !mlr.metadata[key].includes(x));
+      const b = mlr.metadata[key].filter((x) => !renewal.metadata[key].includes(x));
+      if (a.length || b.length) {
+        let msg = `Inconsistency between Renewal & MLR models for ${key}; values only in renewal model: ${a.join(", ")}, only in MRL model: ${b.join(", ")}. `
+        if (key==="dates") {
+          /* this is not terminal, and in fact is often the case! */
+          msg += "Proceeding with the dates specified in the renewal model."
+          console.log(msg)
+        } else {
+          errMsg += msg;
+        }
+      }
+    }
+  }
+  if (errMsg) {
+    throw new Error(errMsg);
+  }
+}
