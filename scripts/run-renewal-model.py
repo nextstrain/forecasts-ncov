@@ -225,7 +225,7 @@ def check_generation_times(rs, model):
     return None
 
 
-def fit_models(rc, rs, locations, model, inference_method, path, save):
+def fit_models(rc, rs, locations, model, inference_method, path, save, pivot=None):
     multi_posterior = ef.MultiPosterior()
 
     check_generation_times(rs, model)
@@ -241,7 +241,11 @@ def fit_models(rc, rs, locations, model, inference_method, path, save):
             continue
 
         # Define data object
-        data = ef.CaseFrequencyData(raw_cases=raw_cases, raw_seq=raw_seq)
+        data = ef.CaseFrequencyData(
+            raw_cases=raw_cases,
+            raw_seq=raw_seq,
+            pivot=pivot
+        )
 
         # Fit model
         posterior = inference_method.fit(model, data, name=location)
@@ -354,6 +358,7 @@ if __name__ == "__main__":
             inference_method,
             export_path,
             save,
+            pivot=config.config["model"]["pivot"]
         )
     elif load:
         print("Loading results")

@@ -13,6 +13,7 @@ settings:
 
 model:
   generation_time: 4.8
+  pivot: "21L (Omicron)"
 
 inference:
   method: "FullRank"

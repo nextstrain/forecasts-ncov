@@ -102,7 +102,7 @@ class MLRConfig:
         return fit, save, load, export_json, export_path
 
 
-def fit_models(rs, locations, model, inference_method, path, save):
+def fit_models(rs, locations, model, inference_method, path, save, pivot=None):
     multi_posterior = ef.MultiPosterior()
 
     for location in locations:
@@ -114,7 +114,7 @@ def fit_models(rs, locations, model, inference_method, path, save):
             print(f"Location {location} not in data")
             continue
 
-        data = ef.VariantFrequencies(raw_seq=raw_seq)
+        data = ef.VariantFrequencies(raw_seq=raw_seq, pivot=pivot)
 
         # Fit model
         posterior = inference_method.fit(model, data, name=location)
@@ -237,6 +237,7 @@ if __name__ == "__main__":
             inference_method,
             export_path,
             save,
+            pivot=config.config["model"]["pivot"]
         )
     elif load:
         print("Loading results")
