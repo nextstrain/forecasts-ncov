@@ -110,6 +110,18 @@ export const Panels = ({modelData, sidebar}) => {
         }
       </PanelSectionContainer>
 
+      <PanelSectionHeaderContainer>
+        {`Growth Advantage`}
+      </PanelSectionHeaderContainer>
+      <PanelSectionContainer id="smoothedIncidencePanel">
+        {modelData.get('locations')
+          .map((location) => ({location, graph: "ga", sizes}))
+          .map((param) => (
+            <SmallMultiple {...param} key={`${param.graph}_${param.location}`} modelData={modelData}/>
+          ))
+        }
+      </PanelSectionContainer>
+
     </Container>
   )
 }

@@ -14,10 +14,12 @@ const TimePoint = new Map([
 ]);
 const VariantPoint = new Map([
   ['ga', undefined],
-  ['temporal', undefined]
+  ['temporal', undefined],
+  ['variant', undefined],
 ])
-const initialisePointsPerVariant = (dates) => {
+const initialisePointsPerVariant = (variant, dates) => {
   const p = new Map(VariantPoint);
+  p.set('variant', variant)
   p.set('temporal', dates.map((date) => {
     const tp = new Map(TimePoint);
     tp.set('date', date);
@@ -51,7 +53,10 @@ export const parseModelData = (renewal, mlr) => {
     ["variantDisplayNames", variantDisplayNames],
     ["dateIdx", dateIdx],
     ["points", undefined],
+    ["domains", undefined]
   ])
+
+  let rt_min=100, rt_max=0, ga_min=100, ga_max=0;
 
   const points = new Map(
     data.get('locations').map((location) => [
@@ -59,7 +64,7 @@ export const parseModelData = (renewal, mlr) => {
       new Map(
         data.get('variants').map((variant) => [
           variant,
-          initialisePointsPerVariant(renewal.metadata.dates)
+          initialisePointsPerVariant(variant, renewal.metadata.dates)
         ])
       )
     ])
@@ -86,6 +91,10 @@ export const parseModelData = (renewal, mlr) => {
     } else if (d.site==="ga") {
       if (d.ps==="median") {
         points.get(d.location).get(d.variant).set('ga', d.value);
+      } else if (d.ps==="HDI_80_lower") {
+        points.get(d.location).get(d.variant).set('ga_HDI_95_lower', d.value);
+      } else if (d.ps==="HDI_80_upper") {
+        points.get(d.location).get(d.variant).set('ga_HDI_95_upper', d.value);
       }
     }
   })
@@ -96,17 +105,32 @@ export const parseModelData = (renewal, mlr) => {
     for (const variantPoint of variantMap.values()) {
       const dateList = variantPoint.get('temporal');
       dateList.forEach((point, idx) => {
+        const freq = point.get('freq');
         /* for any timePoint where the frequency is either not provided (NaN) or
         under our threshold, we don't want to use any model output for this date
         (for the given variant, location) */
-        if (isNaN(point.get('freq'))) {
+        if (isNaN(freq)) {
           dateList[idx] = new Map(TimePoint);
           nanCount++;
-        } else if (point.get('freq')<THRESHOLD_FREQ) {
+        } else if (freq<THRESHOLD_FREQ) {
           dateList[idx] = new Map(TimePoint);
           censorCount++;
+        // } else {
+        //   // pt is valid -- inform domains
+        //   const rt = point.get('r_t');
+        //   if (rt<rt_min) {
+        //     rt_min = rt;
+        //   } else if (rt>rt_max) {
+        //     rt_max = rt;
+        //   } 
         }
       })
+      // set non-temporal domains
+      if (variantPoint.get('ga_HDI_95_lower')<ga_min) {
+        ga_min = variantPoint.get('ga_HDI_95_lower');
+      } else if (variantPoint.get('ga_HDI_95_upper')>ga_max) {
+        ga_max = variantPoint.get('ga_HDI_95_upper')
+      }
     }
   }
 
@@ -123,6 +147,13 @@ export const parseModelData = (renewal, mlr) => {
       })
     }
   }
+
+  data.set('domains', new Map([
+    // ['rt', [rt_min, rt_max]],
+    ['ga', [ga_min, ga_max]],
+  ]));
+
+  console.log("DOMAINS", data.get('domains'))
 
   console.log(`Renewal model data`)
   console.log(`\t${renewal.metadata.location.length} locations x ${renewal.metadata.variants.length} variants x ${renewal.metadata.dates.length} dates`)

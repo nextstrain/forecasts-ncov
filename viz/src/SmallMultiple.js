@@ -26,20 +26,22 @@ const dateFormatter = (dStr) => {
   return '';
 }
 
-const temporalXAxis = (x, sizes) => (g) => g
-  .attr("transform", `translate(0,${sizes.height - sizes.margin.bottom})`)
-  .call(d3.axisBottom(x).tickSize(0))
-  // .call(g => g.select(".domain").remove())
-  .selectAll("text")
-    .text(dateFormatter)
-    // .attr("y", 0)
-    // .attr("x", (d) => x(d))
-    .attr("dy", "0.6em")
-    .attr("transform", "rotate(45)")
-    .style("text-anchor", "start")
-    .style("font-size", "12px")
-    .style("font-family", "Lato, courier")
-    .style("fill", "#aaa");
+const generalXAxis = (x, sizes, textFn) => {
+  return (g) => g
+    .attr("transform", `translate(0,${sizes.height - sizes.margin.bottom})`)
+    .call(d3.axisBottom(x).tickSize(0))
+    // .call(g => g.select(".domain").remove())
+    .selectAll("text")
+      .text(textFn)
+      // .attr("y", 0)
+      // .attr("x", (d) => x(d))
+      .attr("dy", "0.6em")
+      .attr("transform", "rotate(45)")
+      .style("text-anchor", "start")
+      .style("font-size", "12px")
+      .style("font-family", "Lato, courier")
+      .style("fill", "#aaa");
+}
 
 const simpleYAxis = (y, sizes, textFun = (d) => d) => (g) => g
   .attr("transform", `translate(${sizes.margin.left},0)`)
@@ -81,7 +83,7 @@ const frequencyPlot = (dom, sizes, location, modelData) => {
     .range([sizes.margin.left, sizes.width-sizes.margin.right]);
 
   svg.append("g")
-      .call(temporalXAxis(x, sizes));
+      .call(generalXAxis(x, sizes, dateFormatter));
 
   const y = d3.scaleLinear()
     .domain([0, 1])
@@ -120,10 +122,11 @@ const rtPlot = (dom, sizes, location, modelData) => {
     .range([sizes.margin.left, sizes.width-sizes.margin.right]);
 
   svg.append("g")
-      .call(temporalXAxis(x, sizes));
+      .call(generalXAxis(x, sizes, dateFormatter));
 
   const y = d3.scaleLinear()
-    .domain([0, 3]) // should be data-driven
+    // .domain(modelData.get('domains').get('rt'))
+    .domain([0, 3])
     .range([sizes.height-sizes.margin.bottom, sizes.margin.top]); // y=0 is @ top. Range is [bottom_y, top_y] which maps 0 to the bottom and 1 to the top (of the graph)
   
   svg.append("g")
@@ -180,7 +183,7 @@ const stackedIncidence = (dom, sizes, location, modelData) => {
     .range([sizes.margin.left, sizes.width-sizes.margin.right]);
 
   svg.append("g")
-      .call(temporalXAxis(x, sizes));
+      .call(generalXAxis(x, sizes, dateFormatter));
 
   /* maximum value by looking at final variant (i.e. on top of the stack) */  
   const variants = modelData.get('variants');
@@ -217,6 +220,59 @@ const stackedIncidence = (dom, sizes, location, modelData) => {
 }
 
 
+
+const categoryPointEstimate = (dom, sizes, location, modelData, dataKey) => {
+  const svg = svgSetup(dom, sizes);
+
+  const x = d3.scalePoint()
+    .domain(['', ...modelData.get('variants')])
+    .range([sizes.margin.left, sizes.width-sizes.margin.right]);
+
+  svg.append("g")
+    .call(generalXAxis(x, sizes, (variant) => modelData.get('variantDisplayNames').get(variant) || variant));
+
+  const points = Array.from(
+      modelData.get('points').get(location),
+      ([variant, variantMap]) => variantMap
+    )
+    .filter((pt) => !isNaN(pt.get(dataKey)))
+
+  const y = d3.scaleLinear()
+    // .domain([
+    //   d3.min(points.map((pt) => pt.get(dataKey))) * 0.9, // todo - should use CIs
+    //   d3.max(points.map((pt) => pt.get(dataKey))) * 1.1 // todo - should use CIs
+    // ])
+    .domain(modelData.get('domains').get('ga'))
+    .range([sizes.height-sizes.margin.bottom, sizes.margin.top]); // y=0 is @ top. Range is [bottom_y, top_y] which maps 0 to the bottom and 1 to the top (of the graph)
+  
+  svg.append("g")
+    .call(simpleYAxis(y, sizes));
+
+  svg.append('g')
+    .selectAll("dot")
+    .data(points)
+    .enter()
+    .append("circle")
+      .attr("cx", (d) => x(d.get('variant')))
+      .attr("cy", (d) => y(d.get(dataKey)))
+      .attr("r", 4)
+      .style("fill", (d) => modelData.get('variantColors').get(d.get('variant')) ||  modelData.get('variantColors').get('other'))
+
+  svg.append('g')
+    .selectAll("HDI")
+    .data(points)
+    .enter()
+    .append('path')
+      .attr("fill", "none")
+      .attr("stroke", (d) => modelData.get('variantColors').get(d.get('variant')) ||  modelData.get('variantColors').get('other'))
+      .attr("stroke-width", 3)
+      .attr("stroke-opacity", 1)
+      .attr("d", (d) => `M ${x(d.get('variant'))} ${y(d.get(dataKey+"_HDI_95_lower"))} L ${x(d.get('variant'))} ${y(d.get(dataKey+"_HDI_95_upper"))}`)
+
+  title(svg, sizes, location)
+}
+
+
 export const SmallMultiple = ({location, graph, sizes, modelData}) => {
 
   const d3Container = useRef(null);
@@ -234,6 +290,9 @@ export const SmallMultiple = ({location, graph, sizes, modelData}) => {
           break;
         case 'stackedIncidence':
           stackedIncidence(dom, sizes, location, modelData);
+          break;
+        case 'ga':
+          categoryPointEstimate(dom, sizes, location, modelData, 'ga');
           break;
         default:
           console.error(`Unknown graph type ${graph}`)
