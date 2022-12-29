@@ -152,7 +152,7 @@ export const Panels = ({modelData, sidebar}) => {
           Vertical bars show the 95% HPD.
         `}
       </PanelAbstract>
-      <PanelSectionContainer id="smoothedIncidencePanel">
+      <PanelSectionContainer id="growthAdvantagePanel">
         {modelData.get('locations')
           .map((location) => ({location, graph: "ga", sizes}))
           .map((param) => (

@@ -26,7 +26,8 @@ function parseArgs() {
 const elementsToScreenshot = [
   "frequenciesPanel",
   "rtPanel",
-  "smoothedIncidencePanel"
+  "smoothedIncidencePanel",
+  "growthAdvantagePanel",
 ];
 
 async function captureScreenshot(dir) {
