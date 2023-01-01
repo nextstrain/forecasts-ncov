@@ -80,6 +80,17 @@ def _get_all_input(w):
                 date=run_date
             ))
 
+            if config.get("trigger_static_model_viz", False):
+                # Trigger for static model viz
+                # Currently we only support gisaid/global/renewal model results
+                all_input.extend(expand(
+                    "results/{data_provenance}/{geo_resolution}/{model}/{date}_trigger_static_model_viz.done",
+                    data_provenance=[data_provenance for data_provenance in data_provenances if data_provenance == "gisaid"],
+                    geo_resolution=[geo_resolution for geo_resolution in geo_resolutions if geo_resolution == "global"],
+                    model=[model for model in models_to_run if model == "renewal"],
+                    date=run_date
+                ))
+
     return all_input
 
 
@@ -95,3 +106,4 @@ if config.get("send_slack_notifications"):
 
 if config.get("upload"):
     include: "workflow/snakemake_rules/upload.smk"
+    include: "workflow/snakemake_rules/trigger.smk"

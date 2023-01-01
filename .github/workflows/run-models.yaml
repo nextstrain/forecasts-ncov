@@ -27,6 +27,7 @@ jobs:
       SLACK_CHANNELS: ${{ github.event.inputs.slack_channel || 'nextstrain-counts-updates' }}
       TRIAL_NAME: ${{ github.event.inputs.trial_name }}
       DATA_PROVENANCE: ${{ github.event.inputs.data_provenance || github.event.client_payload.data_provenance }}
+      PAT_GITHUB_DISPATCH: ${{ secrets.GH_TOKEN_NEXTSTRAIN_BOT_WORKFLOW_DISPATCH }}
     steps:
     - uses: actions/checkout@v3
     - uses: nextstrain/.github/actions/setup-nextstrain-cli@master
@@ -40,6 +41,7 @@ jobs:
           AWS_DEFAULT_REGION \
           SLACK_TOKEN \
           SLACK_CHANNELS \
+          PAT_GITHUB_DISPATCH \
 
         # Need to edit the optional file with a script because we need to edit nested values
         if [[ "$TRIAL_NAME" ]]; then

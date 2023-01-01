@@ -30,4 +30,7 @@ if __name__ == '__main__':
 
         config['send_slack_notifications'] = args.send_slack_notifications
 
+        # No need to trigger static model viz because it only uses production JSONs
+        config['trigger_static_model_viz'] = False
+
         print(yaml.dump(config, default_flow_style=False, sort_keys=False))
