@@ -31,14 +31,14 @@ jobs:
 
     - name: Upload static model figures
       run: |
-        S3_DST=s3://nextstrain-data/files/workflows/forecasts-ncov/gisaid/
+        S3_DST=s3://nextstrain-data/files/workflows/forecasts-ncov/gisaid
 
         if [[ "$TRIAL_NAME" ]]; then
           S3_DST+=/trial/"$TRIAL_NAME"
         fi
 
         nextstrain remote upload \
-          "$S3_DST"/nextstrain_clades/global/renewal/ \
+          "$S3_DST"/nextstrain_clades/global/ \
           figures/*.png
       env:
         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
