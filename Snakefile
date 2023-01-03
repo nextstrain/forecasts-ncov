@@ -29,8 +29,8 @@ def get_todays_date():
     return date
 
 def _get_all_input(w):
-    data_provenances = config["data_provenances"]
-    geo_resolutions = config["geo_resolutions"]
+    data_provenances = config["data_provenances"] if isinstance(config["data_provenances"], list) else [config["data_provenances"]]
+    geo_resolutions = config["geo_resolutions"] if isinstance(config["geo_resolutions"], list) else [config["geo_resolutions"]]
 
     all_input = [
         *expand(
