@@ -19,8 +19,8 @@ def parse_with_default(cf, var, dflt):
 def parse_RLik(cf_m):
     # Don't like defaults being here...
     name = "GARW"
-    gp = 0.5
-    gdp = 10
+    gp = 1e-2
+    gdp = 1e-3
 
     # Check for fields of interest
     if "R_likelihood" in cf_m:
