@@ -21,6 +21,7 @@ model:
   prior_seq_dispersion: 100.0 # Ignored if using Multinomial
   k: 12 # Number of spline knots to use
   order: 4 # Order of spline to use
+  pivot: "21L (Omicron)"
   generation_time: # Specify mean and standard deviation for generation time
     Delta:
       name: "Delta"
