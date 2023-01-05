@@ -47,6 +47,8 @@ async function captureScreenshot(dir) {
 
     await page.goto("http://localhost:3000");
 
+    await page.addStyleTag({content: 'p,text {font-family: Helvetica, sans-serif !important;}'});
+
     await page.waitForSelector('#mainPanelsContainer', {visible: true})
 
     await page.waitForTimeout(5000); // bad - should check the d3 is rendered not this!
