@@ -122,7 +122,7 @@ export const parseModelData = (renewal, mlr) => {
         //     rt_min = rt;
         //   } else if (rt>rt_max) {
         //     rt_max = rt;
-        //   } 
+        //   }
         }
       })
       // set non-temporal domains

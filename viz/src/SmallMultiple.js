@@ -88,7 +88,7 @@ const frequencyPlot = (dom, sizes, location, modelData) => {
   const y = d3.scaleLinear()
     .domain([0, 1])
     .range([sizes.height-sizes.margin.bottom, sizes.margin.top]); // y=0 is @ top. Range is [bottom_y, top_y] which maps 0 to the bottom and 1 to the top (of the graph)
-  
+
   svg.append("g")
     .call(simpleYAxis(y, sizes));
 
@@ -128,7 +128,7 @@ const rtPlot = (dom, sizes, location, modelData) => {
     // .domain(modelData.get('domains').get('rt'))
     .domain([0, 3])
     .range([sizes.height-sizes.margin.bottom, sizes.margin.top]); // y=0 is @ top. Range is [bottom_y, top_y] which maps 0 to the bottom and 1 to the top (of the graph)
-  
+
   svg.append("g")
     .call(simpleYAxis(y, sizes));
 
@@ -185,7 +185,7 @@ const stackedIncidence = (dom, sizes, location, modelData) => {
   svg.append("g")
       .call(generalXAxis(x, sizes, dateFormatter));
 
-  /* maximum value by looking at final variant (i.e. on top of the stack) */  
+  /* maximum value by looking at final variant (i.e. on top of the stack) */
   const variants = modelData.get('variants');
   const dataPerVariant = modelData.get('points').get(location)
   const maxI = d3.max(
@@ -196,7 +196,7 @@ const stackedIncidence = (dom, sizes, location, modelData) => {
   const y = d3.scaleLinear()
     .domain([0, maxI])
     .range([sizes.height-sizes.margin.bottom, sizes.margin.top]); // y=0 is @ top. Range is [bottom_y, top_y] which maps 0 to the bottom and 1 to the top (of the graph)
-  
+
   svg.append("g")
     .call(simpleYAxis(y, sizes, d3.format("~s")));
 
@@ -244,7 +244,7 @@ const categoryPointEstimate = (dom, sizes, location, modelData, dataKey) => {
     // ])
     .domain(modelData.get('domains').get('ga'))
     .range([sizes.height-sizes.margin.bottom, sizes.margin.top]); // y=0 is @ top. Range is [bottom_y, top_y] which maps 0 to the bottom and 1 to the top (of the graph)
-  
+
   svg.append("g")
     .call(simpleYAxis(y, sizes));
 
