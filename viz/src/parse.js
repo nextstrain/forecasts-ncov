@@ -29,6 +29,7 @@ const initialisePointsPerVariant = (variant, dates) => {
 }
 
 const THRESHOLD_FREQ = 0.005; /* half a percent */
+const INITIAL_DAY_CUTOFF = 10; /* cut off first 10 days */
 
 /**
  * <returned_Object> ["points"] [location] [ variant ] [ dateIdx ] : Point
@@ -44,12 +45,14 @@ export const parseModelData = (renewal, mlr) => {
 
   compareModels(renewal, mlr); // throws if inconsistent JSONs
 
-  const dateIdx = new Map(renewal.metadata.dates.map((d, i) => [d, i]));
+  // Skip initial days of model estimates to avoid artifacts in plots
+  const keep_dates = renewal.metadata.dates.slice(INITIAL_DAY_CUTOFF);
+  const dateIdx = new Map(keep_dates.map((d, i) => [d, i]));
 
   const data = new Map([
     ["locations", renewal.metadata.location],
     ["variants", renewal.metadata.variants],
-    ["dates", renewal.metadata.dates],
+    ["dates", keep_dates],
     ["variantColors", variantColors],
     ["variantDisplayNames", variantDisplayNames],
     ["dateIdx", dateIdx],
@@ -68,40 +71,50 @@ export const parseModelData = (renewal, mlr) => {
       new Map(
         data.get('variants').map((variant) => [
           variant,
-          initialisePointsPerVariant(variant, renewal.metadata.dates)
+          initialisePointsPerVariant(variant, keep_dates)
         ])
       )
     ])
   );
 
   /* Iterate through each data element & assign to our structure */
-  renewal.data.forEach((d) => {
-    if (d.site==="R") {
-      if (d.ps==="median") {
-        points.get(d.location).get(d.variant).get('temporal')[dateIdx.get(d.date)].set('r_t', d.value);
+  renewal.data
+    .filter((d) => dateIdx.get(d.date) !== undefined) /* filter out skipped dates */
+    .forEach((d) => {
+      if (d.site==="R") {
+        if (d.ps==="median") {
+          points.get(d.location).get(d.variant).get('temporal')[dateIdx.get(d.date)].set('r_t', d.value);
+        }
       }
-    }
-    else if (d.site==="I_smooth") {
-      if (d.ps==="median") {
-        points.get(d.location).get(d.variant).get('temporal')[dateIdx.get(d.date)].set('I_smooth', d.value);
+      else if (d.site==="I_smooth") {
+        if (d.ps==="median") {
+          points.get(d.location).get(d.variant).get('temporal')[dateIdx.get(d.date)].set('I_smooth', d.value);
+        }
       }
-    }
-  })
-  mlr.data.forEach((d) => {
-    if (d.site==="freq") {
-      if (d.ps==="median") {
-        points.get(d.location).get(d.variant).get('temporal')[dateIdx.get(d.date)].set('freq', d.value);
+    });
+  mlr.data
+    .filter((d) => {
+      // if data has a date, filter out skipped dates
+      if (d.date) {
+        return dateIdx.get(d.date) !== undefined;
       }
-    } else if (d.site==="ga") {
-      if (d.ps==="median") {
-        points.get(d.location).get(d.variant).set('ga', d.value);
-      } else if (d.ps==="HDI_80_lower") {
-        points.get(d.location).get(d.variant).set('ga_HDI_95_lower', d.value);
-      } else if (d.ps==="HDI_80_upper") {
-        points.get(d.location).get(d.variant).set('ga_HDI_95_upper', d.value);
+      return true;
+    })
+    .forEach((d) => {
+      if (d.site==="freq") {
+        if (d.ps==="median") {
+          points.get(d.location).get(d.variant).get('temporal')[dateIdx.get(d.date)].set('freq', d.value);
+        }
+      } else if (d.site==="ga") {
+        if (d.ps==="median") {
+          points.get(d.location).get(d.variant).set('ga', d.value);
+        } else if (d.ps==="HDI_80_lower") {
+          points.get(d.location).get(d.variant).set('ga_HDI_95_lower', d.value);
+        } else if (d.ps==="HDI_80_upper") {
+          points.get(d.location).get(d.variant).set('ga_HDI_95_upper', d.value);
+        }
       }
-    }
-  })
+    });
 
   /* Once everything's been added (including frequencies) - iterate over each point & censor certain frequencies */
   let [nanCount, censorCount] = [0, 0];
@@ -141,7 +154,7 @@ export const parseModelData = (renewal, mlr) => {
   /* create a stack for I_smooth to help with plotting - this could be in the previous set of
   loops but it's here for readability */
   for (const variantMap of points.values()) {
-    let runningTotalPerDay = new Array(renewal.metadata.dates.length).fill(0);
+    let runningTotalPerDay = new Array(keep_dates.length).fill(0);
     for (const variantPoint of variantMap.values()) {
       const dateList = variantPoint.get('temporal');
       dateList.forEach((point, idx) => {
@@ -158,7 +171,7 @@ export const parseModelData = (renewal, mlr) => {
   ]));
 
   console.log(`Renewal model data`)
-  console.log(`\t${renewal.metadata.location.length} locations x ${renewal.metadata.variants.length} variants x ${renewal.metadata.dates.length} dates`)
+  console.log(`\t${renewal.metadata.location.length} locations x ${renewal.metadata.variants.length} variants x ${keep_dates.length} dates`)
   console.log(`\t${censorCount} ensored points + ${nanCount} points missing`);
 
   data.set("points", points);
