@@ -90,7 +90,7 @@ const frequencyPlot = (dom, sizes, location, modelData) => {
     .range([sizes.height-sizes.margin.bottom, sizes.margin.top]); // y=0 is @ top. Range is [bottom_y, top_y] which maps 0 to the bottom and 1 to the top (of the graph)
 
   svg.append("g")
-    .call(simpleYAxis(y, sizes));
+    .call(simpleYAxis(y, sizes, d3.format(".0%")));
 
   // Add dots - one group per variant
   /* note map.forEach() returns a tuple of (value, key, map) -- perhaps not the order you expect! */
