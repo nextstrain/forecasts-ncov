@@ -153,7 +153,7 @@ const rtPlot = (dom, sizes, location, modelData) => {
     const finalPt = finalNonValidPoint(temporalPoints, 'r_t');
     if (!finalPt) return;
     g.append("text")
-      .text(`${finalPt.get('r_t')}`)
+      .text(`${parseFloat(finalPt.get('r_t')).toPrecision(2)}`)
       .attr("x", x(finalPt.get('date')))
       .attr("y", y(finalPt.get('r_t')))
       .style("text-anchor", "start")
