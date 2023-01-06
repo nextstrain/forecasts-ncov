@@ -32,7 +32,7 @@ const PanelAbstract = styled(PanelSectionHeaderContainer)`
 const LegendContainer = styled.div`
   /* border: solid red; */
   display: flex;
-  
+
   /* legend-inline styles (which will be overridden by a media query if necessary) */
   position: block;
   flex-wrap: wrap;
@@ -109,16 +109,18 @@ export const Panels = ({modelData, sidebar}) => {
       </PanelSectionContainer>
 
       <PanelSectionHeaderContainer>
-        {`Estimated effective reproduction number over time`}
+        {`Growth Advantage`}
       </PanelSectionHeaderContainer>
       <PanelAbstract>
-        {`This is an estimate of the average number of secondary infections expected to be caused by an individual infected with a given variant as estimated by the variant renewal model.
-        In general, we expect the variant to be growing if this number is greater than 1.`}
+        {`
+          These plots show the estimated growth advantage for given variants relative to baseline.
+          This is an estimate of how many more secondary infections this variant causes on average compared the baseline variant as estimated but the multinomial logistic regression model.
+          Vertical bars show the 95% HPD.
+        `}
       </PanelAbstract>
-
-      <PanelSectionContainer id="rtPanel">
-      {modelData.get('locations')
-          .map((location) => ({location, graph: "r_t", sizes}))
+      <PanelSectionContainer id="growthAdvantagePanel">
+        {modelData.get('locations')
+          .map((location) => ({location, graph: "ga", sizes}))
           .map((param) => (
             <SmallMultiple {...param} key={`${param.graph}_${param.location}`} modelData={modelData}/>
           ))
@@ -141,20 +143,16 @@ export const Panels = ({modelData, sidebar}) => {
         }
       </PanelSectionContainer>
 
-
       <PanelSectionHeaderContainer>
-        {`Growth Advantage`}
+        {`Estimated effective reproduction number over time`}
       </PanelSectionHeaderContainer>
       <PanelAbstract>
-        {`
-          These plots show the estimated growth advantage for given variants relative to baseline.
-          This is an estimate of how many more secondary infections this variant causes on average compared the baseline variant as estimated but the multinomial logistic regression model.
-          Vertical bars show the 95% HPD.
-        `}
+        {`This is an estimate of the average number of secondary infections expected to be caused by an individual infected with a given variant as estimated by the variant renewal model.
+        In general, we expect the variant to be growing if this number is greater than 1.`}
       </PanelAbstract>
-      <PanelSectionContainer id="growthAdvantagePanel">
-        {modelData.get('locations')
-          .map((location) => ({location, graph: "ga", sizes}))
+      <PanelSectionContainer id="rtPanel">
+      {modelData.get('locations')
+          .map((location) => ({location, graph: "r_t", sizes}))
           .map((param) => (
             <SmallMultiple {...param} key={`${param.graph}_${param.location}`} modelData={modelData}/>
           ))
