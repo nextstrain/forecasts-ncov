@@ -224,8 +224,9 @@ const stackedIncidence = (dom, sizes, location, modelData) => {
 const categoryPointEstimate = (dom, sizes, location, modelData, dataKey) => {
   const svg = svgSetup(dom, sizes);
 
+  // Removes the pivot category that does not need to be plotted.
   const x = d3.scalePoint()
-    .domain(['', ...modelData.get('variants')])
+    .domain(['', ...modelData.get('variants').filter(v => v !== modelData.get('pivot'))])
     .range([sizes.margin.left, sizes.width-sizes.margin.right]);
 
   svg.append("g")

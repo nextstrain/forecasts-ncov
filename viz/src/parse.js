@@ -38,6 +38,7 @@ const THRESHOLD_FREQ = 0.005; /* half a percent */
  *                   ["dateIdx"] : Map (lookup for date string -> idx in dates array)
  *                   ["variantColors"] : Map
  *                   ["variantDisplayNames"] : Map
+ *                   ["pivot"]: string
  */
 export const parseModelData = (renewal, mlr) => {
 
@@ -53,7 +54,10 @@ export const parseModelData = (renewal, mlr) => {
     ["variantDisplayNames", variantDisplayNames],
     ["dateIdx", dateIdx],
     ["points", undefined],
-    ["domains", undefined]
+    ["domains", undefined],
+    // TODO: use the explicit pivot in the metadata instead of assuming the
+    // pivot is the last variant in the array once it has been added to the evofr output
+    ["pivot", mlr.metadata.variants[mlr.metadata.variants.length - 1]]
   ])
 
   let rt_min=100, rt_max=0, ga_min=100, ga_max=0;

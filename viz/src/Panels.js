@@ -113,7 +113,7 @@ export const Panels = ({modelData, sidebar}) => {
       </PanelSectionHeaderContainer>
       <PanelAbstract>
         {`
-          These plots show the estimated growth advantage for given variants relative to baseline.
+          These plots show the estimated growth advantage for given variants relative to ${modelData.get("variantDisplayNames").get(modelData.get("pivot")) || "baseline"}.
           This is an estimate of how many more secondary infections this variant causes on average compared the baseline variant as estimated but the multinomial logistic regression model.
           Vertical bars show the 95% HPD.
         `}
