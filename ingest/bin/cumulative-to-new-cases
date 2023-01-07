@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+"""
+Converts US state cumulative case counts to daily case counts.
+Expects the cumulative case counts to be from The New York Times,
+retrieved from https://github.com/nytimes/covid-19-data
+
+Outputs results to standard output as TSV, where the results only includes
+locations/dates with new cases. Excludes locations/dates with 0 or negative
+case counts from error corrections.
+"""
+import argparse
+import pandas as pd
+import sys
+
+LOCATIONS_TO_REPLACE = {
+    "District of Columbia": "Washington DC"
+}
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(__doc__,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+    parser.add_argument("--cumulative-cases", required=True,
+        help="Path to cumulative cases CSV file.")
+
+    args = parser.parse_args()
+
+    df = pd.read_csv(args.cumulative_cases, usecols=['state', 'date', 'cases'], parse_dates=['date'])
+    df.rename(columns={'state': 'location'}, inplace=True)
+
+    # Sort by location then date to make sure the row diff below will diff between consecutive days
+    df.sort_values(by=['location', 'date'], ascending=True, inplace=True)
+
+    # Diff the 'cases' column value between rows to get the number of new cases per day
+    # Uses `fillna` to fill the original value of the first row
+    # Adapted from https://stackoverflow.com/a/67240975
+    df['cases'] = df.groupby('location')['cases'].diff().fillna(df.cases).astype(int)
+
+    # Drop location/dates with no new cases or "negative" cases
+    # Negative cases can occur when error in cases counts are corrected
+    # See https://github.com/nytimes/covid-19-data#methodology-and-definitions for details
+    df = df[df.cases > 0]
+
+    # Transformations to match our downstream data expectations
+    df.replace(LOCATIONS_TO_REPLACE, inplace=True)
+    df = df[['location', 'date', 'cases']]
+
+    df.to_csv(sys.stdout, sep='\t', index=False)
