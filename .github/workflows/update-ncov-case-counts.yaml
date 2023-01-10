@@ -40,10 +40,6 @@ jobs:
         ./ingest/bin/fetch-ncov-global-case-counts > global_case_counts.tsv
         ./ingest/bin/fetch-ncov-us-case-counts > us_case_counts.tsv
 
-    - name: notify new us locations
-      run: |
-        ./ingest/bin/notify-on-new-location us_case_counts.tsv ingest/source-data/us-states.tsv
-
     - name: upload to S3
       run: |
         S3_DST=s3://nextstrain-data/files/workflows/forecasts-ncov/cases
