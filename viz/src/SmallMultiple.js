@@ -92,7 +92,8 @@ const frequencyPlot = (dom, sizes, location, modelData) => {
   // Add dots - one group per variant
   /* note map.forEach() returns a tuple of (value, key, map) -- perhaps not the order you expect! */
   modelData.get('points').get(location).forEach((variantPoint, variant) => {
-    const temporalPoints = variantPoint.get('temporal');
+    const temporalPoints = variantPoint.get('temporal')
+      .filter((point) => !!point.get('date'));
     svg.append('g')
       .selectAll("dot")
       .data(temporalPoints)
