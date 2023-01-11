@@ -63,7 +63,7 @@ export const parseModelData = (renewal, mlr) => {
     ["pivot", mlr.metadata.variants[mlr.metadata.variants.length - 1]]
   ])
 
-  let rt_min=100, rt_max=0, ga_min=100, ga_max=0;
+  let ga_min=100, ga_max=0;
 
   const points = new Map(
     data.get('locations').map((location) => [
@@ -116,32 +116,30 @@ export const parseModelData = (renewal, mlr) => {
       }
     });
 
+
   /* Once everything's been added (including frequencies) - iterate over each point & censor certain frequencies */
   let [nanCount, censorCount] = [0, 0];
+
+  /**
+   * for any timePoint where the frequency is either not provided (NaN) or
+   * under our threshold, we don't want to use any model output for this date
+   * (for the given variant, location))
+   */
+  const censorTimePoints = (point, idx, dateList) => {
+    const freq = point.get('freq');
+    if (isNaN(freq)) {
+      dateList[idx] = new Map(TimePoint);
+      nanCount++;
+    } else if (freq<THRESHOLD_FREQ) {
+      dateList[idx] = new Map(TimePoint);
+      censorCount++;
+    }
+  }
+
   for (const variantMap of points.values()) {
     for (const variantPoint of variantMap.values()) {
       const dateList = variantPoint.get('temporal');
-      dateList.forEach((point, idx) => {
-        const freq = point.get('freq');
-        /* for any timePoint where the frequency is either not provided (NaN) or
-        under our threshold, we don't want to use any model output for this date
-        (for the given variant, location) */
-        if (isNaN(freq)) {
-          dateList[idx] = new Map(TimePoint);
-          nanCount++;
-        } else if (freq<THRESHOLD_FREQ) {
-          dateList[idx] = new Map(TimePoint);
-          censorCount++;
-        // } else {
-        //   // pt is valid -- inform domains
-        //   const rt = point.get('r_t');
-        //   if (rt<rt_min) {
-        //     rt_min = rt;
-        //   } else if (rt>rt_max) {
-        //     rt_max = rt;
-        //   }
-        }
-      })
+      dateList.forEach(censorTimePoints)
       // set non-temporal domains
       if (variantPoint.get('ga_HDI_95_lower')<ga_min) {
         ga_min = variantPoint.get('ga_HDI_95_lower');
@@ -166,13 +164,14 @@ export const parseModelData = (renewal, mlr) => {
   }
 
   data.set('domains', new Map([
-    // ['rt', [rt_min, rt_max]],
     ['ga', [ga_min, ga_max]],
   ]));
 
   console.log(`Renewal model data`)
   console.log(`\t${renewal.metadata.location.length} locations x ${renewal.metadata.variants.length} variants x ${keep_dates.length} dates`)
-  console.log(`\t${censorCount} ensored points + ${nanCount} points missing`);
+  console.log(`\tNote: The earliest ${INITIAL_DAY_CUTOFF} days have been ignored`);
+  console.log(`\t${censorCount} censored points as frequency<${THRESHOLD_FREQ}`);
+  console.log(`\t${nanCount} points missing`);
 
   data.set("points", points);
   return data;

@@ -150,7 +150,7 @@ const rtPlot = (dom, sizes, location, modelData) => {
       .attr("stroke-width", 1.5)
       .attr("stroke-opacity", 0.8)
       .attr("d", line(temporalPoints));
-    const finalPt = finalNonValidPoint(temporalPoints, 'r_t');
+    const finalPt = finalValidPoint(temporalPoints, 'r_t');
     if (!finalPt) return;
     g.append("text")
       .text(`${parseFloat(finalPt.get('r_t')).toPrecision(2)}`)
@@ -273,7 +273,6 @@ const categoryPointEstimate = (dom, sizes, location, modelData, dataKey) => {
   title(svg, sizes, location)
 }
 
-
 export const SmallMultiple = ({location, graph, sizes, modelData}) => {
 
   const d3Container = useRef(null);
@@ -308,7 +307,7 @@ export const SmallMultiple = ({location, graph, sizes, modelData}) => {
   )
 }
 
-function finalNonValidPoint(points, key) {
+function finalValidPoint(points, key) {
   for (let i=points.length-1; i>0; i--) {
     if (!isNaN(points[i].get(key))) return points[i];
   }
