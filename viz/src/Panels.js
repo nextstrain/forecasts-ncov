@@ -17,16 +17,35 @@ const PanelSectionContainer = styled.div`
   justify-content: space-between;
 `;
 
+/**
+ * styles chosen to match nextstrain.org
+ */
+const MainTitle = styled.div`
+  text-align: center;
+  font-size: 38px;
+  line-height: 32px;
+  min-width: 240px;
+  margin-top: 4px;
+  margin-bottom: 20px;
+`
+
+/**
+ * font weight + size chosen to match nextstrain.org
+ */
 const PanelSectionHeaderContainer = styled.div`
   margin-bottom: 15px;
   margin-top: 50px;
   margin-left: 10%;
-  margin-right: 10%
+  margin-right: 10%;
+  font-size: 20px;
+  font-weight: 500;
 `;
-const PanelAbstract = styled(PanelSectionHeaderContainer)`
+
+const PanelAbstract = styled.div`
   margin-top: 0px;
   margin-bottom: 30px;
-  font-size: 14px;
+  margin-left: 10%;
+  margin-right: 10%;
 `;
 
 const LegendContainer = styled.div`
@@ -61,7 +80,7 @@ const useResponsiveSizing = () => {
   const width = 250;
   const height = 200;
   /* control the spacing around graphs via the margin of each graph */
-  const margin = {top: 5, right: 30, bottom: 40, left: 30}
+  const margin = {top: 5, right: 20, bottom: 40, left: 40}
   const fontSize = "10px";
 
   return {width, height, margin, fontSize};
@@ -75,6 +94,10 @@ export const Panels = ({modelData, sidebar}) => {
 
   return (
     <Container id="mainPanelsContainer" >
+
+      <MainTitle>
+        Nextstrain SARS-CoV-2 Forecasts
+      </MainTitle>
 
       <PanelAbstract>
         <>This page visualises the evolution and dynamics of SARS-CoV-2 evolution and dynamics using two models:</>

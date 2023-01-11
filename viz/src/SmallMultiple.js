@@ -39,7 +39,6 @@ const generalXAxis = (x, sizes, textFn) => {
       .attr("transform", "rotate(45)")
       .style("text-anchor", "start")
       .style("font-size", "12px")
-      .style("font-family", "Lato, courier")
       .style("fill", "#aaa");
 }
 
@@ -50,7 +49,6 @@ const simpleYAxis = (y, sizes, textFun = (d) => d) => (g) => g
   .selectAll("text")
     .text(textFun)
     .style("font-size", "12px")
-    .style("font-family", "Lato, courier")
     .style("fill", "#aaa");
 
 const svgSetup = (dom, sizes) => {
@@ -71,7 +69,6 @@ const title = (svg, sizes, text) => {
     .style("text-anchor", "start")
     .style("dominant-baseline", "hanging")
     .style("font-size", "16px")
-    .style("font-family", "Lato, courier")
     .style("fill", "#444");
 }
 
@@ -158,8 +155,7 @@ const rtPlot = (dom, sizes, location, modelData) => {
       .attr("y", y(finalPt.get('r_t')))
       .style("text-anchor", "start")
       .style("alignment-baseline", "baseline")
-      .style("font-size", "10px")
-      .style("font-family", "Lato, courier")
+      .style("font-size", "12px")
       .style("fill", color)
   });
 
