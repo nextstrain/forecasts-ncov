@@ -27,13 +27,15 @@ jobs:
     - uses: conda-incubator/setup-miniconda@v2
       with:
         python-version: 3.9
-        mamba-version: "*"
-        channels: conda-forge,bioconda
-        channel-priority: true
         activate-environment: counts
 
+    - name: Install conda-libmamba-solver
+      run: |
+        conda install -n base conda-libmamba-solver
+        conda config --set solver libmamba
+
     - name: setup
-      run: mamba install "csvtk>=0.23.0"
+      run: conda install -c bioconda "csvtk>=0.23.0"
 
     - name: download case counts
       run: |
