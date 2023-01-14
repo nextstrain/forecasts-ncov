@@ -16,7 +16,6 @@ jobs:
     - uses: conda-incubator/setup-miniconda@v2
       with:
         python-version: 3.9
-        activate-environment: counts
 
     - name: Install conda-libmamba-solver
       run: |
