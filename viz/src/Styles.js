@@ -36,3 +36,33 @@ export const Container = styled.div`
   }
   
 `
+/**
+ * styles chosen to match nextstrain.org
+ */
+export const MainTitle = styled.div`
+  text-align: center;
+  font-size: 38px;
+  line-height: 32px;
+  min-width: 240px;
+  margin-top: 4px;
+  margin-bottom: 20px;
+`
+
+/**
+ * font weight + size chosen to match nextstrain.org
+ */
+export const PanelSectionHeaderContainer = styled.div`
+  margin-bottom: 15px;
+  margin-top: 50px;
+  margin-left: 10%;
+  margin-right: 10%;
+  font-size: 20px;
+  font-weight: 500;
+`;
+
+export const PanelAbstract = styled.div`
+  margin-top: 0px;
+  margin-bottom: 30px;
+  margin-left: 10%;
+  margin-right: 10%;
+`;
