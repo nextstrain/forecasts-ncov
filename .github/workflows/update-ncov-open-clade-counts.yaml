@@ -29,16 +29,12 @@ jobs:
     - uses: actions/checkout@v2
     - uses: conda-incubator/setup-miniconda@v2
       with:
-        python-version: 3.9
-        activate-environment: counts
-
-    - name: Install conda-libmamba-solver
-      run: |
-        conda install -n base conda-libmamba-solver
-        conda config --set solver libmamba
+        python-version: "3.9"
+        miniforge-variant: Mambaforge
+        channels: conda-forge,bioconda
 
     - name: setup
-      run: conda install -c bioconda -c conda-forge "pandas>=1.0.0" "tsv-utils" --freeze-installed
+      run: mamba install "pandas>=1.0.0" "tsv-utils" --freeze-installed
 
     - name: download metadata
       run: ./ingest/bin/download-from-s3 s3://nextstrain-data/files/ncov/open/metadata.tsv.gz metadata.tsv
