@@ -164,8 +164,8 @@ class RenewalConfig:
 
         # Processing hyperparameters
         seed_L = parse_with_default(model_cf, "seed_L", dflt=7)
-        forecast_L = parse_with_default(model_cf, "forecast_L", dflt=0)
-        k = parse_with_default(model_cf, "k", dflt=10)
+        forecast_L = parse_with_default(model_cf, "forecast_L", dflt=14)
+        k = parse_with_default(model_cf, "k", dflt=5)
         order = parse_with_default(model_cf, "order", dflt=4)
 
         # Processing generation time and delays
@@ -290,8 +290,9 @@ def make_model_directories(path):
 
 
 def export_results(multi_posterior, ps, path, data_name):
-    EXPORT_SITES = ["freq", "R", "I_smooth", "ga"]
-    EXPORT_DATED = [True, True, True, True]
+    EXPORT_SITES = ["freq", "freq_forecast", "R", "I_smooth", "ga"]
+    EXPORT_DATED = [True, True, True, True, True]
+    EXPORT_ATTRS = ["pivot"]
     # Make directories
     make_model_directories(path)
 
