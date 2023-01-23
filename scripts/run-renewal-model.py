@@ -296,6 +296,7 @@ def make_model_directories(path):
 def export_results(multi_posterior, ps, path, data_name):
     EXPORT_SITES = ["freq", "R", "I_smooth", "ga"]
     EXPORT_DATED = [True, True, True, True]
+    EXPORT_ATTRS = ["pivot"]
     # Make directories
     make_model_directories(path)
 
@@ -309,7 +310,8 @@ def export_results(multi_posterior, ps, path, data_name):
                 EXPORT_SITES,
                 EXPORT_DATED,
                 ps,
-                location
+                location,
+                EXPORT_ATTRS
         ))
     results = ef.posterior.combine_sites_tidy(results)
     ef.save_json(results, path=f"{path}/{data_name}_results.json")

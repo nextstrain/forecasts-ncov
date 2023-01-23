@@ -164,6 +164,7 @@ def make_model_directories(path):
 def export_results(multi_posterior, ps, path, data_name):
     EXPORT_SITES = ["freq", "ga"]
     EXPORT_DATED = [True, False]
+    EXPORT_ATTRS = ["pivot"]
     # Make directories
     make_model_directories(path)
 
@@ -178,6 +179,7 @@ def export_results(multi_posterior, ps, path, data_name):
                 EXPORT_DATED,
                 ps,
                 location,
+                EXPORT_ATTRS,
             )
         )
     results = ef.posterior.combine_sites_tidy(results)
