@@ -68,6 +68,11 @@ model:
       mean: 3.1
       sd: 1.2
       family: "Gamma" # Options: Gamma and LogNormal
+    O23A:
+      name: "23A (Omicron)"
+      mean: 3.1
+      sd: 1.2
+      family: "Gamma" # Options: Gamma and LogNormal
     other:
       name: "other"
       mean: 4.4

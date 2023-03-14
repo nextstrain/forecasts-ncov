@@ -13,7 +13,8 @@ export const variantColors = new Map([
   ["22C (Omicron)", "#8ABB6A"],
   ["22D (Omicron)", "#BEBB48"],
   ["22E (Omicron)", "#E29E39"],
-  ["22F (Omicron)", "#E2562B"]
+  ["22F (Omicron)", "#E2562B"],
+  ["23A (Omicron)", "#FF322C"],
 ]);
 
 export const variantDisplayNames = new Map([
@@ -25,4 +26,5 @@ export const variantDisplayNames = new Map([
   ["22D (Omicron)", "BA.2.75"],
   ["22E (Omicron)", "BQ.1"],
   ["22F (Omicron)", "XBB"],
+  ["23A (Omicron)", "XBB.1.5"],
 ]);
