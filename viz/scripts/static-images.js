@@ -85,8 +85,7 @@ async function captureScreenshot(dir) {
 async function startServer() {
   const app = express()
   app.set('port', 3000);
-  app.use("/", express.static(path.join(__dirname, '..', "build")))
-  app.use('/forecasting-viz-asset', express.static(path.join(__dirname, '..', "build", "forecasting-viz-assets")))
+  app.use("/", express.static(path.join(__dirname, '..', "dist")))
   const server = await app.listen(app.get('port'));
   console.log(`Ephemeral server running at port ${app.get('port')}`)
   return server;

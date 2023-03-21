@@ -1,0 +1,72 @@
+/* 
+  Lato fonts downloaded from https://www.latofonts.com/,
+  which also includes the mapping of CSS weights to font names.
+  Only a subset of the available weights imported here to reduce bundle size
+*/
+@font-face {
+  font-family: 'lato';
+  font-weight: 300;
+  src: local('lato'), url(./fonts/LatoLatin-Light.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'lato';
+  font-weight: 500;
+  src: local('lato'), url(./fonts/LatoLatin-Medium.woff2) format('woff2');
+}
+
+.App {
+  /* default margin is for mobile / small displays */
+  margin: 50px 100px;
+  @media screen and (min-width: 1000px) {
+    margin: 50px 100px;
+  }
+  /* border: solid purple; */
+  text-align: center;
+  font-family: Lato, Helvetica Neue, Helvetica, sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.4;
+  color: #333;
+}
+
+.App a {
+  text-decoration: none;
+  background-color: transparent;
+  color: #5097BA;
+  font-weight: 500;
+}
+.App a:hover,
+.App a:focus {
+  color: #5097BA;
+  text-decoration: underline;
+}
+.App svg {
+  /* small font sizes in the panels are improved with 500 weight */
+  font-weight: 500;
+}
+
+.abstract {
+  margin-top: 0px;
+  margin-bottom: 30px;
+  margin-left: 10%;
+  margin-right: 10%;
+}
+
+.App h1 {
+  text-align: center;
+  font-size: 38px;
+  font-weight: 300;
+  line-height: 32px;
+  min-width: 240px;
+  margin-top: 4px;
+  margin-bottom: 20px;
+}
+
+.App h2 {
+  font-weight: 300;
+  margin-bottom: 15px;
+  margin-top: 50px;
+  margin-left: 10%;
+  margin-right: 10%;
+  font-size: 20px;
+}
