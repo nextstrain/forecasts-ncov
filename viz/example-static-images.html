@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Static image example</title>
+    <style>
+      h1 {
+        font-size: 32px;
+        font-weight: 300;
+      }
+      #root {
+        margin: 20px 20px;
+        border: 1px black solid;
+      }
+      .center {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <h1>Example page using static images of various resolutions</h1>
+      <p>
+        This will only work after figures have been generated which can be done via
+        <code>npm run build && node scripts/static-images.js</code>.
+      </p>
+      <p>
+        Hint: Try changing the window size and see the images change appropriately (without even needing to reload the page).
+      </p>
+      <div class="center">
+        <!-- the widths used in the img were taken from the script's STDOUT -->
+        <img
+          srcset="./figures/frequenciesPanel_small.png 504w, ./figures/frequenciesPanel_medium.png 784w, ./figures/frequenciesPanel_large.png 1084w, ./figures/frequenciesPanel_xlarge.png 1334w"
+          sizes="(max-width: 999px) 504px, (max-width: 1299px) 784px, (max-width: 1549px) 1084px, 1334px,"
+          src="./figures/frequenciesPanel_small.png"
+          alt="Frequencies panel"
+        />
+      </div>
+    </div>
+  </body>
+</html>
