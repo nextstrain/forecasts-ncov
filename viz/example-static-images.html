@@ -32,12 +32,12 @@
       </p>
       <div class="center">
         <!-- the widths used in the img were taken from the script's STDOUT -->
-        <img
-          srcset="./figures/frequenciesPanel_small.png 504w, ./figures/frequenciesPanel_medium.png 784w, ./figures/frequenciesPanel_large.png 1084w, ./figures/frequenciesPanel_xlarge.png 1334w"
-          sizes="(max-width: 999px) 504px, (max-width: 1299px) 784px, (max-width: 1549px) 1084px, 1334px,"
-          src="./figures/frequenciesPanel_small.png"
-          alt="Frequencies panel"
-        />
+        <picture>
+          <source media="(min-width: 1549px)" srcset="./figures/frequenciesPanel_xlarge.png 1334w" />
+          <source media="(min-width: 1299px)" srcset="./figures/frequenciesPanel_large.png 1084w" />
+          <source media="(min-width: 999px)" srcset="./figures/frequenciesPanel_medium.png 784w" />
+          <img src="./figures/frequenciesPanel_small.png" alt="Frequencies panel"/>
+        </picture>
       </div>
     </div>
   </body>
