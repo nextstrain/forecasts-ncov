@@ -63,7 +63,7 @@ jobs:
           --aws-batch \
           --detach \
           --no-download \
-          --image nextstrain/base:build-20221220T200916Z \
+          --image nextstrain/base \
           --cpus 8 \
           --memory 16GiB \
           --exec env \
