@@ -1,43 +1,25 @@
 {
-  "name": "nextstrain-frecasts-ncov-viz",
-  "version": "0.1.0",
+  "name": "viz",
   "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
   "dependencies": {
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
+    "@nextstrain/evofr-viz": "file:nextstrain-evofr-viz-0.1.0.tgz",
     "argparse": "^2.0.1",
-    "d3": "7.6",
     "express": "^4.18.2",
+    "nextstrain-evofr-viz": "file:./nextstrain-evofr-viz-0.1.0.tgz",
     "puppeteer": "^19.4.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "styled-components": "^5.3.6",
-    "web-vitals": "^2.1.4"
+    "react-dom": "^18.2.0"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "scripts/build.sh",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "devDependencies": {
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "@vitejs/plugin-react": "^3.1.0",
+    "vite": "^4.2.0"
   }
 }

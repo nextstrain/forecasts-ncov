@@ -23,12 +23,24 @@ function parseArgs() {
   return parser.parse_args();
 }
 
+/**
+ * These are the IDs of the DOM elements which
+ * we will take screenshots of
+ */
 const elementsToScreenshot = [
   "frequenciesPanel",
   "rtPanel",
   "smoothedIncidencePanel",
   "growthAdvantagePanel",
 ];
+
+const resolutions = [
+  {width: 720, name: 'small'}, // 2-wide
+  {width: 1000, name: 'medium'}, // 3-wide
+  // {width: 1200, name: '...'}, // 3-wide with side legend
+  {width: 1300, name: 'large'}, // 4-wide
+  {width: 1550, name: 'xlarge'} // 5-wide
+]
 
 async function captureScreenshot(dir) {
 
@@ -48,32 +60,22 @@ async function captureScreenshot(dir) {
     await page.goto("http://localhost:3000");
 
     await page.waitForSelector('#mainPanelsContainer', {visible: true})
+    await page.waitForSelector('svg', {visible: true})
+    await page.waitForTimeout(500); // ensure it's painted -- may not be necessary?
+    console.log("Page, including SGVs, rendered")
 
-    await page.waitForTimeout(5000); // bad - should check the d3 is rendered not this!
-    console.log("Page rendered")
-
-    /* save each panel (of small multiples) as a .png image */
-    for (const id of elementsToScreenshot) {
-      console.log(`Finding & saving ${id}`)
-      const panel = await page.$(`#${id}`);
-      await panel.screenshot({ path: `${dir}/${id}.png` });
+    for (const resolution of resolutions) {
+      await page.setViewport({ width: resolution.width, height: 1080 });
+      /* save each panel (of small multiples) as a .png image */
+      console.log(`Finding & saving panels at size ${resolution.name} (page width of ${resolution.width}px)`);
+      for (const id of elementsToScreenshot) {
+        const panel = await page.$(`#${id}`);
+        const figureWidth = Math.floor((await panel.boundingBox()).width);
+        const fname = `${dir}/${id}_${resolution.name}.png`
+        await panel.screenshot({ path: fname }); 
+        console.log(`\t${fname} (width: ${figureWidth}px)`)
+      }
     }
-
-    /* proof-of-principle for how to generate the PDF */
-    const pdfConfig = {
-      path: `${dir}/testing.pdf`,
-      format: 'A4',
-      printBackground: false,
-    };
-    await page.pdf(pdfConfig);
-
-    /* legend is a bit different, as we want to control the layout of it */
-    console.log("Changing page size & saving the legend")
-    await page.setViewport({ width: 800, height: 1080 });
-    const panel = await page.$(`#legend`);
-    await panel.screenshot({ path: `${dir}/legend.png` });
-
-
   } catch (err) {
     console.log(`❌ Error: ${err.message}`);
   } finally {
@@ -85,8 +87,7 @@ async function captureScreenshot(dir) {
 async function startServer() {
   const app = express()
   app.set('port', 3000);
-  app.use("/", express.static(path.join(__dirname, '..', "build")))
-  app.use('/forecasting-viz-asset', express.static(path.join(__dirname, '..', "build", "forecasting-viz-assets")))
+  app.use("/", express.static(path.join(__dirname, '..', "dist")))
   const server = await app.listen(app.get('port'));
   console.log(`Ephemeral server running at port ${app.get('port')}`)
   return server;

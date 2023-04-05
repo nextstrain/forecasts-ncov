@@ -11,3 +11,11 @@ rule notify_on_clade_without_variant:
         """
         ./bin/notify-on-clade-without-variant {input.clade_without_variant}
         """
+
+
+onstart:
+    shell("./bin/notify-on-job-start")
+
+
+onerror:
+    shell("./bin/notify-on-job-fail")

@@ -2,60 +2,38 @@
 
 > _This is a work in progress!_
 
-### Installation
+Quickstart:
 
-* Everything should happen from the `viz` directory (where this file is)
-
-* Create an enviornment with nodeJS and npm, e.g. 
-`conda create -n <env-name> -c conda-forge nodejs=18`
-
-```sh
-npm install 
-npm run start # dev mode
+```
+npm ci
+npm run dev # open http://localhost:5173
 ```
 
-### Where are model data sourced from?
+This (single-page) app exists to visualise the model outputs to both generate static images as well as help development of the underlying visualisation library.
+It is not intended to remain here long term; this will be added as a "normal" page of nextstrain.org once some technical hurdles are solved with that site.
 
-By default, the two model data JSONs are fetched from `https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/global/<MODEL>/latest_results.json`, where `<MODEL>={renewal,mlr}`;
-Each of these can be changed via the following environment variables:
+### Viz library
 
-* If you wish to use HTTP endpoints, run `REACT_APP_RENEWAL_ENDPOINT="https://..." REACT_APP_MLR_ENDPOINT="https://" npm run start`. Browser-compatible MIME types will be used but note this doesn't yet include zstd.
+We are using our generalised [@nextstrain/evofr-viz library](https://github.com/nextstrain/forecasts-viz) which is packed and
+vendored here. To update the library:
 
-* If you wish to use a local JSON, provision the files and serve them via a simple server (see below), then use 
+1. In the library repo itself run `npm pack` to create a tarball
+2. Move the tarball to this folder (`./viz`) so it will be committed, and remove the old one if necessary
+3. `npm install <path_to_tarball>`
 
-```sh
-REACT_APP_RENEWAL_ENDPOINT="http://localhost:8000/renewal.json" \
-  REACT_APP_MLR_ENDPOINT="http://localhost:8000/mlr.json" \
-  npm run start
+If this fails to update for some reason then removing `package-lock.json` and reinstalling seems to work.
+
+### Config
+
+The [config file](./src/config.js) defines the variant colors, display names as well as the URLs where the model JSONs are fetched from.
+
+### Static image generation
+
+```
+# running from the viz directory
+npm run build
+node scripts/static-images.js
+# images will be in ./figures
 ```
 
-How to make local data available (note that `/data` is gitignored):
-
-```sh
-# provision the files
-mkdir -p data/
-curl --compressed "https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/global/renewal/latest_results.json" --output data/renewal.json
-curl --compressed "https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/global/mlr/latest_results.json" --output data/mlr.json
-# serve them over localhost:8000
-node scripts/data-server.js
-```
-
-> Note that we cannot currently use the zstd encodings. There is a library to decompress this in the browser (https://github.com/bokuweb/zstd-wasm) but it requires webpack modifications. For the time being, I've chosen to use gzip encodings. 
-
-### Regenerating the png images in `figures`
-
-`node scripts/static-images.js`
-
-These images are referenced in `./report.md`
-
-### Prior art
-
-* https://github.com/blab/rt-from-frequency-dynamics/tree/master/results/omicron-countries-split
-* https://github.com/blab/rt-from-frequency-dynamics/tree/master/results/pango-countries
-
-### Todo
-
-* export a react component we can use in gatsby, or render / serve SVG server-side?
-* run on schedule, somewhere, to generate at each model run
-* URL inspection to choose model JSON path
-
+This is run via the `generate-static-model-viz` GitHub action of this repo

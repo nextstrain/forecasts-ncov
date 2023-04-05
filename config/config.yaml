@@ -4,7 +4,6 @@ data_provenances:
   - open
 geo_resolutions:
   - global
-  - usa
 
 # Params for the prepare data scripts
 # Define params for each data_provenance/geo_resolution combination
@@ -20,30 +19,12 @@ prepare_data:
       clade_min_seq: 5000
       clade_min_seq_days: 150
       clade_to_variant: "defaults/clade_to_variant.tsv"
-    usa:
-      included_days: 150
-      location_min_seq: 500
-      location_min_seq_days: 30
-      excluded_locations: "defaults/usa_excluded_locations.txt"
-      prune_seq_days: 12
-      clade_min_seq: 5000
-      clade_min_seq_days: 150
-      clade_to_variant: "defaults/clade_to_variant.tsv"
   open:
     global:
       included_days: 150
       location_min_seq: 500
       location_min_seq_days: 30
       excluded_locations: "defaults/global_excluded_locations.txt"
-      prune_seq_days: 12
-      clade_min_seq: 5000
-      clade_min_seq_days: 150
-      clade_to_variant: "defaults/clade_to_variant.tsv"
-    usa:
-      included_days: 150
-      location_min_seq: 500
-      location_min_seq_days: 30
-      excluded_locations: "defaults/usa_excluded_locations.txt"
       prune_seq_days: 12
       clade_min_seq: 5000
       clade_min_seq_days: 150
