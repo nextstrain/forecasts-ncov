@@ -183,7 +183,7 @@ class RenewalConfig:
 
         # Processing hyperparameters
         seed_L = parse_with_default(model_cf, "seed_L", dflt=7)
-        forecast_L = parse_with_default(model_cf, "forecast_L", dflt=14)
+        forecast_L = parse_with_default(model_cf, "forecast_L", dflt=30)
         k = parse_with_default(model_cf, "k", dflt=5)
         order = parse_with_default(model_cf, "order", dflt=4)
 

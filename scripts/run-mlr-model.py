@@ -87,7 +87,7 @@ class MLRConfig:
 
         # Processing generation time
         tau = parse_generation_time(model_cf)
-        forecast_L = parse_with_default(model_cf, "forecast_L", dflt=0)
+        forecast_L = parse_with_default(model_cf, "forecast_L", dflt=30)
 
         # Processing likelihoods
         model = ef.MultinomialLogisticRegression(tau=tau)
