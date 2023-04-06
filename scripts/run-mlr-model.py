@@ -188,6 +188,7 @@ def make_model_directories(path):
 def export_results(multi_posterior, ps, path, data_name):
     EXPORT_SITES = ["freq", "ga", "freq_forecast"]
     EXPORT_DATED = [True, False, True]
+    EXPORT_FORECASTS = [False, False, True]
     EXPORT_ATTRS = ["pivot"]
     # Make directories
     make_model_directories(path)
@@ -201,6 +202,7 @@ def export_results(multi_posterior, ps, path, data_name):
                 posterior.data,
                 EXPORT_SITES,
                 EXPORT_DATED,
+                EXPORT_FORECASTS,
                 ps,
                 location,
             )
