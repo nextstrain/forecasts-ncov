@@ -238,9 +238,9 @@ class RenewalConfig:
 def check_generation_times(rs, model):
 
     # If not all variants use same gen time
-    if model.v_names is not None:
+    if model.gen_v_names is not None:
         # Check to see if all are present
-        assert rs.variant.isin(model.v_names).all(), "All variants must be present in config or have same gen time."
+        assert rs.variant.isin(model.gen_v_names).all(), "All variants must be present in config or have same gen time."
     return None
 
 
