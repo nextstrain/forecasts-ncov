@@ -16,13 +16,13 @@ export const config = {
   ]),
   variantDisplayNames: new Map([
     ["other", "other"],
-    ["21L (Omicron)", "BA.2"],
-    ["22A (Omicron)", "BA.4"],
-    ["22B (Omicron)", "BA.5"],
-    ["22C (Omicron)", "BA.2.12.1"],
-    ["22D (Omicron)", "BA.2.75"],
-    ["22E (Omicron)", "BQ.1"],
-    ["22F (Omicron)", "XBB"],
-    ["23A (Omicron)", "XBB.1.5"],
+    ["21L (Omicron)", "21L (BA.2)"],
+    ["22A (Omicron)", "22A (BA.4)"],
+    ["22B (Omicron)", "22B (BA.5)"],
+    ["22C (Omicron)", "22C (BA.2.12.1)"],
+    ["22D (Omicron)", "22D (BA.2.75)"],
+    ["22E (Omicron)", "22E (BQ.1)"],
+    ["22F (Omicron)", "22F (XBB)"],
+    ["23A (Omicron)", "23A (XBB.1.5)"],
   ])
 }
