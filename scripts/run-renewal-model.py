@@ -183,8 +183,8 @@ class RenewalConfig:
 
         # Processing hyperparameters
         seed_L = parse_with_default(model_cf, "seed_L", dflt=7)
-        forecast_L = parse_with_default(model_cf, "forecast_L", dflt=0)
-        k = parse_with_default(model_cf, "k", dflt=10)
+        forecast_L = parse_with_default(model_cf, "forecast_L", dflt=30)
+        k = parse_with_default(model_cf, "k", dflt=5)
         order = parse_with_default(model_cf, "order", dflt=4)
 
         # Processing generation time and delays
@@ -238,9 +238,9 @@ class RenewalConfig:
 def check_generation_times(rs, model):
 
     # If not all variants use same gen time
-    if model.v_names is not None:
+    if model.gen_v_names is not None:
         # Check to see if all are present
-        assert rs.variant.isin(model.v_names).all(), "All variants must be present in config or have same gen time."
+        assert rs.variant.isin(model.gen_v_names).all(), "All variants must be present in config or have same gen time."
     return None
 
 
@@ -313,8 +313,10 @@ def make_model_directories(path):
 
 
 def export_results(multi_posterior, ps, path, data_name):
-    EXPORT_SITES = ["freq", "R", "I_smooth", "ga"]
-    EXPORT_DATED = [True, True, True, True]
+    EXPORT_SITES = ["freq", "freq_forecast", "R", "I_smooth", "ga"]
+    EXPORT_DATED = [True, True, True, True, True]
+    EXPORT_FORECASTS = [False, True, False, False, False]
+    EXPORT_ATTRS = ["pivot"]
     # Make directories
     make_model_directories(path)
 
@@ -327,6 +329,7 @@ def export_results(multi_posterior, ps, path, data_name):
                 posterior.data,
                 EXPORT_SITES,
                 EXPORT_DATED,
+                EXPORT_FORECASTS,
                 ps,
                 location
         ))

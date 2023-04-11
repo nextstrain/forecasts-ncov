@@ -87,9 +87,11 @@ class MLRConfig:
 
         # Processing generation time
         tau = parse_generation_time(model_cf)
+        forecast_L = parse_with_default(model_cf, "forecast_L", dflt=30)
 
         # Processing likelihoods
         model = ef.MultinomialLogisticRegression(tau=tau)
+        model.forecast_L = forecast_L
         return model
 
     def load_optim(self):
@@ -138,6 +140,9 @@ def fit_models(rs, locations, model, inference_method, path, save, pivot=None):
         # Fit model
         posterior = inference_method.fit(model, data, name=location)
 
+        # Forecast frequencies
+        model.forecast_frequencies(posterior.samples, forecast_L=model.forecast_L)
+
         # Add posterior to group
         multi_posterior.add_posterior(posterior=posterior)
 
@@ -181,8 +186,10 @@ def make_model_directories(path):
 
 
 def export_results(multi_posterior, ps, path, data_name):
-    EXPORT_SITES = ["freq", "ga"]
-    EXPORT_DATED = [True, False]
+    EXPORT_SITES = ["freq", "ga", "freq_forecast"]
+    EXPORT_DATED = [True, False, True]
+    EXPORT_FORECASTS = [False, False, True]
+    EXPORT_ATTRS = ["pivot"]
     # Make directories
     make_model_directories(path)
 
@@ -195,6 +202,7 @@ def export_results(multi_posterior, ps, path, data_name):
                 posterior.data,
                 EXPORT_SITES,
                 EXPORT_DATED,
+                EXPORT_FORECASTS,
                 ps,
                 location,
             )
@@ -219,8 +227,8 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--data-name",
-        help="Name of the data set to include in the results filename as <data_name>_results.json. " +
-             "Overrides data.name in config."
+        help="Name of the data set to include in the results filename as <data_name>_results.json. "
+        + "Overrides data.name in config.",
     )
     args = parser.parse_args()
 
