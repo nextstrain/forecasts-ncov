@@ -211,6 +211,7 @@ def export_results(multi_posterior, ps, path, data_name):
             )
         )
     results = ef.posterior.combine_sites_tidy(results)
+    results["metadata"]["updated"] = pd.to_datetime(date.today())
     ef.save_json(results, path=f"{path}/{data_name}_results.json")
 
 
