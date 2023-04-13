@@ -71,4 +71,5 @@ jobs:
             envdir env.d snakemake \
               --configfile config/config.yaml optional.yaml \
               --printshellcmds \
+              --cores 8 \
               "${override_config[@]}"
