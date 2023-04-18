@@ -6,13 +6,14 @@ export const config = {
   variantColors: new Map([
     ["other", "#737373"],
     ["21L (Omicron)", "#BDBDBD"],
-    ["22A (Omicron)", "#447CCD"],
-    ["22B (Omicron)", "#5EA9A1"],
-    ["22C (Omicron)", "#8ABB6A"],
-    ["22D (Omicron)", "#BEBB48"],
-    ["22E (Omicron)", "#E29E39"],
-    ["22F (Omicron)", "#E2562B"],
-    ["23A (Omicron)", "#FF322C"],
+    ["22A (Omicron)", "#7725c6"],
+    ["22B (Omicron)", "#447CCD"],
+    ["22C (Omicron)", "#5EA9A1"],
+    ["22D (Omicron)", "#8ABB6A"],
+    ["22E (Omicron)", "#BEBB48"],
+    ["22F (Omicron)", "#E29E39"],
+    ["23A (Omicron)", "#E2562B"],
+    ["23B (Omicron)", "#FF322C"],
   ]),
   variantDisplayNames: new Map([
     ["other", "other"],
@@ -24,5 +25,6 @@ export const config = {
     ["22E (Omicron)", "22E (BQ.1)"],
     ["22F (Omicron)", "22F (XBB)"],
     ["23A (Omicron)", "23A (XBB.1.5)"],
+    ["23B (Omicron)", "23B (XBB.1.16)"],
   ])
 }
