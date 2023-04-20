@@ -49,6 +49,7 @@ async function captureScreenshot(dir) {
   }
 
   let browser = null;
+  let failure;
 
   try {
     browser = await puppeteer.launch({ headless: true });
@@ -78,9 +79,10 @@ async function captureScreenshot(dir) {
     }
   } catch (err) {
     console.log(`❌ Error: ${err.message}`);
+    failure = true; // to be handled in the `finally` block
   } finally {
     await browser.close();
-    console.log(`\n🎉 success`);
+    failure ? process.exit(2) : console.log(`\n🎉 success`);
   }
 }
 
