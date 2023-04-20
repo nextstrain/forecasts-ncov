@@ -46,7 +46,7 @@ jobs:
     - name: subset metadata columns
       run: |
         tsv-select -H \
-          -f strain,date,country,division,QC_overall_status,Nextstrain_clade \
+          -f strain,date,country,division,QC_overall_status,Nextstrain_clade,Nextclade_pango \
           metadata.tsv > metadata_pruned.tsv
 
         mv metadata_pruned.tsv metadata.tsv
@@ -60,6 +60,15 @@ jobs:
           --filter-query "QC_overall_status != 'bad'" \
           --output global_clade_counts.tsv
 
+    - name: summarize global lineage counts
+      run: |
+        ./ingest/bin/summarize-clade-sequence-counts \
+          --metadata metadata.tsv \
+          --clade-column Nextclade_pango \
+          --filter-columns QC_overall_status \
+          --filter-query "QC_overall_status != 'bad'" \
+          --output global_lineage_counts.tsv
+
     - name: summarize us clade counts
       run: |
         ./ingest/bin/summarize-clade-sequence-counts \
@@ -69,6 +78,16 @@ jobs:
           --filter-columns QC_overall_status country \
           --filter-query "QC_overall_status != 'bad' & country == 'USA'" \
           --output us_clade_counts.tsv
+
+    - name: summarize us lineage counts
+      run: |
+        ./ingest/bin/summarize-clade-sequence-counts \
+          --metadata metadata.tsv \
+          --location-column division \
+          --clade-column Nextclade_pango \
+          --filter-columns QC_overall_status country \
+          --filter-query "QC_overall_status != 'bad' & country == 'USA'" \
+          --output us_lineage_counts.tsv
 
     - name: upload clade counts
       run: |
@@ -80,7 +99,9 @@ jobs:
         fi
 
         ./ingest/bin/upload-to-s3 global_clade_counts.tsv "$S3_DST"/nextstrain_clades/global.tsv.gz $CLOUDFRONT_DOMAIN
+        ./ingest/bin/upload-to-s3 global_lineage_counts.tsv "$S3_DST"/pango_lineages/global.tsv.gz $CLOUDFRONT_DOMAIN
         ./ingest/bin/upload-to-s3 us_clade_counts.tsv "$S3_DST"/nextstrain_clades/usa.tsv.gz $CLOUDFRONT_DOMAIN
+        ./ingest/bin/upload-to-s3 us_lineage_counts.tsv "$S3_DST"/pango_lineages/usa.tsv.gz $CLOUDFRONT_DOMAIN
       env:
         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

@@ -35,8 +35,12 @@ Within TSVs at the country resolution, the `location` column contains divisions 
 | --------------- | ----------------- | --------------------- | ------------------------------------------------------------------------------------------------- |
 | GISAID          | Nextstrain clades | Global                | https://data.nextstrain.org/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/global.tsv.gz |
 |                 |                   | USA                   | https://data.nextstrain.org/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/usa.tsv.gz    |
+|                 | Pango lineages    | Global                | https://data.nextstrain.org/files/workflows/forecasts-ncov/gisaid/pango_lineages/global.tsv.gz |
+|                 |                   | USA                   | https://data.nextstrain.org/files/workflows/forecasts-ncov/gisaid/pango_lineages/usa.tsv.gz    |
 | open (GenBank)  | Nextstrain clades | Global                | https://data.nextstrain.org/files/workflows/forecasts-ncov/open/nextstrain_clades/global.tsv.gz   |
 |                 |                   | USA                   | https://data.nextstrain.org/files/workflows/forecasts-ncov/open/nextstrain_clades/usa.tsv.gz      |
+|                 | Pango lineages    | Global                | https://data.nextstrain.org/files/workflows/forecasts-ncov/open/pango_lineages/global.tsv.gz |
+|                 |                   | USA                   | https://data.nextstrain.org/files/workflows/forecasts-ncov/open/pango_lineages/usa.tsv.gz    |
 
 ## Running locally
 
