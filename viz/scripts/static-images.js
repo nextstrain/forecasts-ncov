@@ -58,12 +58,13 @@ async function captureScreenshot(dir) {
 
     await page.setViewport({ width: 1440, height: 1080 });
 
-    await page.goto("http://localhost:3000");
+    await page.goto("http://localhost:3000/forecasts-ncov/");
 
-    await page.waitForSelector('#mainPanelsContainer', {visible: true})
+    await page.waitForSelector('#frequenciesPanel', {visible: true})
     await page.waitForSelector('svg', {visible: true})
     await page.waitForTimeout(500); // ensure it's painted -- may not be necessary?
     console.log("Page, including SGVs, rendered")
+    await removeLogitToggle(page);
 
     for (const resolution of resolutions) {
       await page.setViewport({ width: resolution.width, height: 1080 });
@@ -89,7 +90,7 @@ async function captureScreenshot(dir) {
 async function startServer() {
   const app = express()
   app.set('port', 3000);
-  app.use("/", express.static(path.join(__dirname, '..', "dist")))
+  app.use("/forecasts-ncov", express.static(path.join(__dirname, '..', "dist")))
   const server = await app.listen(app.get('port'));
   console.log(`Ephemeral server running at port ${app.get('port')}`)
   return server;
@@ -99,6 +100,27 @@ async function main({outputDir}) {
   const server = await startServer();
   await captureScreenshot(outputDir);
   server.close();
+}
+
+async function removeLogitToggle(page) {
+  console.log("Removing logit toggle prior to screenshots")
+  try {
+    await page.evaluate(() => {
+      /* Structure is:
+      <div id=frequenciesPanel>
+        <div>
+          <div>TOGGLE HERE</div>
+          <div>Panels, Legend</div>
+        </div>
+      </div>
+      */  
+      document.querySelector('#frequenciesPanel').children[0].children[0].remove()
+    })
+    console.log("\tSuccess")
+  } catch (err) {
+    console.error(err)
+    console.log("Logit toggle removal failed. We'll keep going as updated screenshots with the toggle are better than stale screenshots.")
+  }
 }
 
 main(parseArgs());
