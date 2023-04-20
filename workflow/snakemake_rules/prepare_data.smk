@@ -48,11 +48,11 @@ rule prepare_clade_data:
     message: "Preparing clade counts for analysis"
     input:
         cases = "data/cases/{geo_resolution}.tsv.gz",
-        nextstrain_clades = "data/{data_provenance}/{variant_classification}/{geo_resolution}.tsv.gz"
+        sequence_counts = "data/{data_provenance}/{variant_classification}/{geo_resolution}.tsv.gz"
     output:
         clade_without_variant = "data/{data_provenance}/{variant_classification}/{geo_resolution}/clade_without_variant.txt",
         cases = "data/{data_provenance}/{variant_classification}/{geo_resolution}/prepared_cases.tsv",
-        variants = "data/{data_provenance}/{variant_classification}/{geo_resolution}/prepared_variants.tsv"
+        sequence_counts = "data/{data_provenance}/{variant_classification}/{geo_resolution}/prepared_seq_counts.tsv"
     log:
         "logs/{data_provenance}/{variant_classification}/{geo_resolution}/prepare_data.txt"
     params:
@@ -69,7 +69,7 @@ rule prepare_clade_data:
     shell:
         """
         python ./scripts/prepare-data.py \
-            --clades {input.nextstrain_clades} \
+            --seq-counts {input.sequence_counts} \
             --cases {input.cases} \
             {params.max_date} \
             {params.included_days} \
@@ -82,6 +82,6 @@ rule prepare_clade_data:
             {params.clade_to_variant} \
             {params.force_include_clades} \
             --output-clade-without-variant {output.clade_without_variant} \
-            --output-variants {output.variants} \
+            --output-seq-counts {output.sequence_counts} \
             --output-cases {output.cases} 2>&1 | tee {log}
         """

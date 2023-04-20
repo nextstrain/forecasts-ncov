@@ -31,7 +31,7 @@ The outputs should be subsets of the clade counts and case counts.
   > --clade-min-seq-days 3 \
   > --clade-to-variant "$TMP/clade_to_variant.tsv" \
   > --output-clade-without-variant "$TMP/clade_without_variant.txt" \
-  > --output-variants "$TMP/prepared_variants.tsv" \
+  > --output-variants "$TMP/prepared_seq_counts.tsv" \
   > --output-cases "$TMP/prepared_cases.tsv"
   Setting max date (inclusive) as '2022-01-10'.
   Setting min date (inclusive) as '2022-01-06'.
@@ -44,13 +44,13 @@ The outputs should be subsets of the clade counts and case counts.
 
 Verify that the output clade counts is a subset with expected locations, clades, and dates.
 
-  $ wc -l < "$TMP/prepared_variants.tsv" | sed 's/^[[:space:]]*//'
+  $ wc -l < "$TMP/prepared_seq_counts.tsv" | sed 's/^[[:space:]]*//'
   13
-  $ echo $(tsv-select -H -f location "$TMP/prepared_variants.tsv" | tsv-uniq -H | tail -n +2 | sort)
+  $ echo $(tsv-select -H -f location "$TMP/prepared_seq_counts.tsv" | tsv-uniq -H | tail -n +2 | sort)
   USA
-  $ echo $(tsv-select -H -f variant "$TMP/prepared_variants.tsv" | tsv-uniq -H | tail -n +2 | sort)
+  $ echo $(tsv-select -H -f variant "$TMP/prepared_seq_counts.tsv" | tsv-uniq -H | tail -n +2 | sort)
   21K (Omicron) 21L (Omicron) other
-  $ echo $(tsv-select -H -f date "$TMP/prepared_variants.tsv" | tsv-uniq -H | tail -n +2 | sort | tsv-summarize --first 1 --last 1)
+  $ echo $(tsv-select -H -f date "$TMP/prepared_seq_counts.tsv" | tsv-uniq -H | tail -n +2 | sort | tsv-summarize --first 1 --last 1)
   2022-01-06 2022-01-09
 
 

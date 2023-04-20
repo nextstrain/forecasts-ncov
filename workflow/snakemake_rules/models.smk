@@ -5,7 +5,7 @@ This part of the workflow runs the model scripts.
 rule renewal_model:
     input:
         cases = "data/{data_provenance}/{geo_resolution}/prepared_cases.tsv",
-        variants = "data/{data_provenance}/{geo_resolution}/prepared_variants.tsv"
+        sequence_counts = "data/{data_provenance}/{geo_resolution}/prepared_seq_counts.tsv"
     output:
         # Note this output is not used in the shell command because it is one of the many
         # files generated and output to the export path.
@@ -26,7 +26,7 @@ rule renewal_model:
         python -u ./scripts/run-renewal-model.py \
             --config {params.renewal_config} \
             --case-path {input.cases} \
-            --seq-path {input.variants} \
+            --seq-path {input.sequence_counts} \
             --export-path {params.export_path} \
             --data-name {wildcards.date} 2>&1 | tee {log}
         """
@@ -34,7 +34,7 @@ rule renewal_model:
 
 rule mlr_model:
     input:
-        variants = "data/{data_provenance}/{geo_resolution}/prepared_variants.tsv"
+        sequence_counts = "data/{data_provenance}/{geo_resolution}/prepared_seq_counts.tsv"
     output:
         # Note this output is not used in the shell command because it is one of the many
         # files generated and output to the export path.
@@ -54,7 +54,7 @@ rule mlr_model:
         """
         python -u ./scripts/run-mlr-model.py \
             --config {params.renewal_config} \
-            --seq-path {input.variants} \
+            --seq-path {input.sequence_counts} \
             --export-path {params.export_path} \
             --data-name {wildcards.date} 2>&1 | tee {log}
         """

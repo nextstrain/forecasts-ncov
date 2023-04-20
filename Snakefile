@@ -45,7 +45,7 @@ def _get_all_input(w):
             geo_resolution=geo_resolutions
         ),
         *expand(
-            "data/{data_provenance}/{variant_classification}/{geo_resolution}/prepared_variants.tsv",
+            "data/{data_provenance}/{variant_classification}/{geo_resolution}/prepared_seq_counts.tsv",
             data_provenance=data_provenances,
             variant_classification=variant_classifications,
             geo_resolution=geo_resolutions
