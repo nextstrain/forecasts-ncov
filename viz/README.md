@@ -6,7 +6,7 @@ Quickstart:
 
 ```
 npm ci
-npm run dev # open http://localhost:5173
+npm run dev # open http://localhost:5173/forecasts-ncov/
 ```
 
 This (single-page) app exists to visualise the model outputs to both generate static images as well as help development of the underlying visualisation library.
