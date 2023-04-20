@@ -91,15 +91,16 @@ jobs:
     - name: upload clade counts
       run: |
         S3_DST=s3://nextstrain-data/files/workflows/forecasts-ncov/gisaid
+        CLOUDFRONT_DOMAIN="data.nextstrain.org"
 
         if [[ "$TRIAL_NAME" ]]; then
           S3_DST+=/trial/"$TRIAL_NAME"
         fi
 
-        ./ingest/bin/upload-to-s3 global_clade_counts.tsv "$S3_DST"/nextstrain_clades/global.tsv.gz
-        ./ingest/bin/upload-to-s3 global_lineage_counts.tsv "$S3_DST"/pango_lineages/global.tsv.gz
-        ./ingest/bin/upload-to-s3 us_clade_counts.tsv "$S3_DST"/nextstrain_clades/usa.tsv.gz
-        ./ingest/bin/upload-to-s3 us_lineage_counts.tsv "$S3_DST"/pango_lineages/usa.tsv.gz        
+        ./ingest/bin/upload-to-s3 global_clade_counts.tsv "$S3_DST"/nextstrain_clades/global.tsv.gz "$CLOUDFRONT_DOMAIN"
+        ./ingest/bin/upload-to-s3 global_lineage_counts.tsv "$S3_DST"/pango_lineages/global.tsv.gz "$CLOUDFRONT_DOMAIN"
+        ./ingest/bin/upload-to-s3 us_clade_counts.tsv "$S3_DST"/nextstrain_clades/usa.tsv.gz "$CLOUDFRONT_DOMAIN"
+        ./ingest/bin/upload-to-s3 us_lineage_counts.tsv "$S3_DST"/pango_lineages/usa.tsv.gz "$CLOUDFRONT_DOMAIN"
       env:
         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
