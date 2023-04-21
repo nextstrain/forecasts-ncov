@@ -2,35 +2,39 @@
 data_provenances:
   - gisaid
   - open
+variant_classifications:
+  - nextstrain_clades
 geo_resolutions:
   - global
 
 # Params for the prepare data scripts
-# Define params for each data_provenance/geo_resolution combination
+# Define params for each data_provenance / variant_classification / geo_resolution combination
 # Include `max_date` if you don't want to use today as the max date
 prepare_data:
   gisaid:
-    global:
-      included_days: 150
-      location_min_seq: 500
-      location_min_seq_days: 30
-      excluded_locations: "defaults/global_excluded_locations.txt"
-      prune_seq_days: 12
-      clade_min_seq: 5000
-      clade_min_seq_days: 150
-      clade_to_variant: "defaults/clade_to_variant.tsv"
-      force_include_clades: "'23B (Omicron)=23B (Omicron)'"
+    nextstrain_clades:
+      global:
+        included_days: 150
+        location_min_seq: 500
+        location_min_seq_days: 30
+        excluded_locations: "defaults/global_excluded_locations.txt"
+        prune_seq_days: 12
+        clade_min_seq: 5000
+        clade_min_seq_days: 150
+        clade_to_variant: "defaults/clade_to_variant.tsv"
+        force_include_clades: "'23B (Omicron)=23B (Omicron)'"
   open:
-    global:
-      included_days: 150
-      location_min_seq: 500
-      location_min_seq_days: 30
-      excluded_locations: "defaults/global_excluded_locations.txt"
-      prune_seq_days: 12
-      clade_min_seq: 5000
-      clade_min_seq_days: 150
-      clade_to_variant: "defaults/clade_to_variant.tsv"
-      force_include_clades: "'23B (Omicron)=23B (Omicron)'"
+    nextstrain_clades:
+      global:
+        included_days: 150
+        location_min_seq: 500
+        location_min_seq_days: 30
+        excluded_locations: "defaults/global_excluded_locations.txt"
+        prune_seq_days: 12
+        clade_min_seq: 5000
+        clade_min_seq_days: 150
+        clade_to_variant: "defaults/clade_to_variant.tsv"
+        force_include_clades: "'23B (Omicron)=23B (Omicron)'"
 
 # Model configs
 renewal_config: "config/renewal-config.yaml"

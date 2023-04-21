@@ -9,6 +9,10 @@ if not config.get("data_provenances"):
     print("ERROR: config must include 'data_provenances'.")
     sys.exit(1)
 
+if not config.get("variant_classifications"):
+    print("ERROR: config must include 'variant_classifications'.")
+    sys.exit(1)
+
 if not config.get("geo_resolutions"):
     print("ERROR: config must include 'geo_resolutions'.")
     sys.exit(1)
@@ -30,25 +34,29 @@ def get_todays_date():
 
 def _get_all_input(w):
     data_provenances = config["data_provenances"] if isinstance(config["data_provenances"], list) else [config["data_provenances"]]
+    variant_classifications = config["variant_classifications"] if isinstance(config["variant_classifications"], list) else [config["variant_classifications"]]
     geo_resolutions = config["geo_resolutions"] if isinstance(config["geo_resolutions"], list) else [config["geo_resolutions"]]
 
     all_input = [
         *expand(
-            "data/{data_provenance}/{geo_resolution}/prepared_cases.tsv",
+            "data/{data_provenance}/{variant_classification}/{geo_resolution}/prepared_cases.tsv",
             data_provenance=data_provenances,
+            variant_classification=variant_classifications,
             geo_resolution=geo_resolutions
         ),
         *expand(
-            "data/{data_provenance}/{geo_resolution}/prepared_variants.tsv",
+            "data/{data_provenance}/{variant_classification}/{geo_resolution}/prepared_variants.tsv",
             data_provenance=data_provenances,
+            variant_classification=variant_classifications,
             geo_resolution=geo_resolutions
         )
     ]
 
     if config.get("send_slack_notifications"):
         all_input.extend(expand(
-            "data/{data_provenance}/{geo_resolution}/notify/clade_without_variant.done",
+            "data/{data_provenance}/{variant_classification}/{geo_resolution}/notify/clade_without_variant.done",
             data_provenance=data_provenances,
+            variant_classification=variant_classifications,
             geo_resolution=geo_resolutions
         ))
 
@@ -62,8 +70,9 @@ def _get_all_input(w):
     if models_to_run:
         run_date = config.get("run_date", get_todays_date())
         all_input.extend(expand(
-            "results/{data_provenance}/{geo_resolution}/{model}/{date}_results.json",
+            "results/{data_provenance}/{variant_classification}/{geo_resolution}/{model}/{date}_results.json",
             data_provenance=data_provenances,
+            variant_classification=variant_classifications,
             geo_resolution=geo_resolutions,
             model=models_to_run,
             date=run_date
@@ -71,10 +80,11 @@ def _get_all_input(w):
         if config.get("upload"):
             all_input.extend(expand(
                 [
-                    "results/{data_provenance}/{geo_resolution}/{model}/{date}_results_s3_upload.done",
-                    "results/{data_provenance}/{geo_resolution}/{model}/{date}_latest_results_s3_upload.done"
+                    "results/{data_provenance}/{variant_classification}/{geo_resolution}/{model}/{date}_results_s3_upload.done",
+                    "results/{data_provenance}/{variant_classification}/{geo_resolution}/{model}/{date}_latest_results_s3_upload.done"
                 ],
                 data_provenance=data_provenances,
+                variant_classification=variant_classifications,
                 geo_resolution=geo_resolutions,
                 model=models_to_run,
                 date=run_date
@@ -85,8 +95,9 @@ def _get_all_input(w):
                 # Trigger for static model viz which uses both MLR and renewal model outputs
                 # Currently we only support gisaid/global model results
                 all_input.extend(expand(
-                    "results/{data_provenance}/{geo_resolution}/{date}_trigger_static_model_viz.done",
+                    "results/{data_provenance}/{variant_classification}/{geo_resolution}/{date}_trigger_static_model_viz.done",
                     data_provenance=[data_provenance for data_provenance in data_provenances if data_provenance == "gisaid"],
+                    variant_classification=[variant_classification for variant_classification in variant_classifications if variant_classification == "nextstrain_clades"],
                     geo_resolution=[geo_resolution for geo_resolution in geo_resolutions if geo_resolution == "global"],
                     date=run_date
                 ))

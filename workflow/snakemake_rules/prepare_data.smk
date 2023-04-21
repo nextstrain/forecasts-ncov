@@ -12,11 +12,11 @@ rule download_case_counts:
         curl -fsSL --compressed {params.cases_url:q} --output {output.cases}
         """
 
-rule download_clade_counts:
+rule download_variant_counts:
     output:
-        clades = "data/{data_provenance}/nextstrain_clades/{geo_resolution}.tsv.gz"
+        clades = "data/{data_provenance}/{variant_classification}/{geo_resolution}.tsv.gz"
     params:
-        clades_url = "https://data.nextstrain.org/files/workflows/forecasts-ncov/{data_provenance}/nextstrain_clades/{geo_resolution}.tsv.gz"
+        clades_url = "https://data.nextstrain.org/files/workflows/forecasts-ncov/{data_provenance}/{variant_classification}/{geo_resolution}.tsv.gz"
     shell:
         """
         curl -fsSL --compressed {params.clades_url:q} --output {output.clades}
@@ -25,13 +25,14 @@ rule download_clade_counts:
 def _get_prepare_data_option(wildcards, option_name):
     """
     Return the option for prepare data from the config based on the
-    wildcards.data_provenance and the wildcards.geo_resolution values.
+    wildcards.data_provenance, wildcards.variant_classification and the wildcards.geo_resolution values.
 
     If the *option* exists as a key within config['prepare_data'][wildcard.data_provenance][wildcard.geo_resolution]
     then return as "--{option-name} {option_value}". Or else return an empty string.
     """
     option_value = config.get('prepare_data', {}) \
                          .get(wildcards.data_provenance, {}) \
+                         .get(wildcards.variant_classification, {}) \
                          .get(wildcards.geo_resolution, {}) \
                          .get(option_name)
 
@@ -43,17 +44,17 @@ def _get_prepare_data_option(wildcards, option_name):
     return ''
 
 
-rule prepare_data:
-    message: "Preparing counts data for analysis"
+rule prepare_clade_data:
+    message: "Preparing clade counts for analysis"
     input:
         cases = "data/cases/{geo_resolution}.tsv.gz",
-        nextstrain_clades = "data/{data_provenance}/nextstrain_clades/{geo_resolution}.tsv.gz"
+        nextstrain_clades = "data/{data_provenance}/{variant_classification}/{geo_resolution}.tsv.gz"
     output:
-        clade_without_variant = "data/{data_provenance}/{geo_resolution}/clade_without_variant.txt",
-        cases = "data/{data_provenance}/{geo_resolution}/prepared_cases.tsv",
-        variants = "data/{data_provenance}/{geo_resolution}/prepared_variants.tsv"
+        clade_without_variant = "data/{data_provenance}/{variant_classification}/{geo_resolution}/clade_without_variant.txt",
+        cases = "data/{data_provenance}/{variant_classification}/{geo_resolution}/prepared_cases.tsv",
+        variants = "data/{data_provenance}/{variant_classification}/{geo_resolution}/prepared_variants.tsv"
     log:
-        "logs/{data_provenance}/{geo_resolution}/prepare_data.txt"
+        "logs/{data_provenance}/{variant_classification}/{geo_resolution}/prepare_data.txt"
     params:
         max_date = lambda wildcards: _get_prepare_data_option(wildcards, 'max_date'),
         included_days = lambda wildcards: _get_prepare_data_option(wildcards, 'included_days'),
