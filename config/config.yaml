@@ -53,6 +53,23 @@ prepare_data:
         clade_min_seq: 500
         clade_min_seq_days: 150
 
+# Params for the model run scripts
+models:
+  gisaid:
+    nextstrain_clades:
+      global:
+        pivot: "23B (Omicron)"
+    pango_lineages:
+      global:
+        pivot: "BA.5"
+  open:
+    nextstrain_clades:
+      global:
+        pivot: "23B (Omicron)"
+    pango_lineages:
+      global:
+        pivot: "BA.5"
+
 # Model configs
 mlr_config: "config/mlr-config.yaml"
 # don't run renewal model by default
