@@ -50,7 +50,6 @@ rule prepare_clade_data:
         cases = "data/cases/{geo_resolution}.tsv.gz",
         sequence_counts = "data/{data_provenance}/{variant_classification}/{geo_resolution}.tsv.gz"
     output:
-        clade_without_variant = "data/{data_provenance}/{variant_classification}/{geo_resolution}/clade_without_variant.txt",
         cases = "data/{data_provenance}/{variant_classification}/{geo_resolution}/prepared_cases.tsv",
         sequence_counts = "data/{data_provenance}/{variant_classification}/{geo_resolution}/prepared_seq_counts.tsv"
     log:
@@ -64,7 +63,6 @@ rule prepare_clade_data:
         prune_seq_days = lambda wildcards: _get_prepare_data_option(wildcards, 'prune_seq_days'),
         clade_min_seq = lambda wildcards: _get_prepare_data_option(wildcards, 'clade_min_seq'),
         clade_min_seq_days = lambda wildcards: _get_prepare_data_option(wildcards, 'clade_min_seq_days'),
-        clade_to_variant = lambda wildcards: _get_prepare_data_option(wildcards, 'clade_to_variant'),
         force_include_clades = lambda wildcards: _get_prepare_data_option(wildcards, 'force_include_clades'),
     shell:
         """
@@ -79,9 +77,7 @@ rule prepare_clade_data:
             {params.prune_seq_days} \
             {params.clade_min_seq} \
             {params.clade_min_seq_days} \
-            {params.clade_to_variant} \
             {params.force_include_clades} \
-            --output-clade-without-variant {output.clade_without_variant} \
             --output-seq-counts {output.sequence_counts} \
             --output-cases {output.cases} 2>&1 | tee {log}
         """

@@ -69,13 +69,9 @@ if __name__ == '__main__':
         help="The number fo days (counting back from the cutoff date) to use as the date range "
              "for counting the number of sequences per clade to determine if a clade is included as its own variant.\n"
              "If not provided, will count sequences from all dates included in analysis date range.")
-    parser.add_argument("--clade-to-variant", required=True,
-        help="Path to TSV file that is a map of clade names to variant names with two columns: 'clade', 'variant'")
     parser.add_argument("--force-include-clades", nargs="*",
         help="Clades to force include in the output regardless of sequences counts. " +
              "Must be formatted as <clade_name>=<variant_name>")
-    parser.add_argument("--output-clade-without-variant",
-        help="Path to output txt file for clade names that do not have a matching variant name.")
     parser.add_argument("--output-seq-counts", required=True,
         help="Path to output TSV file for the prepared variants data.")
     parser.add_argument("--output-cases", required=True,
@@ -152,9 +148,8 @@ if __name__ == '__main__':
     ############## Rules for collapsing clades to variants ####################
     ###########################################################################
 
-    # Map clade names to variant names
-    clade_to_variant = pd.read_csv(args.clade_to_variant, sep='\t', dtype='string', usecols=['clade', 'variant'])
-    seq_counts = seq_counts.merge(clade_to_variant, how='left', on='clade')
+    # Duplicate 'clade' column to 'variant' column to faciliate mapping to 'other'
+    seq_counts['variant'] = seq_counts.loc[:, 'clade']
 
     # Keep track of clades that are force included so that they can bypass the sequence counts check
     force_included_clades = set()
@@ -204,13 +199,6 @@ if __name__ == '__main__':
 
         # Replace variant with 'other' if they are not force included and do not meet the clade_min_seq requirement
         seq_counts.loc[~seq_counts['clade'].isin(force_included_clades | clades_with_min_seq), 'variant'] = 'other'
-
-    # If requested, output clades that do not have a matching variant
-    if args.output_clade_without_variant:
-        clade_without_variant = sorted(seq_counts.loc[pd.isna(seq_counts['variant']), 'clade'].unique())
-        with open(args.output_clade_without_variant, 'w') as fh:
-            for clade in clade_without_variant:
-                fh.write(f"{clade}\n")
 
     # Add clades with unknown variants to 'other' variant group
     seq_counts.loc[pd.isna(seq_counts['variant']), 'variant'] = 'other'
