@@ -8,23 +8,17 @@ const mlrUrl = `${DEFAULT_ENDPOINT_PREFIX}/mlr/latest_results.json`;
 const renewalUrl = `${DEFAULT_ENDPOINT_PREFIX}/renewal/latest_results.json`;
 
 const variantColors = new Map([
-  ["other", "#737373"],
-  ["21L (Omicron)", "#BDBDBD"],
-  ["22A (Omicron)", "#7725c6"],
-  ["22B (Omicron)", "#447CCD"],
-  ["22C (Omicron)", "#5EA9A1"],
-  ["22D (Omicron)", "#8ABB6A"],
-  ["22E (Omicron)", "#BEBB48"],
-  ["22F (Omicron)", "#E29E39"],
-  ["23A (Omicron)", "#E2562B"],
-  ["23B (Omicron)", "#FF322C"],
+  ["other", "#595959"],
+  ["22B (Omicron)", "#A6A6A6"],
+  ["22D (Omicron)", "#4D21AD"],
+  ["22E (Omicron)", "#4C90C0"],
+  ["22F (Omicron)", "#8EBC66"],
+  ["23A (Omicron)", "#DEA73C"],
+  ["23B (Omicron)", "#DB2823"],
 ]);
 const variantDisplayNames = new Map([
   ["other", "other"],
-  ["21L (Omicron)", "21L (BA.2)"],
-  ["22A (Omicron)", "22A (BA.4)"],
   ["22B (Omicron)", "22B (BA.5)"],
-  ["22C (Omicron)", "22C (BA.2.12.1)"],
   ["22D (Omicron)", "22D (BA.2.75)"],
   ["22E (Omicron)", "22E (BQ.1)"],
   ["22F (Omicron)", "22F (XBB)"],
