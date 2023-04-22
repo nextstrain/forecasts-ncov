@@ -23,16 +23,13 @@ The latest results are stored as `latest_results.json` and previously uploaded r
 
 #### Summary of Available files:
 
-| Data Provenance | Clade Type        | Geographic Resolution | Model   | Address |
-| --------------- | ----------------- | --------------------- | ------- | ------- |
-| GISAID          | Nextstrain clades | Global                | MLR     | `https://data.nextstrain.org/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/global/mlr/latest_results.json`    |
-|                 |                   |                       | Renewal | `https://data.nextstrain.org/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/global/renewal/latest_results.json`|
-|                 |                   | USA                   | MLR     | `https://data.nextstrain.org/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/usa/mlr/latest_results.json`       |
-|                 |                   |                       | Renewal | `https://data.nextstrain.org/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/usa/renewal/latest_results.json`   |
-| open (GenBank)  | Nextstrain clades | Global                | MLR     | `https://data.nextstrain.org/files/workflows/forecasts-ncov/open/nextstrain_clades/global/mlr/latest_results.json`      |
-|                 |                   |                       | Renewal | `https://data.nextstrain.org/files/workflows/forecasts-ncov/open/nextstrain_clades/global/renewal/latest_results.json`  |
-|                 |                   | USA                   | MLR     | `https://data.nextstrain.org/files/workflows/forecasts-ncov/open/nextstrain_clades/usa/mlr/latest_results.json`         |
-|                 |                   |                       | Renewal | `https://data.nextstrain.org/files/workflows/forecasts-ncov/open/nextstrain_clades/usa/renewal/latest_results.json`     |
+| Data Provenance | Variant Classification | Geographic Resolution | Model  | Address                                                                                                              |
+| --------------- | ---------------------- | --------------------- | ------ | -------------------------------------------------------------------------------------------------------------------- |
+| GISAID          | Nextstrain clades      | Global                | MLR    | `https://data.nextstrain.org/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/global/mlr/latest_results.json` |
+|                 | Pango lineages         |                       |        | `https://data.nextstrain.org/files/workflows/forecasts-ncov/gisaid/pango_lineages/global/mlr/latest_results.json`    |
+| open (GenBank)  | Nextstrain clades      |                       |        | `https://data.nextstrain.org/files/workflows/forecasts-ncov/open/nextstrain_clades/global/mlr/latest_results.json`   |
+|                 | Pango lineages         |                       |        | `https://data.nextstrain.org/files/workflows/forecasts-ncov/open/pango_lineages/global/mlr/latest_results.json`      |
+
 
 ## Installation
 
@@ -69,11 +66,12 @@ Run the GitHub Action workflow named "Run models" to run the pipeline on AWS Bat
 The `data_provenances`, `variant_classifications` and `geo_resolutions` are required configs for the pipeline.
 
 The current available options for `data_provenances` are
-- open
 - gisaid
+- open
 
 The current available options for `variant_classifications` are
 - nextstrain_clades
+- pango_lineages
 
 The current available options for `geo_resolutions` are
 - global
