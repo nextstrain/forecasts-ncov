@@ -6,10 +6,9 @@ Prepared data with the max date 2022-01-10, which is the last date of the test d
 The output should include all clade counts, but create a subset of the case counts.
 
   $ python3 ../../../scripts/prepare-data.py \
-  > --clades ../data/nextstrain_clades.tsv \
+  > --seq-counts ../data/nextstrain_clades.tsv \
   > --cases ../data/cases.tsv \
   > --max-date 2022-01-10 \
-  > --clade-to-variant ../data/clade_to_variant.tsv \
   > --output-seq-counts "$TMP/prepared_seq_counts.tsv" \
   > --output-cases "$TMP/prepared_cases.tsv"
   Setting max date (inclusive) as '2022-01-10'.

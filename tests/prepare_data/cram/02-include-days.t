@@ -7,12 +7,11 @@ Only include 5 days in analysis.
 The outputs should be subsets of the variants counts and case counts.
 
   $ python3 ../../../scripts/prepare-data.py \
-  > --clades ../data/nextstrain_clades.tsv \
+  > --seq-counts ../data/nextstrain_clades.tsv \
   > --cases ../data/cases.tsv \
   > --max-date 2022-01-10 \
   > --included-days 5 \
-  > --clade-to-variant ../data/clade_to_variant.tsv \
-  > --output-variants "$TMP/prepared_seq_counts.tsv" \
+  > --output-seq-counts "$TMP/prepared_seq_counts.tsv" \
   > --output-cases "$TMP/prepared_cases.tsv"
   Setting max date (inclusive) as '2022-01-10'.
   Setting min date (inclusive) as '2022-01-06'.

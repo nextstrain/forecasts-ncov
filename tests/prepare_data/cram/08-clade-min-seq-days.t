@@ -11,7 +11,7 @@ Collapse clades that have less than 50 sequences in the last 3 days into 'other'
 The outputs should be subsets of the clade counts and case counts.
 
   $ python3 ../../../scripts/prepare-data.py \
-  > --clades ../data/nextstrain_clades.tsv \
+  > --seq-counts ../data/nextstrain_clades.tsv \
   > --cases ../data/cases.tsv \
   > --max-date 2022-01-10 \
   > --included-days 5 \
@@ -21,8 +21,7 @@ The outputs should be subsets of the clade counts and case counts.
   > --excluded-locations ../data/excluded_locations.txt \
   > --clade-min-seq 50 \
   > --clade-min-seq-days 3 \
-  > --clade-to-variant ../data/clade_to_variant.tsv \
-  > --output-variants "$TMP/prepared_seq_counts.tsv" \
+  > --output-seq-counts "$TMP/prepared_seq_counts.tsv" \
   > --output-cases "$TMP/prepared_cases.tsv"
   Setting max date (inclusive) as '2022-01-10'.
   Setting min date (inclusive) as '2022-01-06'.
