@@ -58,14 +58,14 @@ models:
   gisaid:
     nextstrain_clades:
       global:
-        pivot: "23B (Omicron)"
+        pivot: "'22B (Omicron)'"
     pango_lineages:
       global:
         pivot: "BA.5"
   open:
     nextstrain_clades:
       global:
-        pivot: "23B (Omicron)"
+        pivot: "'22B (Omicron)'"
     pango_lineages:
       global:
         pivot: "BA.5"
