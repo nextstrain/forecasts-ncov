@@ -52,14 +52,6 @@ def _get_all_input(w):
         )
     ]
 
-    if config.get("send_slack_notifications"):
-        all_input.extend(expand(
-            "data/{data_provenance}/{variant_classification}/{geo_resolution}/notify/clade_without_variant.done",
-            data_provenance=data_provenances,
-            variant_classification=variant_classifications,
-            geo_resolution=geo_resolutions
-        ))
-
     # Check which models to run based on which model configs have been provided
     models_to_run = [
         model_name

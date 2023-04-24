@@ -2,14 +2,6 @@ Setup
 
   $ pushd "$TESTDIR" > /dev/null
 
-Create subset of clade to variants mapping for testing clades without variants.
-
-  $ cat >$TMP/clade_to_variant.tsv <<~~
-  > clade	variant
-  > 21K (Omicron)	21K (Omicron)
-  > 21L (Omicron)	21L (Omicron)
-  > ~~
-
 Prepared data with the max date 2022-01-10, which is the last date of the test data.
 Only include 5 days in analysis.
 Prune the sequences in last day of clade counts.
