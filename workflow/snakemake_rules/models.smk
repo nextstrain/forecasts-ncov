@@ -26,7 +26,7 @@ def _get_models_option(wildcards, option_name):
 rule renewal_model:
     input:
         cases = "data/{data_provenance}/{variant_classification}/{geo_resolution}/prepared_cases.tsv",
-        sequence_counts = "data/{data_provenance}/{variant_classification}/{geo_resolution}/prepared_seq_counts.tsv"
+        sequence_counts = "data/{data_provenance}/{variant_classification}/{geo_resolution}/collapsed_seq_counts.tsv"
     output:
         # Note this output is not used in the shell command because it is one of the many
         # files generated and output to the export path.
@@ -55,7 +55,7 @@ rule renewal_model:
 
 rule mlr_model:
     input:
-        sequence_counts = "data/{data_provenance}/{variant_classification}/{geo_resolution}/prepared_seq_counts.tsv"
+        sequence_counts = "data/{data_provenance}/{variant_classification}/{geo_resolution}/collapsed_seq_counts.tsv"
     output:
         # Note this output is not used in the shell command because it is one of the many
         # files generated and output to the export path.

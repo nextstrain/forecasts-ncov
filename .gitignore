@@ -3,6 +3,8 @@ data/*
 logs/
 results/
 benchmarks/
+nextclade_sars-cov-2_21L.json
+pango_aliasing.tsv
 
 # Errors from tests
 *.err
