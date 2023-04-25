@@ -6,11 +6,10 @@ Prepared data with the max date 2022-01-10, which is the last date of the test d
 The output should include all clade counts, but create a subset of the case counts.
 
   $ python3 ../../../scripts/prepare-data.py \
-  > --clades ../data/nextstrain_clades.tsv \
+  > --seq-counts ../data/nextstrain_clades.tsv \
   > --cases ../data/cases.tsv \
   > --max-date 2022-01-10 \
-  > --clade-to-variant ../data/clade_to_variant.tsv \
-  > --output-variants "$TMP/prepared_variants.tsv" \
+  > --output-seq-counts "$TMP/prepared_seq_counts.tsv" \
   > --output-cases "$TMP/prepared_cases.tsv"
   Setting max date (inclusive) as '2022-01-10'.
   No min date was set, including all dates up to the max date.
@@ -21,9 +20,9 @@ The output should include all clade counts, but create a subset of the case coun
 Verify the header "clade" has been replaced by "variant".
 Verify that the output variants counts is the same as the original clade counts.
 
-  $ head -n 1 "$TMP/prepared_variants.tsv" | tr '\t' ' '
+  $ head -n 1 "$TMP/prepared_seq_counts.tsv" | tr '\t' ' '
   location variant date sequences
-  $ cmp <(tail -n +2 ../data/nextstrain_clades.tsv) <(tail -n +2 "$TMP/prepared_variants.tsv")
+  $ cmp <(tail -n +2 ../data/nextstrain_clades.tsv) <(tail -n +2 "$TMP/prepared_seq_counts.tsv")
 
 Verify that the output case counts is a subset with expected locations and dates.
 

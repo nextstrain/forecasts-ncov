@@ -13,7 +13,7 @@ CASES_DTYPES = {
     'cases': 'int64',
 }
 
-CLADES_DTYPES = {
+SEQ_COUNTS_DTYPES = {
     'location': 'string',
     'clade': 'string',
     'sequences': 'int64',
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(__doc__,
         formatter_class=argparse.RawTextHelpFormatter)
 
-    parser.add_argument("--clades", metavar="TSV", required=True,
+    parser.add_argument("--seq-counts", metavar="TSV", required=True,
         help="Path to clade counts TSV with four columns: 'location','clade','date','sequences'")
     parser.add_argument("--cases", metavar="TSV", required=True,
         help="Path to case counts TSV with three columns: 'location','date','cases'")
@@ -69,14 +69,10 @@ if __name__ == '__main__':
         help="The number fo days (counting back from the cutoff date) to use as the date range "
              "for counting the number of sequences per clade to determine if a clade is included as its own variant.\n"
              "If not provided, will count sequences from all dates included in analysis date range.")
-    parser.add_argument("--clade-to-variant", required=True,
-        help="Path to TSV file that is a map of clade names to variant names with two columns: 'clade', 'variant'")
     parser.add_argument("--force-include-clades", nargs="*",
         help="Clades to force include in the output regardless of sequences counts. " +
              "Must be formatted as <clade_name>=<variant_name>")
-    parser.add_argument("--output-clade-without-variant",
-        help="Path to output txt file for clade names that do not have a matching variant name.")
-    parser.add_argument("--output-variants", required=True,
+    parser.add_argument("--output-seq-counts", required=True,
         help="Path to output TSV file for the prepared variants data.")
     parser.add_argument("--output-cases", required=True,
         help="Path to output TSV file for the prepared cases data.")
@@ -90,7 +86,7 @@ if __name__ == '__main__':
     print(f"Setting max date (inclusive) as {args.max_date!r}.")
     max_date = datetime.strptime(args.max_date, '%Y-%m-%d')
 
-    # The min date is shared between the clades and cases data
+    # The min date is shared between the seq_counts and cases data
     # Set default min_date to minimum date possible so we include all data up to the max date
     min_date = None
     if args.included_days is not None:
@@ -105,7 +101,7 @@ if __name__ == '__main__':
     ################### Rules for subsetting by location ######################
     ###########################################################################
     # Load entire clade counts data since we need to to find all locations
-    clades = pd.read_csv(args.clades, sep='\t', parse_dates=['date'], dtype=CLADES_DTYPES)
+    seq_counts = pd.read_csv(args.seq_counts, sep='\t', parse_dates=['date'], dtype=SEQ_COUNTS_DTYPES)
 
     # Set the min_date as the default min date for counting sequences per location
     # to count sequences per location over the entire analysis date range
@@ -126,9 +122,9 @@ if __name__ == '__main__':
 
     # Subset to locations and sequences within the date range from min_location_seq_date to max_date
     # and group by location to get the total number of sequences per location in this date range
-    location_and_seqs = clades.loc[
-        (clades['date'] >= min_location_seq_date if min_location_seq_date else True) &
-        (clades['date'] <= max_date),
+    location_and_seqs = seq_counts.loc[
+        (seq_counts['date'] >= min_location_seq_date if min_location_seq_date else True) &
+        (seq_counts['date'] <= max_date),
         ['location', 'sequences']
     ]
     seqs_per_location = location_and_seqs.groupby(['location'], as_index=False).sum()
@@ -152,9 +148,8 @@ if __name__ == '__main__':
     ############## Rules for collapsing clades to variants ####################
     ###########################################################################
 
-    # Map clade names to variant names
-    clade_to_variant = pd.read_csv(args.clade_to_variant, sep='\t', dtype='string', usecols=['clade', 'variant'])
-    clades = clades.merge(clade_to_variant, how='left', on='clade')
+    # Duplicate 'clade' column to 'variant' column to faciliate mapping to 'other'
+    seq_counts['variant'] = seq_counts.loc[:, 'clade']
 
     # Keep track of clades that are force included so that they can bypass the sequence counts check
     force_included_clades = set()
@@ -166,7 +161,7 @@ if __name__ == '__main__':
                 sys.exit(1)
 
             clade, variant = force_include
-            clades.loc[clades['clade'] == clade, 'variant'] = variant
+            seq_counts.loc[seq_counts['clade'] == clade, 'variant'] = variant
             force_included_clades.add(clade)
 
         print(f"Force including the following clades/variants: {args.force_include_clades}")
@@ -192,9 +187,9 @@ if __name__ == '__main__':
 
         # Subset to clades and sequences within the date range from min_clades_seq_date to max_date
         # and group by clade to get the total number of sequences per clade in this date range
-        clades_and_seqs = clades.loc[
-            (clades['date'] >= min_clades_seq_date if min_clades_seq_date else True) &
-            (clades['date'] <= max_date),
+        clades_and_seqs = seq_counts.loc[
+            (seq_counts['date'] >= min_clades_seq_date if min_clades_seq_date else True) &
+            (seq_counts['date'] <= max_date),
             ['clade', 'sequences']
         ]
         seqs_per_clade = clades_and_seqs.groupby(['clade'], as_index=False).sum()
@@ -203,21 +198,14 @@ if __name__ == '__main__':
         clades_with_min_seq = set(seqs_per_clade.loc[seqs_per_clade['sequences'] >= args.clade_min_seq, 'clade'])
 
         # Replace variant with 'other' if they are not force included and do not meet the clade_min_seq requirement
-        clades.loc[~clades['clade'].isin(force_included_clades | clades_with_min_seq), 'variant'] = 'other'
-
-    # If requested, output clades that do not have a matching variant
-    if args.output_clade_without_variant:
-        clade_without_variant = sorted(clades.loc[pd.isna(clades['variant']), 'clade'].unique())
-        with open(args.output_clade_without_variant, 'w') as fh:
-            for clade in clade_without_variant:
-                fh.write(f"{clade}\n")
+        seq_counts.loc[~seq_counts['clade'].isin(force_included_clades | clades_with_min_seq), 'variant'] = 'other'
 
     # Add clades with unknown variants to 'other' variant group
-    clades.loc[pd.isna(clades['variant']), 'variant'] = 'other'
+    seq_counts.loc[pd.isna(seq_counts['variant']), 'variant'] = 'other'
 
     # Collapse the variants of the same location and date
-    clades = clades.groupby(['location', 'variant', 'date'], as_index=False).sum(numeric_only=False)
-    clades.drop(columns=['clade'], inplace=True)
+    seq_counts = seq_counts.groupby(['location', 'variant', 'date'], as_index=False).sum(numeric_only=False)
+    seq_counts.drop(columns=['clade'], inplace=True)
 
 
     ###########################################################################
@@ -240,18 +228,18 @@ if __name__ == '__main__':
     ###########################################################################
 
     # Subset the clade counts data by date and locations
-    clades = clades.loc[
-        (clades['date'] >= min_date if min_date else True) &
-        (clades['date'] <= max_clade_date) &
-        (clades['location'].isin(locations_to_include))
+    seq_counts = seq_counts.loc[
+        (seq_counts['date'] >= min_date if min_date else True) &
+        (seq_counts['date'] <= max_clade_date) &
+        (seq_counts['location'].isin(locations_to_include))
     ]
 
-    print(f"Variants that will be included: {sorted(clades['variant'].unique())}.")
+    print(f"Variants that will be included: {sorted(seq_counts['variant'].unique())}.")
 
     # Sort variants subset and print to output file
-    clades.sort_values(['location', 'variant', 'date']) \
+    seq_counts.sort_values(['location', 'variant', 'date']) \
           .to_csv(
-              args.output_variants,
+              args.output_seq_counts,
               sep='\t',
               index=False,
           )

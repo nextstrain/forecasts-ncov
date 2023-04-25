@@ -8,13 +8,12 @@ Prune the sequences in last day of variants counts.
 The outputs should be subsets of the variants counts and case counts.
 
   $ python3 ../../../scripts/prepare-data.py \
-  > --clades ../data/nextstrain_clades.tsv \
+  > --seq-counts ../data/nextstrain_clades.tsv \
   > --cases ../data/cases.tsv \
   > --max-date 2022-01-10 \
   > --included-days 5 \
   > --prune-seq-days 1 \
-  > --clade-to-variant ../data/clade_to_variant.tsv \
-  > --output-variants "$TMP/prepared_variants.tsv" \
+  > --output-seq-counts "$TMP/prepared_seq_counts.tsv" \
   > --output-cases "$TMP/prepared_cases.tsv"
   Setting max date (inclusive) as '2022-01-10'.
   Setting min date (inclusive) as '2022-01-06'.
@@ -25,13 +24,13 @@ The outputs should be subsets of the variants counts and case counts.
 
 Verify that the output variants counts is a subset with expected locations, variants, and dates.
 
-  $ wc -l < "$TMP/prepared_variants.tsv" | sed 's/^[[:space:]]*//'
+  $ wc -l < "$TMP/prepared_seq_counts.tsv" | sed 's/^[[:space:]]*//'
   70
-  $ echo $(tsv-select -H -f location "$TMP/prepared_variants.tsv" | tsv-uniq -H | tail -n +2 | sort)
+  $ echo $(tsv-select -H -f location "$TMP/prepared_seq_counts.tsv" | tsv-uniq -H | tail -n +2 | sort)
   Argentina Japan USA United Kingdom
-  $ echo $(tsv-select -H -f variant "$TMP/prepared_variants.tsv" | tsv-uniq -H | tail -n +2 | sort)
+  $ echo $(tsv-select -H -f variant "$TMP/prepared_seq_counts.tsv" | tsv-uniq -H | tail -n +2 | sort)
   19A 20A 20B 20C 20I (Alpha, V1) 21A (Delta) 21I (Delta) 21J (Delta) 21K (Omicron) 21L (Omicron) 21M (Omicron) recombinant
-  $ echo $(tsv-select -H -f date "$TMP/prepared_variants.tsv" | tsv-uniq -H | tail -n +2 | sort | tsv-summarize --first 1 --last 1)
+  $ echo $(tsv-select -H -f date "$TMP/prepared_seq_counts.tsv" | tsv-uniq -H | tail -n +2 | sort | tsv-summarize --first 1 --last 1)
   2022-01-06 2022-01-09
 
 Verify that the output case counts is a subset with expected locations and dates.

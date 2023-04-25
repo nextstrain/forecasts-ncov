@@ -230,6 +230,10 @@ if __name__ == "__main__":
         help="Name of the data set to include in the results filename as <data_name>_results.json. "
         + "Overrides data.name in config.",
     )
+    parser.add_argument(
+        "--pivot",
+        help="Variant to use as pivot. Overrides model.pivot in config.",
+    )
     args = parser.parse_args()
 
     # Load configuration, data, and create model
@@ -254,6 +258,14 @@ if __name__ == "__main__":
     if export_path:
         make_model_directories(export_path)
 
+    # Find pivot
+    # Use mlr config pivot unless a dataset-specific pivot is specified
+    if config.config["model"]["pivot"]:
+        pivot = config.config["model"]["pivot"]
+    if args.pivot and args.pivot != "None":
+        pivot = args.pivot
+    print("pivot", pivot)
+
     # Fit or load model results
     if fit:
         print("Fitting model")
@@ -264,7 +276,7 @@ if __name__ == "__main__":
             inference_method,
             export_path,
             save,
-            pivot=config.config["model"]["pivot"]
+            pivot=pivot
         )
     elif load:
         print("Loading results")

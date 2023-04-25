@@ -2,36 +2,75 @@
 data_provenances:
   - gisaid
   - open
+variant_classifications:
+  - nextstrain_clades
+  - pango_lineages
 geo_resolutions:
   - global
 
 # Params for the prepare data scripts
-# Define params for each data_provenance/geo_resolution combination
+# Define params for each data_provenance / variant_classification / geo_resolution combination
 # Include `max_date` if you don't want to use today as the max date
 prepare_data:
   gisaid:
-    global:
-      included_days: 150
-      location_min_seq: 500
-      location_min_seq_days: 30
-      excluded_locations: "defaults/global_excluded_locations.txt"
-      prune_seq_days: 12
-      clade_min_seq: 5000
-      clade_min_seq_days: 150
-      clade_to_variant: "defaults/clade_to_variant.tsv"
-      force_include_clades: "'23B (Omicron)=23B (Omicron)'"
+    nextstrain_clades:
+      global:
+        included_days: 150
+        location_min_seq: 500
+        location_min_seq_days: 30
+        excluded_locations: "defaults/global_excluded_locations.txt"
+        prune_seq_days: 12
+        clade_min_seq: 5000
+        clade_min_seq_days: 150
+        force_include_clades: "'23B (Omicron)=23B (Omicron)'"
+    pango_lineages:
+      global:
+        included_days: 150
+        location_min_seq: 5000
+        location_min_seq_days: 30
+        excluded_locations: "defaults/global_excluded_locations.txt"
+        prune_seq_days: 12
+        clade_min_seq: 500
+        clade_min_seq_days: 150
   open:
-    global:
-      included_days: 150
-      location_min_seq: 500
-      location_min_seq_days: 30
-      excluded_locations: "defaults/global_excluded_locations.txt"
-      prune_seq_days: 12
-      clade_min_seq: 5000
-      clade_min_seq_days: 150
-      clade_to_variant: "defaults/clade_to_variant.tsv"
-      force_include_clades: "'23B (Omicron)=23B (Omicron)'"
+    nextstrain_clades:
+      global:
+        included_days: 150
+        location_min_seq: 500
+        location_min_seq_days: 30
+        excluded_locations: "defaults/global_excluded_locations.txt"
+        prune_seq_days: 12
+        clade_min_seq: 5000
+        clade_min_seq_days: 150
+        force_include_clades: "'23B (Omicron)=23B (Omicron)'"
+    pango_lineages:
+      global:
+        included_days: 150
+        location_min_seq: 5000
+        location_min_seq_days: 30
+        excluded_locations: "defaults/global_excluded_locations.txt"
+        prune_seq_days: 12
+        clade_min_seq: 500
+        clade_min_seq_days: 150
+
+# Params for the model run scripts
+models:
+  gisaid:
+    nextstrain_clades:
+      global:
+        pivot: "'22B (Omicron)'"
+    pango_lineages:
+      global:
+        pivot: "BA.5"
+  open:
+    nextstrain_clades:
+      global:
+        pivot: "'22B (Omicron)'"
+    pango_lineages:
+      global:
+        pivot: "BA.5"
 
 # Model configs
-renewal_config: "config/renewal-config.yaml"
 mlr_config: "config/mlr-config.yaml"
+# don't run renewal model by default
+#renewal_config: "config/renewal-config.yaml"
