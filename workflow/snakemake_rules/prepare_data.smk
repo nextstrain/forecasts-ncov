@@ -106,7 +106,8 @@ rule extract_pango_aliasing:
     shell:
         """
         python ./scripts/extract-pango-aliasing.py \
-            --json {input.tree} > {output.aliasing}
+            --json {input.tree} \
+            --output {output.aliasing}
         """
 
 # This rule should work equally well with both lineages and clades
