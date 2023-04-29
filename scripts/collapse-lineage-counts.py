@@ -62,17 +62,17 @@
 
 import argparse
 import pandas as pd
-from collections import defaultdict
-
-def load_seq_counts(file):
-    return pd.read_csv(file, sep="\t")
-
-def load_aliasing(file):
-    return pd.read_csv(file, sep="\t")
 
 def apply_aliasing(seq_counts, aliasing):
     aliasing_dict = aliasing.set_index("Nextclade_pango")["partiallyAliased"].to_dict()
-    seq_counts["variant"] = seq_counts["variant"].map(aliasing_dict).fillna("other")
+    mapped_variants = seq_counts["variant"].map(aliasing_dict)
+
+    # Find and print variants not found in aliasing_dict
+    not_found_variants = seq_counts.loc[mapped_variants.isna(), "variant"].unique()
+    if len(not_found_variants) > 0:
+        print("Variants not found in aliasing_dict:", ", ".join(not_found_variants))
+
+    seq_counts["variant"] = mapped_variants.fillna("other")
     return seq_counts
 
 def get_parent(lineage):
@@ -104,7 +104,14 @@ def collapse_lineages(seq_counts, collapse_threshold):
 def reverse_aliasing(seq_counts, aliasing):
     reverse_aliasing_dict = aliasing.set_index("partiallyAliased")["Nextclade_pango"].to_dict()
     reverse_aliasing_dict["other"] = "other"
-    seq_counts["variant"] = seq_counts["variant"].map(reverse_aliasing_dict).fillna("other")
+    mapped_variants = seq_counts["variant"].map(reverse_aliasing_dict)
+
+    # Find and print variants not found in reverse_aliasing_dict
+    not_found_variants = seq_counts.loc[mapped_variants.isna(), "variant"].unique()
+    if len(not_found_variants) > 0:
+        print("Variants not found in reverse_aliasing_dict:", ", ".join(not_found_variants))
+
+    seq_counts["variant"] = mapped_variants.fillna("other")
     return seq_counts
 
 def aggregate_counts(seq_counts):
@@ -117,15 +124,17 @@ def save_seq_counts(seq_counts, output_file):
     seq_counts.to_csv(output_file, sep="\t", index=False)
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--seq-counts", type=str, required=True)
-    parser.add_argument("--aliasing", type=str, required=True)
-    parser.add_argument("--collapse-threshold", type=int, default=1000)
-    parser.add_argument("--output-seq-counts", type=str, required=True)
+    parser = argparse.ArgumentParser(description = "Given input sequence counts and \
+        Pango aliasing file, collapse Pango lineages into their parental lineages \
+        based on supplied threshold and output a new sequence counts file")
+    parser.add_argument("--seq-counts", type=str, required=True, help="input TSV of sequence counts")
+    parser.add_argument("--aliasing", type=str, required=True, help="input TSV of Pango aliasing")
+    parser.add_argument("--collapse-threshold", type=int, default=1000, help="threshold count to collapse lineage into parental lineage")
+    parser.add_argument("--output-seq-counts", type=str, required=True, help="output TSV of collapsed sequence counts")
     args = parser.parse_args()
 
-    seq_counts = load_seq_counts(args.seq_counts)
-    aliasing = load_aliasing(args.aliasing)
+    seq_counts = pd.read_csv(args.seq_counts, sep="\t")
+    aliasing = pd.read_csv(args.aliasing, sep="\t")
 
     seq_counts = apply_aliasing(seq_counts, aliasing)
     seq_counts = collapse_lineages(seq_counts, args.collapse_threshold)
