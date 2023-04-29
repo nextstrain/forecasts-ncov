@@ -2,6 +2,12 @@
 This part of the workflow runs the model scripts.
 """
 
+def _get_sequence_counts_input(wildcards):
+    if wildcards.variant_classification == 'pango_lineages':
+        return "data/{data_provenance}/{variant_classification}/{geo_resolution}/collapsed_seq_counts.tsv"
+
+    return "data/{data_provenance}/{variant_classification}/{geo_resolution}/prepared_seq_counts.tsv"
+
 def _get_models_option(wildcards, option_name):
     """
     Return the option for model from the config based on the
@@ -26,7 +32,7 @@ def _get_models_option(wildcards, option_name):
 rule renewal_model:
     input:
         cases = "data/{data_provenance}/{variant_classification}/{geo_resolution}/prepared_cases.tsv",
-        sequence_counts = "data/{data_provenance}/{variant_classification}/{geo_resolution}/collapsed_seq_counts.tsv"
+        sequence_counts = _get_sequence_counts_input
     output:
         # Note this output is not used in the shell command because it is one of the many
         # files generated and output to the export path.
@@ -55,7 +61,7 @@ rule renewal_model:
 
 rule mlr_model:
     input:
-        sequence_counts = "data/{data_provenance}/{variant_classification}/{geo_resolution}/collapsed_seq_counts.tsv"
+        sequence_counts = _get_sequence_counts_input
     output:
         # Note this output is not used in the shell command because it is one of the many
         # files generated and output to the export path.
