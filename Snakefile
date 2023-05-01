@@ -32,6 +32,13 @@ def get_todays_date():
     date = datetime.today().strftime('%Y-%m-%d')
     return date
 
+# Check which models to run based on which model configs have been provided
+models_to_run = [
+    model_name
+    for model_name in KNOWN_MODELS
+    if config.get(f"{model_name}_config")
+]
+
 def _get_all_input(w):
     data_provenances = config["data_provenances"] if isinstance(config["data_provenances"], list) else [config["data_provenances"]]
     variant_classifications = config["variant_classifications"] if isinstance(config["variant_classifications"], list) else [config["variant_classifications"]]
@@ -50,13 +57,6 @@ def _get_all_input(w):
             variant_classification=variant_classifications,
             geo_resolution=geo_resolutions
         )
-    ]
-
-    # Check which models to run based on which model configs have been provided
-    models_to_run = [
-        model_name
-        for model_name in KNOWN_MODELS
-        if config.get(f"{model_name}_config")
     ]
 
     if models_to_run:
@@ -82,10 +82,8 @@ def _get_all_input(w):
                 date=run_date
             ))
 
-            if (config.get("trigger_static_model_viz", False) and
-                all(required_model in models_to_run for required_model in ["mlr", "renewal"])):
-                # Trigger for static model viz which uses both MLR and renewal model outputs
-                # Currently we only support gisaid/global model results
+            if config.get("trigger_static_model_viz", False):
+                # Currently we only support gisaid/nextstrain_clades/global model results
                 all_input.extend(expand(
                     "results/{data_provenance}/{variant_classification}/{geo_resolution}/{date}_trigger_static_model_viz.done",
                     data_provenance=[data_provenance for data_provenance in data_provenances if data_provenance == "gisaid"],
