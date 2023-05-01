@@ -2,7 +2,7 @@ import argparse
 import csv
 import json
 import re
-from augur.utils import json_to_tree, annotate_parents_for_tree
+from augur.utils import json_to_tree
 
 def collect_args():
     parser = argparse.ArgumentParser(description = "Extract clade and lineage tip attributes")
