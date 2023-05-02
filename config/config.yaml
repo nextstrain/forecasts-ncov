@@ -30,8 +30,9 @@ prepare_data:
         location_min_seq_days: 30
         excluded_locations: "defaults/global_excluded_locations.txt"
         prune_seq_days: 12
-        clade_min_seq: 500
+        clade_min_seq: 1
         clade_min_seq_days: 150
+        collapse_threshold: 200
   open:
     nextstrain_clades:
       global:
@@ -50,8 +51,9 @@ prepare_data:
         location_min_seq_days: 30
         excluded_locations: "defaults/global_excluded_locations.txt"
         prune_seq_days: 12
-        clade_min_seq: 500
+        clade_min_seq: 1
         clade_min_seq_days: 150
+        collapse_threshold: 200
 
 # Params for the model run scripts
 models:

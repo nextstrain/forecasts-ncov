@@ -26,4 +26,4 @@ jobs:
       run: mamba install "pandas>=1.0.0" "tsv-utils"
 
     - name: Run Cram tests
-      run: cram --shell=/bin/bash tests/prepare_data/cram/
+      run: cram --shell=/bin/bash tests/
