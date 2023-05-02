@@ -1,4 +1,5 @@
-import { PanelDisplay, useModelData } from 'nextstrain-evofr-viz';
+import { PanelDisplay, useModelData } from '@nextstrain/evofr-viz';
+import '@nextstrain/evofr-viz/dist/index.css';
 import { renewalConfig, mlrConfig } from "./config";
 
 function App() {
