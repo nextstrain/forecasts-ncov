@@ -66,56 +66,40 @@
 # The script no longer uses the aliasing file, but pango_aliasor instead.
 
 import argparse
+
 import pandas as pd
 from pango_aliasor.aliasor import Aliasor
 
 
-def apply_aliasing(seq_counts: pd.DataFrame, aliasor: Aliasor):
-    mapped_variants = seq_counts["variant"].map(aliasor.uncompress)
-
-    # Find and print variants not found in aliasing_dict
-    not_found_variants = seq_counts.loc[mapped_variants.isna(), "variant"].unique()
-    if len(not_found_variants) > 0:
-        print("Variants not found in aliasing_dict:", ", ".join(not_found_variants))
-
-    seq_counts["variant"] = mapped_variants.fillna("other")
-    return seq_counts
-
-def get_parent(lineage):
-    parts = lineage.split(".")
-    if len(parts) > 1:
-        return ".".join(parts[:-1])
-    return "other"
-
-def collapse_lineages(seq_counts, collapse_threshold):
+def get_low_count_lineages(seq_counts: pd.DataFrame, collapse_threshold: int) -> set:
     total_counts = seq_counts.groupby("variant")["sequences"].sum()
-    low_count_lineages = total_counts[total_counts < collapse_threshold].index
+    low_count_lineages = set(total_counts[total_counts < collapse_threshold].index.to_list())
+    low_count_lineages.discard("other")
+    return low_count_lineages
 
+def collapse_lineages(seq_counts, collapse_threshold, aliasor: Aliasor):
     print("Starting variants:", len(seq_counts.groupby("variant")))
+    # Print all variant names
+    print(seq_counts.variant.unique())
 
+    low_count_lineages = get_low_count_lineages(seq_counts, collapse_threshold)
+
+    # What if "other" is the only low_count_lineage?
     while len(low_count_lineages) > 0:
         print("Low count lineages:", len(low_count_lineages))
         print(low_count_lineages)
         for lineage in low_count_lineages:
-            parent = get_parent(lineage)
+            parent = aliasor.parent(lineage)
+            if parent == "":
+                parent = "other"
             seq_counts.loc[seq_counts["variant"] == lineage, "variant"] = parent
 
-        total_counts = seq_counts.groupby("variant")["sequences"].sum()
-        low_count_lineages = total_counts[total_counts < collapse_threshold].index
+        low_count_lineages = get_low_count_lineages(seq_counts, collapse_threshold)
 
     print("Ending variants:", len(seq_counts.groupby("variant")))
+    print(seq_counts.groupby("variant"))
+    print(seq_counts.variant.unique())
 
-    return seq_counts
-
-def reverse_aliasing(seq_counts, aliasor: Aliasor):
-    mapped_variants = seq_counts["variant"].map(aliasor.compress)
-
-    # Find and print variants not found in reverse_aliasing_dict
-    not_found_variants = seq_counts.loc[mapped_variants.isna(), "variant"].unique()
-    if len(not_found_variants) > 0:
-        print("Variants not found in reverse_aliasing_dict:", ", ".join(not_found_variants))
-
-    seq_counts["variant"] = mapped_variants.fillna("other")
     return seq_counts
 
 def aggregate_counts(seq_counts):
@@ -141,9 +125,7 @@ def main():
     # Automatically downloads aliasing file from github, needs internet connection
     aliasor: Aliasor = Aliasor()
 
-    seq_counts = apply_aliasing(seq_counts, aliasor)
-    seq_counts = collapse_lineages(seq_counts, args.collapse_threshold)
-    seq_counts = reverse_aliasing(seq_counts, aliasor)
+    seq_counts = collapse_lineages(seq_counts, args.collapse_threshold, aliasor)
     seq_counts = aggregate_counts(seq_counts)
     seq_counts = sort_output(seq_counts)
 
