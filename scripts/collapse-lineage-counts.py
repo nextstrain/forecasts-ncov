@@ -61,13 +61,17 @@
 # to change name of `output` variable and a bit of dialog to remind GPT about the
 # need to convert empty strings to `other` and also to aggregate the `sequences`
 # column for each unique combination of `location`, `variant`, and `date`.
+# ----------------------------------------------
+#
+# The script no longer uses the aliasing file, but pango_aliasor instead.
 
 import argparse
 import pandas as pd
+from pango_aliasor.aliasor import Aliasor
 
-def apply_aliasing(seq_counts, aliasing):
-    aliasing_dict = aliasing.set_index("Nextclade_pango")["partiallyAliased"].to_dict()
-    mapped_variants = seq_counts["variant"].map(aliasing_dict)
+
+def apply_aliasing(seq_counts: pd.DataFrame, aliasor: Aliasor):
+    mapped_variants = seq_counts["variant"].map(aliasor.uncompress)
 
     # Find and print variants not found in aliasing_dict
     not_found_variants = seq_counts.loc[mapped_variants.isna(), "variant"].unique()
@@ -103,10 +107,8 @@ def collapse_lineages(seq_counts, collapse_threshold):
 
     return seq_counts
 
-def reverse_aliasing(seq_counts, aliasing):
-    reverse_aliasing_dict = aliasing.set_index("partiallyAliased")["Nextclade_pango"].to_dict()
-    reverse_aliasing_dict["other"] = "other"
-    mapped_variants = seq_counts["variant"].map(reverse_aliasing_dict)
+def reverse_aliasing(seq_counts, aliasor: Aliasor):
+    mapped_variants = seq_counts["variant"].map(aliasor.compress)
 
     # Find and print variants not found in reverse_aliasing_dict
     not_found_variants = seq_counts.loc[mapped_variants.isna(), "variant"].unique()
@@ -130,17 +132,18 @@ def main():
         Pango aliasing file, collapse Pango lineages into their parental lineages \
         based on supplied threshold and output a new sequence counts file")
     parser.add_argument("--seq-counts", type=str, required=True, help="input TSV of sequence counts")
-    parser.add_argument("--aliasing", type=str, required=True, help="input TSV of Pango aliasing")
     parser.add_argument("--collapse-threshold", type=int, default=1000, help="threshold count to collapse lineage into parental lineage")
     parser.add_argument("--output-seq-counts", type=str, required=True, help="output TSV of collapsed sequence counts")
     args = parser.parse_args()
 
     seq_counts = pd.read_csv(args.seq_counts, sep="\t")
-    aliasing = pd.read_csv(args.aliasing, sep="\t")
 
-    seq_counts = apply_aliasing(seq_counts, aliasing)
+    # Automatically downloads aliasing file from github, needs internet connection
+    aliasor: Aliasor = Aliasor()
+
+    seq_counts = apply_aliasing(seq_counts, aliasor)
     seq_counts = collapse_lineages(seq_counts, args.collapse_threshold)
-    seq_counts = reverse_aliasing(seq_counts, aliasing)
+    seq_counts = reverse_aliasing(seq_counts, aliasor)
     seq_counts = aggregate_counts(seq_counts)
     seq_counts = sort_output(seq_counts)
 

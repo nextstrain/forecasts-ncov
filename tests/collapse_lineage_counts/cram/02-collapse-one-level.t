@@ -3,7 +3,6 @@ This should only collapse BQ.1.1.1 into BQ.1.1 since the other lineages meet the
 
   $ python3 "$TESTDIR/../../../scripts/collapse-lineage-counts.py" \
   > --seq-counts "$TESTDIR/../data/prepared_seq_counts.tsv" \
-  > --aliasing "$TESTDIR/../data/pango_aliasing.tsv" \
   > --collapse-threshold 10 \
   > --output-seq-counts "$TESTDIR/collapsed_seq_counts.tsv" > /dev/null
 
