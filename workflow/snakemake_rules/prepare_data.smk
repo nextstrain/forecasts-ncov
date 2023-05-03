@@ -45,7 +45,7 @@ def _get_prepare_data_option(wildcards, option_name):
 
 
 rule prepare_clade_data:
-    message: "Preparing clade counts for analysis"
+    """Preparing clade counts for analysis"""
     input:
         cases = "data/cases/{geo_resolution}.tsv.gz",
         sequence_counts = "data/{data_provenance}/{variant_classification}/{geo_resolution}.tsv.gz"
@@ -83,7 +83,7 @@ rule prepare_clade_data:
         """
 
 rule download_nextclade_tree:
-    message: "Downloading Nextclade 21L tree JSON"
+    """Downloading Nextclade 21L tree JSON"""
     output:
         tree = "data/aliasing/nextclade_sars-cov-2.json"
     params:
@@ -98,7 +98,7 @@ rule download_nextclade_tree:
 # BQ.1	   22E (Omicron)  BQ.1	           BA.5.3.1.1.1.1.1
 # BQ.1.1   22E (Omicron)  BQ.1.1	       BA.5.3.1.1.1.1.1.1
 rule extract_pango_aliasing:
-    message: "Extracting Pango aliasing table from Nextclade tree"
+    """Extracting Pango aliasing table from Nextclade tree"""
     input:
         tree = "data/aliasing/nextclade_sars-cov-2.json"
     output:
@@ -111,7 +111,7 @@ rule extract_pango_aliasing:
         """
 
 rule collapse_sequence_counts:
-    message: "Collapsing Pango lineages, based on sequence count threshold"
+    """Collapsing Pango lineages, based on sequence count threshold"""
     input:
         sequence_counts = "data/{data_provenance}/{variant_classification}/{geo_resolution}/prepared_seq_counts.tsv",
         aliasing = "data/aliasing/pango_aliasing.tsv"
