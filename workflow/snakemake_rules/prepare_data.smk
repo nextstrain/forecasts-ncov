@@ -45,7 +45,7 @@ def _get_prepare_data_option(wildcards, option_name):
 
 
 rule prepare_clade_data:
-    "Preparing clade counts for analysis"
+    """Preparing clade counts for analysis"""
     input:
         cases = "data/cases/{geo_resolution}.tsv.gz",
         sequence_counts = "data/{data_provenance}/{variant_classification}/{geo_resolution}.tsv.gz"
@@ -81,7 +81,6 @@ rule prepare_clade_data:
             --output-seq-counts {output.sequence_counts} \
             --output-cases {output.cases} 2>&1 | tee {log}
         """
-
 
 rule collapse_sequence_counts:
     "Collapsing Pango lineages, based on sequence count threshold"
