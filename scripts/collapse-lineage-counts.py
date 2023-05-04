@@ -77,6 +77,9 @@ def get_low_count_lineages(seq_counts: pd.DataFrame, collapse_threshold: int) ->
     low_count_lineages.discard("other")
     return low_count_lineages
 
+def lineage_depth(lineage: str, aliasor: Aliasor) -> int:
+    return len(aliasor.uncompress(lineage).split("."))
+
 def collapse_lineages(seq_counts, collapse_threshold, aliasor: Aliasor):
     print("Starting variants:", len(seq_counts.groupby("variant")))
     # Print all variant names
@@ -84,15 +87,20 @@ def collapse_lineages(seq_counts, collapse_threshold, aliasor: Aliasor):
 
     low_count_lineages = get_low_count_lineages(seq_counts, collapse_threshold)
 
-    # What if "other" is the only low_count_lineage?
-    while len(low_count_lineages) > 0:
+    # Find max depth of lineage tree
+    max_lineage_depth = max(map(lambda x: lineage_depth(x, aliasor), low_count_lineages))
+
+    # Collapse lineages from highest depth to lowest depth
+    for depth in range(max_lineage_depth, 0, -1):
+        print("Depth:", depth)
         print("Low count lineages:", len(low_count_lineages))
         print(low_count_lineages)
         for lineage in low_count_lineages:
-            parent = aliasor.parent(lineage)
-            if parent == "":
-                parent = "other"
-            seq_counts.loc[seq_counts["variant"] == lineage, "variant"] = parent
+            if lineage_depth(lineage, aliasor) == depth: 
+                parent = aliasor.parent(lineage)
+                if parent == "":
+                    parent = "other"
+                seq_counts.loc[seq_counts["variant"] == lineage, "variant"] = parent
 
         low_count_lineages = get_low_count_lineages(seq_counts, collapse_threshold)
 
