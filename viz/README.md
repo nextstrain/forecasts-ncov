@@ -2,7 +2,12 @@
 
 > _This is a work in progress!_
 
-Quickstart:
+
+The web-app detailed here is currently running at [nextstrain.github.io/forecasts-ncov/](https://nextstrain.github.io/forecasts-ncov/) and will visualise the lates available model run.
+If you wish to visualise a local JSON file, it may be easiest to use [this drag-and-drop web app](https://nextstrain.github.io/forecasts-viz/).
+
+
+### Quickstart:
 
 ```
 npm ci
@@ -45,3 +50,10 @@ node scripts/static-images.js
 ```
 
 This is run via the `generate-static-model-viz` GitHub action of this repo
+
+
+### Updating the GitHub pages site
+
+A [GitHub Action](https://github.com/nextstrain/forecasts-ncov/blob/main/.github/workflows/deploy-viz-app.yaml) will automatically re-deploy the site whenever changes to files in this directory (`viz`) are committed to the main branch.
+The GitHub pages site is available at [nextstrain.github.io/forecasts-ncov/](https://nextstrain.github.io/forecasts-ncov/).
+

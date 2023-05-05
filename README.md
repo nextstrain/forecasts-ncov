@@ -2,8 +2,18 @@
 
 > :warning: **WARNING: This is an alpha release.** Output file format and address may change at any time
 
+This repo forms the basis of our continually-updated modelling of SARS-CoV-2 variant frequencies.
+Broadly speaking, the moving pieces in this repo are:
+
+* Data ingest, which produces TSV files of sequence counts. See [./ingest/README](https://github.com/nextstrain/forecasts-ncov/blob/main/ingest/README.md) for more details.
+* Variant modelling, which is detailed in this README. The models themselves are defined in the [evofr](https://github.com/blab/evofr) repo.
+* The `./viz/` directory contains a web-app which visualises the latest model outputs. See [./viz/README](https://github.com/nextstrain/forecasts-ncov/blob/main/ingest/README.md) for more details. Currently this web-app is available at [nextstrain.github.io/forecasts-ncov/](https://nextstrain.github.io/forecasts-ncov/).
+
+
 ## Automated pipeline
 The automated pipeline runs daily based on a scheduled jobs and triggers from upstream data ingests.
+We use GitHub actions to schedule these jobs, often with one job triggering another upon completion.
+
 * Case counts are fetched from [external data sources](./ingest/README.md#data-sources) daily at 8 AM PST
 * Raw metadata/sequences are fetched and cleaned via [nextstrain/ncov-ingest].
     * See [GISAID](https://github.com/nextstrain/ncov-ingest/blob/master/.github/workflows/fetch-and-ingest-gisaid-master.yml) and [open](https://github.com/nextstrain/ncov-ingest/blob/master/.github/workflows/fetch-and-ingest-genbank-master.yml) data workflows for their daily scheduled times
