@@ -1,4 +1,4 @@
-/* 
+/*
   Lato fonts downloaded from https://www.latofonts.com/,
   which also includes the mapping of CSS weights to font names.
   Only a subset of the available weights imported here to reduce bundle size
@@ -15,12 +15,11 @@
 }
 
 .App {
-  /* default margin is for mobile / small displays */
-  margin: 50px 100px;
+  /* These margins are shrunken to work in an iFrame */
+  margin: 10px 10px;
   @media screen and (min-width: 1000px) {
-    margin: 50px 100px;
+    margin: 10px 10px;
   }
-  /* border: solid purple; */
   text-align: center;
   font-family: Lato, Helvetica Neue, Helvetica, sans-serif;
   font-size: 16px;
@@ -63,10 +62,25 @@
 }
 
 .App h2 {
-  font-weight: 300;
-  margin-bottom: 15px;
-  margin-top: 50px;
-  margin-left: 10%;
-  margin-right: 10%;
+  text-align: left;
+  font-weight: 500;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
   font-size: 20px;
+}
+
+.App p {
+  text-align: left;
+  font-weight: 300;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+.App .panelDisplay {
+  margin-bottom: 50px;
 }
