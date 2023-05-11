@@ -28,10 +28,10 @@ function parseArgs() {
  * we will take screenshots of
  */
 const elementsToScreenshot = [
-  "frequenciesPanel",
-  "rtPanel",
-  "smoothedIncidencePanel",
-  "growthAdvantagePanel",
+  "cladeFrequenciesPanel",
+  "cladeGrowthAdvantagePanel",
+  "lineageFrequenciesPanel",
+  "lineageGrowthAdvantagePanel",
 ];
 
 const resolutions = [
@@ -60,14 +60,17 @@ async function captureScreenshot(dir) {
 
     await page.goto("http://localhost:3000/forecasts-ncov/");
 
-    await page.waitForSelector('#frequenciesPanel', {visible: true})
+    await page.waitForSelector('#cladeFrequenciesPanel', {visible: true})
     await page.waitForSelector('svg', {visible: true})
-    await page.waitForTimeout(500); // ensure it's painted -- may not be necessary?
+    await page.waitForTimeout(700); // ensure it's painted -- may not be necessary?
     console.log("Page, including SGVs, rendered")
-    await removeLogitToggle(page);
+    await removeLogitToggle(page, '#cladeFrequenciesPanel');
+    await removeLogitToggle(page, '#lineageFrequenciesPanel');
+
 
     for (const resolution of resolutions) {
       await page.setViewport({ width: resolution.width, height: 1080 });
+      await page.waitForTimeout(700); // the library has a 500ms debounce when listening to window resizes
       /* save each panel (of small multiples) as a .png image */
       console.log(`Finding & saving panels at size ${resolution.name} (page width of ${resolution.width}px)`);
       for (const id of elementsToScreenshot) {
@@ -102,20 +105,22 @@ async function main({outputDir}) {
   server.close();
 }
 
-async function removeLogitToggle(page) {
+async function removeLogitToggle(page, parentID) {
   console.log("Removing logit toggle prior to screenshots")
   try {
-    await page.evaluate(() => {
+    await page.evaluate((parentID) => {
       /* Structure is:
-      <div id=frequenciesPanel>
+      <div id="cladeFrequenciesPanel">
         <div>
           <div>TOGGLE HERE</div>
           <div>Panels, Legend</div>
         </div>
       </div>
-      */  
-      document.querySelector('#frequenciesPanel').children[0].children[0].remove()
-    })
+      */
+      // NOTE: this function is called in the page's context, so you
+      // don't have access to variables outside this function's scope
+      document.querySelector(parentID).children[0].children[0].remove()
+    }, parentID)
     console.log("\tSuccess")
   } catch (err) {
     console.error(err)

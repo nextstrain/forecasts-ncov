@@ -49,7 +49,9 @@ node scripts/static-images.js
 # images will be in ./figures
 ```
 
-This is run via the `generate-static-model-viz` GitHub action of this repo
+This is run via the `generate-static-model-viz` GitHub action of this repo.
+
+You can `open ./example-static-images.html` to see an example HTML page where different image sizes are selected based on your screen size.
 
 
 ### Updating the GitHub pages site

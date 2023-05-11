@@ -7,7 +7,7 @@ Broadly speaking, the moving pieces in this repo are:
 
 * Data ingest, which produces TSV files of sequence counts. See [./ingest/README](https://github.com/nextstrain/forecasts-ncov/blob/main/ingest/README.md) for more details.
 * Variant modelling, which is detailed in this README. The models themselves are defined in the [evofr](https://github.com/blab/evofr) repo.
-* The `./viz/` directory contains a web-app which visualises the latest model outputs. See [./viz/README](https://github.com/nextstrain/forecasts-ncov/blob/main/ingest/README.md) for more details. Currently this web-app is available at [nextstrain.github.io/forecasts-ncov/](https://nextstrain.github.io/forecasts-ncov/).
+* The `./viz/` directory contains a web-app which visualises the latest model outputs. See [./viz/README](https://github.com/nextstrain/forecasts-ncov/blob/main/viz/README.md) for more details. Currently this web-app is available at [nextstrain.github.io/forecasts-ncov/](https://nextstrain.github.io/forecasts-ncov/).
 
 
 ## Automated pipeline
