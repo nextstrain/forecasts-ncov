@@ -3,9 +3,10 @@
  * Eventually all of these will (hopefully) be part of the
  * JSON itself.
  */
-const DEFAULT_ENDPOINT_PREFIX = "https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/global";
-const mlrUrl = `${DEFAULT_ENDPOINT_PREFIX}/mlr/latest_results.json`;
-const renewalUrl = `${DEFAULT_ENDPOINT_PREFIX}/renewal/latest_results.json`;
+
+const DEFAULT_ENDPOINT_PREFIX = "https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov";
+const mlrCladesUrl = `${DEFAULT_ENDPOINT_PREFIX}/gisaid/nextstrain_clades/global/mlr/latest_results.json`;
+const mlrLineagesUrl = `${DEFAULT_ENDPOINT_PREFIX}/gisaid/pango_lineages/global/mlr/latest_results.json`;
 
 const variantColors = new Map([
   ["other", "#595959"],
@@ -26,17 +27,16 @@ const variantDisplayNames = new Map([
   ["23B (Omicron)", "23B (XBB.1.16)"],
 ]);
 
-export const mlrConfig = {
-  modelName: "MLR",
-  modelUrl: mlrUrl,
+export const mlrCladesConfig = {
+  modelName: "mlr_clades",
+  modelUrl: mlrCladesUrl,
   sites: undefined, // can restrict the sites parsed from the JSON
   variantColors,
   variantDisplayNames
 };
-export const renewalConfig = {
-  modelName: "Renewal",
-  modelUrl: renewalUrl,
+
+export const mlrLineagesConfig = {
+  modelName: "mlr_lineages",
+  modelUrl: mlrLineagesUrl,
   sites: undefined, // can restrict the sites parsed from the JSON
-  variantColors,
-  variantDisplayNames
 };

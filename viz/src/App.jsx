@@ -1,46 +1,54 @@
 import { PanelDisplay, useModelData } from '@nextstrain/evofr-viz';
 import '@nextstrain/evofr-viz/dist/index.css';
-import { renewalConfig, mlrConfig } from "./config";
+import { mlrCladesConfig, mlrLineagesConfig } from "./config";
 
 function App() {
 
-  const mlrData = useModelData(mlrConfig);
-  const renewalData = useModelData(renewalConfig);
+  const mlrCladesData = useModelData(mlrCladesConfig);
+  const mlrLineagesData = useModelData(mlrLineagesConfig);
 
   return (
     <div className="App">
-      <h1>Nextstrain SARS-CoV-2 Forecasts</h1>
-      <div className="abstract">
-        {`The interactive visualisations of evofr modelling data using `}
-        <a href="github.com/nextstrain/forecasts-viz/">our visualisation library</a>{`.`}
-        <p/>
-        {`Currently this page is used to generate static images which are then used within the
-        nextstrain.org codebase - please edit that page to update the titles and abstracts.`}
-        <p/>
-        {`The config ('./src/config.js') defines the variant colors, display names as well as
-        the URLs where the model JSONs are fetched from.`}
-      </div>
 
       <div id="mainPanelsContainer">
-        <h2>Frequencies (MLR model)</h2>
-        <div id="frequenciesPanel"> {/* surrounding div(s) used for static-images.js script */}
-          <PanelDisplay data={mlrData} graphType="frequency"/>
+        <h2>Clade frequencies over time</h2>
+        <p>
+          Each line represents the estimated frequency of a particular clade through time.
+          Equivalent Pango lineage is given in parenthesis, eg clade 22B (lineage BA.5).
+        </p>
+        <div id="cladeFrequenciesPanel" class="panelDisplay"> {/* surrounding div(s) used for static-images.js script */}
+          <PanelDisplay data={mlrCladesData} params={{preset: "frequency"}}/>
         </div>
 
-        <h2>Growth Advantage (MLR model)</h2>
-        <div id="growthAdvantagePanel">
-          <PanelDisplay data={mlrData} graphType="growthAdvantage"/>
+        <h2>Clade growth advantage</h2>
+        <p>
+          These plots show the estimated growth advantage for given clades relative to clade
+          22B (lineage BA.5). This describes how many more secondary infections a variant causes
+          on average relative to clade 22B. Vertical bars show the 95% HPD.
+        </p>
+        <div id="cladeGrowthAdvantagePanel" class="panelDisplay">
+          <PanelDisplay data={mlrCladesData} params={{preset: "growthAdvantage"}}/>
         </div>
 
-        <h2>Cases (Renewal model)</h2>
-        <div id="smoothedIncidencePanel">
-          <PanelDisplay data={renewalData} graphType="stackedIncidence" />
+        <h2>Lineage frequencies over time</h2>
+        <p>
+          Each line represents the estimated frequency of a particular Pango lineage through time.
+          Lineages with fewer than 200 observations are collapsed into parental lineage.
+        </p>
+        <div id="lineageFrequenciesPanel" class="panelDisplay">
+          <PanelDisplay data={mlrLineagesData} params={{preset: "frequency"}}/>
         </div>
 
-        <h2>Effective Reproduction Number over time (Renewal model)</h2>
-        <div id="rtPanel">
-          <PanelDisplay data={renewalData} graphType="R"/>
+        <h2>Lineage growth advantage</h2>
+        <p>
+          These plots show the estimated growth advantage for given Pango lineages relative to
+          lineage BA.5. This describes how many more secondary infections a variant causes
+          on average relative to lineage BA.5. Vertical bars show the 95% HPD.
+        </p>
+        <div id="lineageGrowthAdvantagePanel" class="panelDisplay">
+          <PanelDisplay data={mlrLineagesData} params={{preset: "growthAdvantage"}}/>
         </div>
+
       </div>
     </div>
   )
