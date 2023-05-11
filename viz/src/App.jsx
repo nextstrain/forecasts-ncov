@@ -24,22 +24,22 @@ function App() {
       <div id="mainPanelsContainer">
         <h2>Frequencies (MLR model)</h2>
         <div id="frequenciesPanel"> {/* surrounding div(s) used for static-images.js script */}
-          <PanelDisplay data={mlrData} graphType="frequency"/>
+          <PanelDisplay data={mlrData} params={{preset: "frequency"}}/>
         </div>
 
         <h2>Growth Advantage (MLR model)</h2>
         <div id="growthAdvantagePanel">
-          <PanelDisplay data={mlrData} graphType="growthAdvantage"/>
+          <PanelDisplay data={mlrData} params={{preset: "growthAdvantage"}}/>
         </div>
 
         <h2>Cases (Renewal model)</h2>
         <div id="smoothedIncidencePanel">
-          <PanelDisplay data={renewalData} graphType="stackedIncidence" />
+          <PanelDisplay data={renewalData} params={{preset: "stackedIncidence"}} />
         </div>
 
         <h2>Effective Reproduction Number over time (Renewal model)</h2>
         <div id="rtPanel">
-          <PanelDisplay data={renewalData} graphType="R"/>
+          <PanelDisplay data={renewalData} params={{preset: "R_t"}}/>
         </div>
       </div>
     </div>

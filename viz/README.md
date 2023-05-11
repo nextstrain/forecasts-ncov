@@ -37,7 +37,7 @@ You can provide style overrides to the `<PanelDisplay>` component (`./src/App.js
 
 ```diff
 - <PanelDisplay graphType="r_t"/>
-+ <PanelDisplay graphType="r_t" facetStyles={{width: 250, height: 200, top: 5, right: 0, bottom: 20, left: 35}}/>
++ <PanelDisplay graphType="r_t" styles={{width: 250, height: 200, top: 5, right: 0, bottom: 20, left: 35}}/>
 ```
 
 ### Static image generation
