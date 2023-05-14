@@ -7,6 +7,7 @@ import os
 import yaml
 import json
 import evofr as ef
+from datetime import date
 
 
 def parse_with_default(cf, var, dflt):
@@ -141,7 +142,9 @@ def fit_models(rs, locations, model, inference_method, path, save, pivot=None):
         posterior = inference_method.fit(model, data, name=location)
 
         # Forecast frequencies
-        model.forecast_frequencies(posterior.samples, forecast_L=model.forecast_L)
+        n_days_to_present = (pd.to_datetime(date.today()) - data.dates[-1]).days
+        n_days_to_forecast = n_days_to_present + model.forecast_L
+        model.forecast_frequencies(posterior.samples, forecast_L=n_days_to_forecast)
 
         # Add posterior to group
         multi_posterior.add_posterior(posterior=posterior)
@@ -208,6 +211,7 @@ def export_results(multi_posterior, ps, path, data_name):
             )
         )
     results = ef.posterior.combine_sites_tidy(results)
+    results["metadata"]["updated"] = pd.to_datetime(date.today())
     ef.save_json(results, path=f"{path}/{data_name}_results.json")
 
 
