@@ -284,6 +284,12 @@ if __name__ == "__main__":
         "--pivot",
         help="Variant to use as pivot. Overrides model.pivot in config.",
     )
+
+    parser.add_argument(
+        "--hier",
+        help="Whether to run the model as hierarchical. Overrides model.hierarchical in config. "
+        + "Default is false if unspecified."
+    )
     args = parser.parse_args()
 
     # Load configuration, data, and create model
@@ -317,7 +323,12 @@ if __name__ == "__main__":
     print("pivot", pivot)
 
     # Fit or load model results
-    hier = config.config["model"]["hierarchical"] or False
+    hier = False
+    if config.config["model"]["hierarchical"]:
+        hier = config.config["model"]["pivot"]
+    if args.hier:
+        hier = args.hier
+    print("hierarchical", hier)
 
     if fit:
         print("Fitting model")
