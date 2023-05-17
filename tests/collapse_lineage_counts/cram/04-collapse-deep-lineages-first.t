@@ -1,9 +1,11 @@
-Collapse lineages with a threshold of 10.
-This should only collapse BQ.1.1.1 into BQ.1.1 since the other lineages meet the threshold
+Collapse lineages with a threshold of 12. The BQ.1.1 lineage would not meet
+this threshold if the deeper lineage BQ.1.1.1 was not already collapsed into it.
+This should only collapse BQ.1.1.1 into BQ.1.1 since we collapse from the
+deepest lineages first.
 
   $ python3 "$TESTDIR/../../../scripts/collapse-lineage-counts.py" \
   > --seq-counts "$TESTDIR/../data/prepared_seq_counts.tsv" \
-  > --collapse-threshold 10 \
+  > --collapse-threshold 12 \
   > --output-seq-counts "$TESTDIR/collapsed_seq_counts.tsv" > /dev/null
 
 Verify the output seq counts
