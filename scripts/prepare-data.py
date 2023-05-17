@@ -204,6 +204,9 @@ if __name__ == '__main__':
         # Replace variant with 'other' if they are not force included and do not meet the clade_min_seq requirement
         seq_counts.loc[~seq_counts['clade'].isin(force_included_clades | clades_with_min_seq), 'variant'] = 'other'
 
+    # Replace 'recombinant' clade with 'other'
+    seq_counts.loc[seq_counts['clade'].isin(['recombinant']), 'variant'] = 'other'
+
     # Add clades with unknown variants to 'other' variant group
     seq_counts.loc[pd.isna(seq_counts['variant']), 'variant'] = 'other'
 
