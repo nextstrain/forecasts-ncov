@@ -10,6 +10,3 @@ upload:
 
 # Send Slack notifications
 send_slack_notifications: True
-
-# Trigger static model viz workflow
-trigger_static_model_viz: True
