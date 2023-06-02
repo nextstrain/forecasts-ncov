@@ -72,4 +72,5 @@ jobs:
               --configfile config/config.yaml optional.yaml \
               --printshellcmds \
               --cores 8 \
+              --keep-going \
               "${override_config[@]}"
