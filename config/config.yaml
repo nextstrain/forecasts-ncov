@@ -26,13 +26,13 @@ prepare_data:
     pango_lineages:
       global:
         included_days: 150
-        location_min_seq: 2500
+        location_min_seq: 2000
         location_min_seq_days: 30
         excluded_locations: "defaults/global_excluded_locations.txt"
         prune_seq_days: 12
         clade_min_seq: 1
         clade_min_seq_days: 150
-        collapse_threshold: 200
+        collapse_threshold: 250
   open:
     nextstrain_clades:
       global:
@@ -53,7 +53,7 @@ prepare_data:
         prune_seq_days: 12
         clade_min_seq: 1
         clade_min_seq_days: 150
-        collapse_threshold: 200
+        collapse_threshold: 250
 
 # Params for the model run scripts
 models:
