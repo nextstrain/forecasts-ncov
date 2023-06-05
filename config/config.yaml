@@ -45,7 +45,7 @@ prepare_data:
     pango_lineages:
       global:
         included_days: 150
-        location_min_seq: 1500
+        location_min_seq: 1200
         location_min_seq_days: 30
         excluded_locations: "defaults/global_excluded_locations.txt"
         prune_seq_days: 12
