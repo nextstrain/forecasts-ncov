@@ -144,6 +144,10 @@ if __name__ == '__main__':
     locations_to_include = locations_with_min_seq - excluded_locations
     print(f"Locations that will be included: {sorted(locations_to_include)}.")
 
+    assert len(locations_to_include) > 0, \
+        "All locations have been excluded. Try again with different options, e.g. lowering the `--location-min-seq` cutoff.\n" + \
+        f"Here's a summary of available sequences per location:\n{seqs_per_location.to_dict(orient='records')}"
+
     ###########################################################################
     ############## Rules for collapsing clades to variants ####################
     ###########################################################################
@@ -234,7 +238,11 @@ if __name__ == '__main__':
         (seq_counts['location'].isin(locations_to_include))
     ]
 
-    print(f"Variants that will be included: {sorted(seq_counts['variant'].unique())}.")
+    included_variants = seq_counts['variant'].unique()
+    print(f"Variants that will be included: {sorted(included_variants)}.")
+
+    assert len(included_variants) > 0, \
+        "All variants have been excluded. Try again with different options, e.g. lowering the `--clade-min-seq` cutoff."
 
     # Sort variants subset and print to output file
     seq_counts.sort_values(['location', 'variant', 'date']) \
