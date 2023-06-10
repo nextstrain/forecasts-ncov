@@ -133,7 +133,7 @@ def fit_models(rs, locations, model, inference_method, hier, path, save, pivot=N
         # Subset data to locations of interest
         raw_seq = rs[rs.location.isin(locations)]
         data = ef.HierFrequencies(raw_seq=raw_seq, pivot=pivot, group="location")
-        
+
         # Fit model
         posterior = inference_method.fit(model, data, name="hierarchical")
 
@@ -215,7 +215,7 @@ def export_results(multi_posterior, ps, path, data_name, hier):
     EXPORT_ATTRS = ["pivot"]
     # Make directories
     make_model_directories(path)
-    
+
     # Split hierarchical results into group posteriors
     if hier:
         def get_group_samples(samples, sites, group):
@@ -286,7 +286,7 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--hier",
+        "--hier",  action='store_true', default=False,
         help="Whether to run the model as hierarchical. Overrides model.hierarchical in config. "
         + "Default is false if unspecified."
     )
@@ -324,8 +324,8 @@ if __name__ == "__main__":
 
     # Fit or load model results
     hier = False
-    if config.config["model"]["hierarchical"]:
-        hier = config.config["model"]["pivot"]
+    if "hierarchical" in config.config["model"]:
+        hier = True
     if args.hier:
         hier = args.hier
     print("hierarchical", hier)
