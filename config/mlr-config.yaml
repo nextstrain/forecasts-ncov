@@ -13,7 +13,7 @@ settings:
 
 model:
   generation_time: 4.8
-  pivot: "22B (Omicron)"
+  pivot: "23A (Omicron)"
 
 inference:
   method: "NUTS"

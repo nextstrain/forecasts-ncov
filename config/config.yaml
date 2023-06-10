@@ -58,17 +58,17 @@ models:
   gisaid:
     nextstrain_clades:
       global:
-        pivot: "'22B (Omicron)'"
+        pivot: "'23A (Omicron)'"
     pango_lineages:
       global:
-        pivot: "BA.5"
+        pivot: "XBB.1.5"
   open:
     nextstrain_clades:
       global:
-        pivot: "'22B (Omicron)'"
+        pivot: "'23A (Omicron)'"
     pango_lineages:
       global:
-        pivot: "BA.5"
+        pivot: "XBB.1.5"
 
 # Model configs
 mlr_config: "config/mlr-config.yaml"
