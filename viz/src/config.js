@@ -10,12 +10,12 @@ const mlrLineagesUrl = `${DEFAULT_ENDPOINT_PREFIX}/gisaid/pango_lineages/global/
 
 const variantColors = new Map([
   ["other", "#595959"],
-  ["22B (Omicron)", "#A6A6A6"],
-  ["22D (Omicron)", "#4D21AD"],
-  ["22E (Omicron)", "#4C90C0"],
-  ["22F (Omicron)", "#8EBC66"],
-  ["23A (Omicron)", "#DEA73C"],
-  ["23B (Omicron)", "#DB2823"],
+  ["22B (Omicron)", "#416DCE"],
+  ["22D (Omicron)", "#59A3AA"],
+  ["22E (Omicron)", "#84BA6F"],
+  ["22F (Omicron)", "#BBBC49"],
+  ["23A (Omicron)", "#E29D39"],
+  ["23B (Omicron)", "#E1502A"],
 ]);
 const variantDisplayNames = new Map([
   ["other", "other"],
