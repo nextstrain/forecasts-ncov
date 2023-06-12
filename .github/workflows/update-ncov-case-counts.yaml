@@ -36,11 +36,6 @@ jobs:
     - name: download case counts
       run: |
         ./ingest/bin/fetch-ncov-global-case-counts > global_case_counts.tsv
-        ./ingest/bin/fetch-ncov-us-case-counts > us_case_counts.tsv
-
-    - name: notify new us locations
-      run: |
-        ./ingest/bin/notify-on-new-location us_case_counts.tsv ingest/source-data/us-states.tsv
 
     - name: upload to S3
       run: |
@@ -52,7 +47,6 @@ jobs:
         fi
 
         ./ingest/bin/upload-to-s3 global_case_counts.tsv "$S3_DST"/global.tsv.gz $CLOUDFRONT_DOMAIN
-        ./ingest/bin/upload-to-s3 us_case_counts.tsv "$S3_DST"/usa.tsv.gz $CLOUDFRONT_DOMAIN
       env:
         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
