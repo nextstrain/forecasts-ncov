@@ -83,17 +83,23 @@ class MLRConfig:
 
         return raw_seq, locations
 
-    def load_model(self):
+    def load_model(self, override_hier=None):
         model_cf = self.config["model"]
 
         # Processing generation time
         tau = parse_generation_time(model_cf)
         forecast_L = parse_with_default(model_cf, "forecast_L", dflt=30)
+        hier = parse_with_default(model_cf, "hierarchical", dflt=False)
+        if override_hier is not None:
+            hier = override_hier
 
         # Processing likelihoods
-        model = ef.MultinomialLogisticRegression(tau=tau)
+        if hier:
+            model = ef.HierMLR(tau=tau)
+        else:
+            model = ef.MultinomialLogisticRegression(tau=tau)
         model.forecast_L = forecast_L
-        return model
+        return model, hier
 
     def load_optim(self):
         infer_cf = self.config["inference"]
@@ -137,10 +143,10 @@ def fit_models(rs, locations, model, inference_method, hier, path, save, pivot=N
         # Fit model
         posterior = inference_method.fit(model, data, name="hierarchical")
 
-        #TODO: Add forecast method for these hierarchical models
+        # Forecast frequencies
         n_days_to_present = (pd.to_datetime(date.today()) - data.dates[-1]).days
         n_days_to_forecast = n_days_to_present + model.forecast_L
-        # model.forecast_frequencies(posterior.samples, forecast_L=n_days_to_forecast)
+        model.forecast_frequencies(posterior.samples, forecast_L=n_days_to_forecast)
 
         multi_posterior.add_posterior(posterior=posterior)
 
@@ -299,7 +305,11 @@ if __name__ == "__main__":
     raw_seq, locations = config.load_data(args.seq_path)
     print("Data loaded sucessfuly")
 
-    mlr_model = config.load_model()
+    override_hier = None
+    if args.hier:
+        override_hier = args.hier
+
+    mlr_model, hier = config.load_model(override_hier=override_hier)
     print("Model created.")
 
     inference_method = config.load_optim()
@@ -316,6 +326,7 @@ if __name__ == "__main__":
 
     # Find pivot
     # Use mlr config pivot unless a dataset-specific pivot is specified
+    pivot = None
     if config.config["model"]["pivot"]:
         pivot = config.config["model"]["pivot"]
     if args.pivot and args.pivot != "None":
@@ -323,13 +334,6 @@ if __name__ == "__main__":
     print("pivot", pivot)
 
     # Fit or load model results
-    hier = False
-    if "hierarchical" in config.config["model"]:
-        hier = True
-    if args.hier:
-        hier = args.hier
-    print("hierarchical", hier)
-
     if fit:
         print("Fitting model")
         multi_posterior = fit_models(
