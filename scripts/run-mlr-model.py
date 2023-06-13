@@ -151,33 +151,33 @@ def fit_models(rs, locations, model, inference_method, hier, path, save, pivot=N
         multi_posterior.add_posterior(posterior=posterior)
 
         if save:
-            posterior.save_posterior(f"{path}/model/hierarchical.json")
+            posterior.save_posterior(f"{path}/models/hierarchical.json")
+    else:
+        for location in locations:
+            # Subset to data of interest
+            raw_seq = rs[rs.location == location].copy()
 
-    for location in locations:
-        # Subset to data of interest
-        raw_seq = rs[rs.location == location].copy()
+            # Check to see if location available
+            if len(raw_seq) == 0:
+                print(f"Location {location} not in data")
+                continue
 
-        # Check to see if location available
-        if len(raw_seq) == 0:
-            print(f"Location {location} not in data")
-            continue
+            data = ef.VariantFrequencies(raw_seq=raw_seq, pivot=pivot)
 
-        data = ef.VariantFrequencies(raw_seq=raw_seq, pivot=pivot)
+            # Fit model
+            posterior = inference_method.fit(model, data, name=location)
 
-        # Fit model
-        posterior = inference_method.fit(model, data, name=location)
+            # Forecast frequencies
+            n_days_to_present = (pd.to_datetime(date.today()) - data.dates[-1]).days
+            n_days_to_forecast = n_days_to_present + model.forecast_L
+            model.forecast_frequencies(posterior.samples, forecast_L=n_days_to_forecast)
 
-        # Forecast frequencies
-        n_days_to_present = (pd.to_datetime(date.today()) - data.dates[-1]).days
-        n_days_to_forecast = n_days_to_present + model.forecast_L
-        model.forecast_frequencies(posterior.samples, forecast_L=n_days_to_forecast)
+            # Add posterior to group
+            multi_posterior.add_posterior(posterior=posterior)
 
-        # Add posterior to group
-        multi_posterior.add_posterior(posterior=posterior)
-
-        # if save, save
-        if save:
-            posterior.save_posterior(f"{path}/models/{location}.json")
+            # if save, save
+            if save:
+                posterior.save_posterior(f"{path}/models/{location}.json")
 
     return multi_posterior
 
@@ -231,37 +231,53 @@ def export_results(multi_posterior, ps, path, data_name, hier):
             return samples_group
 
         mp = multi_posterior
-        hier_samples = mp.locator["hierarchical"].samples
+        hier_posterior = mp.locator["hierarchical"]
+        hier_samples = hier_posterior.samples
+        hier_data = hier_posterior.data
         multi_posterior = ef.MultiPosterior()
-        for n, name in enumerate(mp.data.groups):
+        for n, name in enumerate(hier_data.names):
+            hier_data.groups[n].dates = hier_data.dates
             multi_posterior.add_posterior(
                  ef.PosteriorHandler(
                     samples=get_group_samples(hier_samples, EXPORT_SITES, n),
-                    data=mp.data.groups[n],
+                    data=hier_data.groups[n],
                     name=name)
             )
         # Add final posterior for hierarchical growth advantages
         multi_posterior.add_posterior(
             ef.PosteriorHandler(
                 samples={"ga": hier_samples["ga_loc"]},
-                data=mp.data,
+                data=hier_data,
                 name="hierarchical")
         )
 
     # Combine jsons from multiple model runs
     results = []
     for location, posterior in multi_posterior.locator.items():
-        results.append(
-            ef.posterior.get_sites_variants_tidy(
-                posterior.samples,
-                posterior.data,
-                EXPORT_SITES,
-                EXPORT_DATED,
-                EXPORT_FORECASTS,
-                ps,
-                location,
+        if location == "hierarchical":
+            results.append(
+                ef.posterior.get_sites_variants_tidy(
+                    posterior.samples,
+                    posterior.data,
+                    ["ga"],
+                    [False],
+                    [False],
+                    ps,
+                    location
+                )
             )
-        )
+        else:
+            results.append(
+                ef.posterior.get_sites_variants_tidy(
+                    posterior.samples,
+                    posterior.data,
+                    EXPORT_SITES,
+                    EXPORT_DATED,
+                    EXPORT_FORECASTS,
+                    ps,
+                    location,
+                )
+            )
     results = ef.posterior.combine_sites_tidy(results)
     results["metadata"]["updated"] = pd.to_datetime(date.today())
     ef.save_json(results, path=f"{path}/{data_name}_results.json")
