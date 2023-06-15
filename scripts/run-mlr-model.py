@@ -35,7 +35,8 @@ class NUTS_from_MAP:
         inference_method = ef.InferNUTS(
             num_warmup=self.num_warmup,
             num_samples=self.num_samples,
-            init_strategy=init_strat
+            init_strategy=init_strat,
+            dense_mass=True,
         )
         return inference_method.fit(model, data, name=name)
 
@@ -136,7 +137,7 @@ def fit_models(rs, locations, model, inference_method, hier, path, save, pivot=N
     multi_posterior = ef.MultiPosterior()
 
     if hier:
-        # Subset data to locations of interest
+        # Subset data to lo of interest
         raw_seq = rs[rs.location.isin(locations)]
         data = ef.HierFrequencies(raw_seq=raw_seq, pivot=pivot, group="location")
 
