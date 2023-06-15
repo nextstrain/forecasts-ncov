@@ -31,7 +31,7 @@ class NUTS_from_MAP:
         self.lr = lr
 
     def fit(self, model, data, name=None):
-        init_strat, _ = ef.init_to_MAP(model, data, iters=30_000, lr=self.lr)
+        init_strat, _ = ef.init_to_MAP(model, data, iters=self.iters, lr=self.lr)
         inference_method = ef.InferNUTS(
             num_warmup=self.num_warmup,
             num_samples=self.num_samples,
