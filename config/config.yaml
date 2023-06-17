@@ -13,60 +13,20 @@ prepare_data:
   gisaid:
     nextstrain_clades:
       global:
-        included_days: 450
+        included_days: 500
         location_min_seq: 12000
-        location_min_seq_days: 450
+        location_min_seq_days: 500
         excluded_locations: "defaults/global_excluded_locations.txt"
         prune_seq_days: 12
         clade_min_seq: 5000
-        clade_min_seq_days: 450
-    pango_lineages:
-      global:
-        included_days: 150
-        location_min_seq: 1500
-        location_min_seq_days: 30
-        excluded_locations: "defaults/global_excluded_locations.txt"
-        prune_seq_days: 12
-        clade_min_seq: 1
-        clade_min_seq_days: 150
-        collapse_threshold: 350
-  open:
-    nextstrain_clades:
-      global:
-        included_days: 150
-        location_min_seq: 500
-        location_min_seq_days: 30
-        excluded_locations: "defaults/global_excluded_locations.txt"
-        prune_seq_days: 12
-        clade_min_seq: 5000
-        clade_min_seq_days: 150
-    pango_lineages:
-      global:
-        included_days: 150
-        location_min_seq: 1200
-        location_min_seq_days: 30
-        excluded_locations: "defaults/global_excluded_locations.txt"
-        prune_seq_days: 12
-        clade_min_seq: 1
-        clade_min_seq_days: 150
-        collapse_threshold: 350
+        clade_min_seq_days: 500
 
 # Params for the model run scripts
 models:
   gisaid:
     nextstrain_clades:
       global:
-        pivot: "'21L (Omicron)'"
-    pango_lineages:
-      global:
-        pivot: "XBB.1.5"
-  open:
-    nextstrain_clades:
-      global:
-        pivot: "'23A (Omicron)'"
-    pango_lineages:
-      global:
-        pivot: "XBB.1.5"
+        pivot: "'21K (Omicron)'"
 
 # Model configs
 mlr_config: "config/mlr-config.yaml"

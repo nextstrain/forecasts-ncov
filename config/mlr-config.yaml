@@ -20,5 +20,5 @@ inference:
   method: "NUTS"
   iters: 50000 # Number of iterations for SVI
   lr: 4e-4 # Learning rate for the model
-  num_warmup: 200
+  num_warmup: 1000
   num_samples: 200
