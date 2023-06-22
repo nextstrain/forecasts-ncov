@@ -137,7 +137,7 @@ def fit_models(rs, locations, model, inference_method, hier, path, save, pivot=N
     multi_posterior = ef.MultiPosterior()
 
     if hier:
-        # Subset data to lo of interest
+        # Subset data to locations of interest
         raw_seq = rs[rs.location.isin(locations)]
         data = ef.HierFrequencies(raw_seq=raw_seq, pivot=pivot, group="location")
 
@@ -328,6 +328,8 @@ if __name__ == "__main__":
 
     mlr_model, hier = config.load_model(override_hier=override_hier)
     print("Model created.")
+
+    print("hierarchical:", hier)
 
     inference_method = config.load_optim()
     print("Inference method defined.")
