@@ -9,7 +9,6 @@ import json
 import evofr as ef
 from datetime import date
 
-
 def parse_with_default(cf, var, dflt):
     if var in cf:
         return cf[var]
@@ -17,11 +16,13 @@ def parse_with_default(cf, var, dflt):
         print(f"Using default value for {var}")
         return dflt
 
-
 def parse_generation_time(cf_m):
     tau = parse_with_default(cf_m, "generation_time", 4.8)
     return tau
 
+def parse_pool_scale(cf_m):
+    pool_scale = parse_with_default(cf_m, "pool_scale", 0.5)
+    return pool_scale
 
 class NUTS_from_MAP:
     def __init__(self, num_warmup, num_samples, iters, lr):
@@ -94,9 +95,13 @@ class MLRConfig:
         if override_hier is not None:
             hier = override_hier
 
+        print("hierarchical:", hier)
+
         # Processing likelihoods
         if hier:
-            model = ef.HierMLR(tau=tau)
+            ps = parse_pool_scale(model_cf)
+            print("Hierarchical pool scale:", ps)
+            model = ef.HierMLR(tau=tau, pool_scale=ps)
         else:
             model = ef.MultinomialLogisticRegression(tau=tau)
         model.forecast_L = forecast_L
@@ -328,8 +333,6 @@ if __name__ == "__main__":
 
     mlr_model, hier = config.load_model(override_hier=override_hier)
     print("Model created.")
-
-    print("hierarchical:", hier)
 
     inference_method = config.load_optim()
     print("Inference method defined.")
