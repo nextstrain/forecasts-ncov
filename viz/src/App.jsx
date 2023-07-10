@@ -25,7 +25,8 @@ function App() {
         <p>
           These plots show the estimated growth advantage for given clades relative to clade
           23A (lineage XBB.1.5). This describes how many more secondary infections a variant causes
-          on average relative to clade 23A. Vertical bars show the 95% HPD.
+          on average relative to clade 23A. Vertical bars show the 95% HPD. The "hierarchical" panel
+          shows pooled estimate of growth rates across different regions.
           Results last updated {mlrCladesData?.modelData?.get('updated') || 'loading'}.
         </p>
         <div id="cladeGrowthAdvantagePanel" class="panelDisplay">
@@ -35,7 +36,7 @@ function App() {
         <h2>Lineage frequencies over time</h2>
         <p>
           Each line represents the estimated frequency of a particular Pango lineage through time.
-          Lineages with fewer than 200 observations are collapsed into parental lineage.
+          Lineages with fewer than 350 observations are collapsed into parental lineage.
           Results last updated {mlrLineagesData?.modelData?.get('updated') || 'loading'}.
         </p>
         <div id="lineageFrequenciesPanel" class="panelDisplay">
@@ -47,6 +48,7 @@ function App() {
           These plots show the estimated growth advantage for given Pango lineages relative to
           lineage XBB.1.5. This describes how many more secondary infections a variant causes
           on average relative to lineage XBB.1.5. Vertical bars show the 95% HPD.
+          The "hierarchical" panel shows pooled estimate of growth rates across different regions.
           Results last updated {mlrLineagesData?.modelData?.get('updated') || 'loading'}.
         </p>
         <div id="lineageGrowthAdvantagePanel" class="panelDisplay">
