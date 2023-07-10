@@ -220,11 +220,42 @@ def make_model_directories(path):
     make_path_if_absent(path + "/models")
 
 
+def make_raw_freq_tidy(data, location):
+    # Unpack HierFrequencies
+    variants = data.var_names
+    date_map = data.date_to_index
+
+    # Compute raw frequencies
+    raw_freq = data.seq_counts / data.seq_counts.sum(axis=1)[:, None]
+    
+    # Create metadata
+    metadata = {
+        "dates": data.dates,
+        "variants": data.var_names,
+        "sites": ["raw_freq"],
+        "location": [location]
+    }
+    
+    # Tidy entries
+    entries = []
+    for v, variant in enumerate(variants):
+        for date, d in date_map.items():
+            entries.append({
+                "location": loc,
+                "site": "raw_freq",
+                "variant": variant,
+                "date": date.strftime("%Y-%m-%d"),
+                "value": np.around(raw_freq[d, v, l], decimals=3)
+            })
+    return {"metadata": metadata, "data": entries}
+
+
 def export_results(multi_posterior, ps, path, data_name, hier):
     EXPORT_SITES = ["freq", "ga", "freq_forecast"]
     EXPORT_DATED = [True, False, True]
     EXPORT_FORECASTS = [False, False, True]
     EXPORT_ATTRS = ["pivot"]
+
     # Make directories
     make_model_directories(path)
 
@@ -284,6 +315,14 @@ def export_results(multi_posterior, ps, path, data_name, hier):
                     location,
                 )
             )
+
+    # Add raw frequencies
+    for location, posterior in multi_posterior.locator.items():
+        if location != "hierarchical":
+            results.append(
+                make_raw_freq_tidy(posterior.data, location)
+            )
+
     results = ef.posterior.combine_sites_tidy(results)
     results["metadata"]["updated"] = pd.to_datetime(date.today())
     ef.save_json(results, path=f"{path}/{data_name}_results.json")
