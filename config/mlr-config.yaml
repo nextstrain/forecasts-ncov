@@ -15,7 +15,6 @@ model:
   generation_time: 4.8
   pivot: "23A (Omicron)"
   hierarchical: true
-  pool_scale: 1.0
 
 inference:
   method: "NUTS"

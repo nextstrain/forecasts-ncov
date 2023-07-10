@@ -21,7 +21,7 @@ def parse_generation_time(cf_m):
     return tau
 
 def parse_pool_scale(cf_m):
-    pool_scale = parse_with_default(cf_m, "pool_scale", 0.5)
+    pool_scale = parse_with_default(cf_m, "pool_scale", 0.1)
     return pool_scale
 
 class NUTS_from_MAP:
