@@ -14,8 +14,9 @@ function App() {
         <h2>Clade frequencies over time</h2>
         <p>
           Each line represents the estimated frequency of a particular clade through time.
-          Equivalent Pango lineage is given in parenthesis, eg clade 23A (lineage XBB.1.5).
-          Results last updated {mlrCladesData?.modelData?.get('updated') || 'loading'}.
+          Equivalent Pango lineage is given in parenthesis, eg clade 23A (lineage XBB.1.5). Only
+          locations with more than 100 sequences from samples collected in the previous 150 days are
+          included. Results last updated {mlrCladesData?.modelData?.get('updated') || 'loading'}.
         </p>
         <div id="cladeFrequenciesPanel" class="panelDisplay"> {/* surrounding div(s) used for static-images.js script */}
           <PanelDisplay data={mlrCladesData} params={{preset: "frequency"}}/>
@@ -26,7 +27,7 @@ function App() {
           These plots show the estimated growth advantage for given clades relative to clade
           23A (lineage XBB.1.5). This describes how many more secondary infections a variant causes
           on average relative to clade 23A. Vertical bars show the 95% HPD. The "hierarchical" panel
-          shows pooled estimate of growth rates across different regions.
+          shows pooled estimate of growth rates across different locations.
           Results last updated {mlrCladesData?.modelData?.get('updated') || 'loading'}.
         </p>
         <div id="cladeGrowthAdvantagePanel" class="panelDisplay">
@@ -36,8 +37,9 @@ function App() {
         <h2>Lineage frequencies over time</h2>
         <p>
           Each line represents the estimated frequency of a particular Pango lineage through time.
-          Lineages with fewer than 350 observations are collapsed into parental lineage.
-          Results last updated {mlrLineagesData?.modelData?.get('updated') || 'loading'}.
+          Lineages with fewer than 350 observations are collapsed into parental lineage. Only
+          locations with more than 300 sequences from samples collected in the previous 150 days are
+          included. Results last updated {mlrLineagesData?.modelData?.get('updated') || 'loading'}.
         </p>
         <div id="lineageFrequenciesPanel" class="panelDisplay">
           <PanelDisplay data={mlrLineagesData} params={{preset: "frequency"}}/>
@@ -48,7 +50,7 @@ function App() {
           These plots show the estimated growth advantage for given Pango lineages relative to
           lineage XBB.1.5. This describes how many more secondary infections a variant causes
           on average relative to lineage XBB.1.5. Vertical bars show the 95% HPD.
-          The "hierarchical" panel shows pooled estimate of growth rates across different regions.
+          The "hierarchical" panel shows pooled estimate of growth rates across different locations.
           Results last updated {mlrLineagesData?.modelData?.get('updated') || 'loading'}.
         </p>
         <div id="lineageGrowthAdvantagePanel" class="panelDisplay">
