@@ -7,6 +7,9 @@ function App() {
   const mlrCladesData = useModelData(mlrCladesConfig);
   const mlrLineagesData = useModelData(mlrLineagesConfig);
 
+  const cladesLocationsFiltered = mlrCladesData?.modelData?.get('locations')?.filter((loc)=>loc!=='hierarchical') || [];
+  const lineagesLocationsFiltered = mlrCladesData?.modelData?.get('locations')?.filter((loc)=>loc!=='hierarchical') || [];
+
   return (
     <div className="App">
 
@@ -19,7 +22,7 @@ function App() {
           included. Results last updated {mlrCladesData?.modelData?.get('updated') || 'loading'}.
         </p>
         <div id="cladeFrequenciesPanel" class="panelDisplay"> {/* surrounding div(s) used for static-images.js script */}
-          <PanelDisplay data={mlrCladesData} params={{preset: "frequency"}}/>
+          <PanelDisplay data={mlrCladesData} locations={cladesLocationsFiltered} params={{preset: "frequency"}}/>
         </div>
 
         <h2>Clade growth advantage</h2>
@@ -42,7 +45,7 @@ function App() {
           included. Results last updated {mlrLineagesData?.modelData?.get('updated') || 'loading'}.
         </p>
         <div id="lineageFrequenciesPanel" class="panelDisplay">
-          <PanelDisplay data={mlrLineagesData} params={{preset: "frequency"}}/>
+          <PanelDisplay data={mlrLineagesData} locations={lineagesLocationsFiltered} params={{preset: "frequency"}}/>
         </div>
 
         <h2>Lineage growth advantage</h2>
