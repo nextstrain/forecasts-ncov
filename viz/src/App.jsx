@@ -8,7 +8,7 @@ function App() {
   const mlrLineagesData = useModelData(mlrLineagesConfig);
 
   const cladesLocationsFiltered = mlrCladesData?.modelData?.get('locations')?.filter((loc)=>loc!=='hierarchical') || [];
-  const lineagesLocationsFiltered = mlrCladesData?.modelData?.get('locations')?.filter((loc)=>loc!=='hierarchical') || [];
+  const lineagesLocationsFiltered = mlrLineagesData?.modelData?.get('locations')?.filter((loc)=>loc!=='hierarchical') || [];
 
   return (
     <div className="App">
