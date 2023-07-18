@@ -67,14 +67,14 @@ rule mlr_model:
         # files generated and output to the export path.
         # We are listing this specific file as the output file because it is the final
         # final output of the model script.
-        results = "results/{data_provenance}/{variant_classification}/{geo_resolution}/mlr/{date}_results.json"
+        results = "results/{data_provenance}/{variant_classification}/{geo_resolution}/mlr/model-outputs/{date}_results.json"
     log:
         "logs/{data_provenance}/{variant_classification}/{geo_resolution}/mlr/{date}.txt"
     benchmark:
         "benchmarks/{data_provenance}/{variant_classification}/{geo_resolution}/mlr/{date}.txt"
     params:
         renewal_config = config.get("mlr_config"),
-        export_path = lambda w: f"results/{w.data_provenance}/{w.variant_classification}/{w.geo_resolution}/mlr",
+        export_path = lambda w: f"results/{w.data_provenance}/{w.variant_classification}/{w.geo_resolution}/mlr/model-outputs",
         pivot = lambda wildcards: _get_models_option(wildcards, 'pivot')
     resources:
         mem_mb=4000
@@ -87,3 +87,26 @@ rule mlr_model:
             {params.pivot} \
             --data-name {wildcards.date} 2>&1 | tee {log}
         """
+
+
+ruleorder: post_process_model_output > skip_post_process_model_output
+
+rule skip_post_process_model_output:
+  input: "results/{data_provenance}/{variant_classification}/{geo_resolution}/{model}/model-outputs/{date}_results.json"
+  output: "results/{data_provenance}/{variant_classification}/{geo_resolution}/{model}/{date}_results.json"
+  shell:
+      """
+      mv {input} {output}
+      """
+
+rule post_process_model_output:
+    """
+    Only applies to specific model runs at the moment (pango_lineages, MLR)
+    """
+    input: "results/{data_provenance}/pango_lineages/{geo_resolution}/mlr/model-outputs/{date}_results.json"
+    output: "results/{data_provenance}/pango_lineages/{geo_resolution}/mlr/{date}_results.json"
+    log: "logs/{data_provenance}/pango_lineages/{geo_resolution}/mlr/{date}_post-processing.txt"
+    shell:
+      """
+      python ./scripts/modify-lineage-colours-and-order.py {input} {output} 2>&1 | tee {log}
+      """

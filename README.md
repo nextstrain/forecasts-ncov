@@ -107,6 +107,14 @@ These separate config files must be provided in the main config as `mlr_config` 
 By default, the model config files used are `config/mlr-config.yaml` and `config/renewal-config.yaml`.
 Note the inputs and outputs for the models are overridden in the Snakemake pipeline to conform to the Snakemake input/output framework.
 
+### Clade and Lineage colours
+
+Model JSONs for `nextstrain_clades` do not include colour information themselves, this is set within the visualisation app config: `./viz/src/config.js`.
+
+Model JSONs for `pango_lineages` are post processed by `./scripts/modify-lineage-colours-and-order.py` which groups lineages by their associated nextstrain clade and uses a different colour scheme for each group to generate a map of colours.
+
+When new clades are added please modify both of the above files (and feel free to reorganise as desired).
+
 ### Environment variables
 
 No environment variables are required for open data.
