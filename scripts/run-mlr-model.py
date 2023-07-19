@@ -2,6 +2,7 @@
 # coding: utf-8
 
 import argparse
+import numpy as np
 import pandas as pd
 import os
 import yaml
@@ -239,13 +240,16 @@ def make_raw_freq_tidy(data, location):
     # Tidy entries
     entries = []
     for v, variant in enumerate(variants):
-        for date, d in date_map.items():
+        for day, d in date_map.items():
             entries.append({
-                "location": loc,
+                "location": location,
                 "site": "raw_freq",
                 "variant": variant,
-                "date": date.strftime("%Y-%m-%d"),
-                "value": np.around(raw_freq[d, v, l], decimals=3)
+                "date": day.strftime("%Y-%m-%d"),
+                "value": (
+                    None
+                    if np.isnan(raw_freq[d, v])
+                    else np.around(raw_freq[d, v], decimals=3))
             })
     return {"metadata": metadata, "data": entries}
 
