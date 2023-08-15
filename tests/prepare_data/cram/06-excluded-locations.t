@@ -26,7 +26,7 @@ The outputs should be subsets of the clade counts and case counts.
   Excluding the following requested locations: ['Japan', 'United Kingdom'].
   Locations that will be included: ['USA'].
   Pruning variants counts in the last 1 day(s) to exclude recent dates that may be overly enriched for variants.
-  Variants that will be included: ['19A', '20A', '20B', '20C', '21A (Delta)', '21I (Delta)', '21J (Delta)', '21K (Omicron)', '21L (Omicron)'].
+  Variants that will be included: ['19A', '20A', '20B', '20C', '21A', '21I', '21J', '21K', '21L'].
 
 Verify that the output clade counts is a subset with expected locations, clades, and dates.
 
@@ -35,7 +35,7 @@ Verify that the output clade counts is a subset with expected locations, clades,
   $ echo $(tsv-select -H -f location "$TMP/prepared_seq_counts.tsv" | tsv-uniq -H | tail -n +2 | sort)
   USA
   $ echo $(tsv-select -H -f variant "$TMP/prepared_seq_counts.tsv" | tsv-uniq -H | tail -n +2 | sort)
-  19A 20A 20B 20C 21A (Delta) 21I (Delta) 21J (Delta) 21K (Omicron) 21L (Omicron)
+  19A 20A 20B 20C 21A 21I 21J 21K 21L
   $ echo $(tsv-select -H -f date "$TMP/prepared_seq_counts.tsv" | tsv-uniq -H | tail -n +2 | sort | tsv-summarize --first 1 --last 1)
   2022-01-06 2022-01-09
 

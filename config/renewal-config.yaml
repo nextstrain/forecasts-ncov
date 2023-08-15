@@ -21,7 +21,7 @@ model:
   prior_seq_dispersion: 100.0 # Ignored if using Multinomial
   k: 12 # Number of spline knots to use
   order: 4 # Order of spline to use
-  pivot: "22B (Omicron)"
+  pivot: "22B"
   generation_time: # Specify mean and standard deviation for generation time
     Delta:
       name: "Delta"
@@ -29,52 +29,52 @@ model:
       sd: 1.2
       family: "Gamma" # Options: Gamma and LogNormal
     O21L:
-      name: "21L (Omicron)"
+      name: "21L"
       mean: 3.1
       sd: 1.2
       family: "Gamma" # Options: Gamma and LogNormal
     O21K:
-      name: "21K (Omicron)"
+      name: "21K"
       mean: 3.1
       sd: 1.2
       family: "Gamma" # Options: Gamma and LogNormal
     O22A:
-      name: "22A (Omicron)"
+      name: "22A"
       mean: 3.1
       sd: 1.2
       family: "Gamma" # Options: Gamma and LogNormal
     O22B:
-      name: "22B (Omicron)"
+      name: "22B"
       mean: 3.1
       sd: 1.2
       family: "Gamma" # Options: Gamma and LogNormal
     O22C:
-      name: "22C (Omicron)"
+      name: "22C"
       mean: 3.1
       sd: 1.2
       family: "Gamma" # Options: Gamma and LogNormal
     O22D:
-      name: "22D (Omicron)"
+      name: "22D"
       mean: 3.1
       sd: 1.2
       family: "Gamma" # Options: Gamma and LogNormal
     O22E:
-      name: "22E (Omicron)"
+      name: "22E"
       mean: 3.1
       sd: 1.2
       family: "Gamma" # Options: Gamma and LogNormal
     O22F:
-      name: "22F (Omicron)"
+      name: "22F"
       mean: 3.1
       sd: 1.2
       family: "Gamma" # Options: Gamma and LogNormal
     O23A:
-      name: "23A (Omicron)"
+      name: "23A"
       mean: 3.1
       sd: 1.2
       family: "Gamma" # Options: Gamma and LogNormal
     O23B:
-      name: "23B (Omicron)"
+      name: "23B"
       mean: 3.1
       sd: 1.2
       family: "Gamma" # Options: Gamma and LogNormal

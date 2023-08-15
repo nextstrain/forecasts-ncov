@@ -8,7 +8,7 @@ Prune the sequences in last day of clade counts.
 Require a location to have a minimum of 5000 sequences in the last 2 days.
 Exclude specific locations.
 Collapse clades that have less than 50 sequences in the last 3 days into 'other'.
-Force include the clades 21A (Delta), 21I (Delta), 21J (Delta) as Delta variant.
+Force include the clades 21A, 21I, 21J as Delta variant.
 The outputs should be subsets of the clade counts and case counts.
 
   $ python3 ../../../scripts/prepare-data.py \
@@ -22,7 +22,7 @@ The outputs should be subsets of the clade counts and case counts.
   > --excluded-locations ../data/excluded_locations.txt \
   > --clade-min-seq 50 \
   > --clade-min-seq-days 3 \
-  > --force-include-clades "21A (Delta)=Delta" "21I (Delta)=Delta" "21J (Delta)=Delta" \
+  > --force-include-clades "21A=Delta" "21I=Delta" "21J=Delta" \
   > --output-seq-counts "$TMP/prepared_seq_counts.tsv" \
   > --output-cases "$TMP/prepared_cases.tsv"
   Setting max date (inclusive) as '2022-01-10'.
@@ -30,10 +30,10 @@ The outputs should be subsets of the clade counts and case counts.
   Only including locations that have at least 5000 sequence(s) in the last 2 days of the analysis date range.
   Excluding the following requested locations: ['Japan', 'United Kingdom'].
   Locations that will be included: ['USA'].
-  Force including the following clades/variants: ['21A (Delta)=Delta', '21I (Delta)=Delta', '21J (Delta)=Delta']
+  Force including the following clades/variants: ['21A=Delta', '21I=Delta', '21J=Delta']
   Collapsing clades that have less than 50 sequence(s) in the last 3 days of the analysis date range into a single 'other' variant.
   Pruning variants counts in the last 1 day(s) to exclude recent dates that may be overly enriched for variants.
-  Variants that will be included: ['21K (Omicron)', '21L (Omicron)', 'Delta', 'other'].
+  Variants that will be included: ['21K', '21L', 'Delta', 'other'].
 
 Verify that the output clade counts is a subset with expected locations, clades, and dates.
 
@@ -42,7 +42,7 @@ Verify that the output clade counts is a subset with expected locations, clades,
   $ echo $(tsv-select -H -f location "$TMP/prepared_seq_counts.tsv" | tsv-uniq -H | tail -n +2 | sort)
   USA
   $ echo $(tsv-select -H -f variant "$TMP/prepared_seq_counts.tsv" | tsv-uniq -H | tail -n +2 | sort)
-  21K (Omicron) 21L (Omicron) Delta other
+  21K 21L Delta other
   $ echo $(tsv-select -H -f date "$TMP/prepared_seq_counts.tsv" | tsv-uniq -H | tail -n +2 | sort | tsv-summarize --first 1 --last 1)
   2022-01-06 2022-01-09
 

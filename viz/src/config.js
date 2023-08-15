@@ -10,29 +10,29 @@ const mlrLineagesUrl = `${DEFAULT_ENDPOINT_PREFIX}/gisaid/pango_lineages/global/
 
 const variantColors = new Map([
   ["other", "#777777"],
-  ["22B (Omicron)", "#999999"],
-  ["22D (Omicron)", "#AAAAAA"],
-  ["22E (Omicron)", "#CCCCCC"],
-  ["22F (Omicron)", "#3F63CF"],
-  ["23A (Omicron)", "#529AB6"],
-  ["23B (Omicron)", "#75B681"],
-  ["23C (Omicron)", "#A6BE55"],
-  ["23D (Omicron)", "#D4B13F"],
-  ["23E (Omicron)", "#E68133"],
-  ["23F (Omicron)", "#DC2F24"],
+  ["22B",   "#999999"],
+  ["22D",   "#AAAAAA"],
+  ["22E",   "#CCCCCC"],
+  ["22F",   "#3F63CF"],
+  ["23A",   "#529AB6"],
+  ["23B",   "#75B681"],
+  ["23C",   "#A6BE55"],
+  ["23D",   "#D4B13F"],
+  ["23E",   "#E68133"],
+  ["23F",   "#DC2F24"]
 ]);
 const variantDisplayNames = new Map([
   ["other", "other"],
-  ["22B (Omicron)", "22B (BA.5)"],
-  ["22D (Omicron)", "22D (BA.2.75)"],
-  ["22E (Omicron)", "22E (BQ.1)"],
-  ["22F (Omicron)", "22F (XBB)"],
-  ["23A (Omicron)", "23A (XBB.1.5)"],
-  ["23B (Omicron)", "23B (XBB.1.16)"],
-  ["23C (Omicron)", "23C (CH.1.1)"],
-  ["23D (Omicron)", "23D (XBB.1.9)"],
-  ["23E (Omicron)", "23E (XBB.2.3)"],
-  ["23F (Omicron)", "23F (EG.5.1)"],
+  ["22B",   "22B (BA.5)"],
+  ["22D",   "22D (BA.2.75)"],
+  ["22E",   "22E (BQ.1)"],
+  ["22F",   "22F (XBB)"],
+  ["23A",   "23A (XBB.1.5)"],
+  ["23B",   "23B (XBB.1.16)"],
+  ["23C",   "23C (CH.1.1)"],
+  ["23D",   "23D (XBB.1.9)"],
+  ["23E",   "23E (XBB.2.3)"],
+  ["23F",   "23F (EG.5.1)"]
 ]);
 
 export const mlrCladesConfig = {

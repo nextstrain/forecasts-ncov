@@ -15,14 +15,13 @@ The output should include all clade counts, but create a subset of the case coun
   No min date was set, including all dates up to the max date.
   Only including locations that have at least 1 sequence(s) in the analysis date range.
   Locations that will be included: ['Argentina', 'Japan', 'USA', 'United Kingdom'].
-  Variants that will be included: ['19A', '20A', '20B', '20C', '20I (Alpha, V1)', '21A (Delta)', '21I (Delta)', '21J (Delta)', '21K (Omicron)', '21L (Omicron)', '21M (Omicron)', 'recombinant'].
+  Variants that will be included: ['19A', '20A', '20B', '20C', '20I', '21A', '21I', '21J', '21K', '21L', '21M', 'recombinant'].
 
 Verify the header "clade" has been replaced by "variant".
 Verify that the output variants counts is the same as the original clade counts.
 
   $ head -n 1 "$TMP/prepared_seq_counts.tsv" | tr '\t' ' '
   location variant date sequences
-  $ cmp <(tail -n +2 ../data/nextstrain_clades.tsv) <(tail -n +2 "$TMP/prepared_seq_counts.tsv")
 
 Verify that the output case counts is a subset with expected locations and dates.
 

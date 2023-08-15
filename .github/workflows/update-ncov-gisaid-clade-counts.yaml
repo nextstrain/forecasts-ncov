@@ -45,7 +45,7 @@ jobs:
     - name: subset metadata columns
       run: |
         tsv-select -H \
-          -f strain,date,country,division,QC_overall_status,Nextstrain_clade,Nextclade_pango \
+          -f strain,date,country,division,QC_overall_status,clade_nextstrain,Nextclade_pango \
           metadata.tsv > metadata_pruned.tsv
 
         mv metadata_pruned.tsv metadata.tsv
@@ -54,7 +54,7 @@ jobs:
       run: |
         ./ingest/bin/summarize-clade-sequence-counts \
           --metadata metadata.tsv \
-          --clade-column Nextstrain_clade \
+          --clade-column clade_nextstrain \
           --filter-columns QC_overall_status \
           --filter-query "QC_overall_status != 'bad'" \
           --output global_clade_counts.tsv
@@ -73,7 +73,7 @@ jobs:
         ./ingest/bin/summarize-clade-sequence-counts \
           --metadata metadata.tsv \
           --location-column division \
-          --clade-column Nextstrain_clade \
+          --clade-column clade_nextstrain \
           --filter-columns QC_overall_status country \
           --filter-query "QC_overall_status != 'bad' & country == 'USA'" \
           --output us_clade_counts.tsv

@@ -22,7 +22,7 @@ The outputs should be subsets of the clade counts and case counts.
   Only including locations that have at least 5000 sequence(s) in the analysis date range.
   Locations that will be included: ['Japan', 'USA', 'United Kingdom'].
   Pruning variants counts in the last 1 day(s) to exclude recent dates that may be overly enriched for variants.
-  Variants that will be included: ['19A', '20A', '20B', '20C', '20I (Alpha, V1)', '21A (Delta)', '21I (Delta)', '21J (Delta)', '21K (Omicron)', '21L (Omicron)', '21M (Omicron)', 'recombinant'].
+  Variants that will be included: ['19A', '20A', '20B', '20C', '20I', '21A', '21I', '21J', '21K', '21L', '21M', 'recombinant'].
 
 Verify that the output clade counts is a subset with expected locations, clades, and dates.
 
@@ -31,7 +31,7 @@ Verify that the output clade counts is a subset with expected locations, clades,
   $ echo $(tsv-select -H -f location "$TMP/prepared_seq_counts.tsv" | tsv-uniq -H | tail -n +2 | sort)
   Japan USA United Kingdom
   $ echo $(tsv-select -H -f variant "$TMP/prepared_seq_counts.tsv" | tsv-uniq -H | tail -n +2 | sort)
-  19A 20A 20B 20C 20I (Alpha, V1) 21A (Delta) 21I (Delta) 21J (Delta) 21K (Omicron) 21L (Omicron) 21M (Omicron) recombinant
+  19A 20A 20B 20C 20I 21A 21I 21J 21K 21L 21M recombinant
   $ echo $(tsv-select -H -f date "$TMP/prepared_seq_counts.tsv" | tsv-uniq -H | tail -n +2 | sort | tsv-summarize --first 1 --last 1)
   2022-01-06 2022-01-09
 
