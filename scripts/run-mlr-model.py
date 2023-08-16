@@ -226,9 +226,17 @@ def make_raw_freq_tidy(data, location):
     variants = data.var_names
     date_map = data.date_to_index
 
-    # Compute raw frequencies
-    raw_freq = data.seq_counts / data.seq_counts.sum(axis=1)[:, None]
-    
+    # Calculate the 7-day moving sum for each of the clades
+    kernel = np.ones(7)  # 7-day window
+    numerator = np.apply_along_axis(lambda x: np.convolve(x, kernel, mode='same'), axis=0, arr=data.seq_counts)
+
+    # Calculate the 7-day moving sum for the total count across all clades (Denominator)
+    total_counts = data.seq_counts.sum(axis=1)
+    denominator = np.convolve(total_counts, kernel, mode='same')
+
+    # Calculate the 7-day smoothed daily frequency
+    raw_freq = numerator / denominator[:, None]
+
     # Create metadata
     metadata = {
         "dates": data.dates,
@@ -236,7 +244,7 @@ def make_raw_freq_tidy(data, location):
         "sites": ["raw_freq"],
         "location": [location]
     }
-    
+
     # Tidy entries
     entries = []
     for v, variant in enumerate(variants):
