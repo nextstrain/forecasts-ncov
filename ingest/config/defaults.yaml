@@ -1,0 +1,89 @@
+data_provenances:
+  - gisaid
+  - open
+
+variant_classifications:
+  - nextstrain_clades
+  - pango_lineages
+
+geo_resolutions:
+  - global
+  - usa
+
+gisaid:
+  s3_metadata: s3://nextstrain-ncov-private/metadata.tsv.gz
+  subset_columns:
+    - strain
+    - date
+    - country
+    - division
+    - clade_nextstrain
+    - Nextclade_pango
+    - QC_overall_status
+
+  nextstrain_clades:
+    global:
+      seq_count_options: >-
+        --clade-column clade_nextstrain
+        --filter-columns QC_overall_status
+        --filter-query "QC_overall_status != 'bad'"
+
+    usa:
+      seq_count_options: >-
+        --location-column division
+        --clade-column clade_nextstrain
+        --filter-columns QC_overall_status country
+        --filter-query "QC_overall_status != 'bad' & country == 'USA'"
+
+  pango_lineages:
+    global:
+      seq_count_options: >-
+        --clade-column Nextclade_pango
+        --filter-columns QC_overall_status
+        --filter-query "QC_overall_status != 'bad'"
+
+    usa:
+      seq_count_options: >-
+        --location-column division
+        --clade-column Nextclade_pango
+        --filter-columns QC_overall_status country
+        --filter-query "QC_overall_status != 'bad' & country == 'USA'"
+
+open:
+  s3_metadata: s3://nextstrain-data/files/ncov/open/metadata.tsv.gz
+  subset_columns:
+    - strain
+    - date
+    - country
+    - division
+    - clade_nextstrain
+    - Nextclade_pango
+    - QC_overall_status
+
+  nextstrain_clades:
+    global:
+      seq_count_options: >-
+        --clade-column clade_nextstrain
+        --filter-columns QC_overall_status
+        --filter-query "QC_overall_status != 'bad'"
+    usa:
+      seq_count_options: >-
+        --location-column division
+        --clade-column clade_nextstrain
+        --filter-columns QC_overall_status country
+        --filter-query "QC_overall_status != 'bad' & country == 'USA'"
+
+  pango_lineages:
+    global:
+      seq_count_options: >-
+        --clade-column Nextclade_pango
+        --filter-columns QC_overall_status
+        --filter-query "QC_overall_status != 'bad'"
+    usa:
+      seq_count_options: >-
+        --location-column division
+        --clade-column Nextclade_pango
+        --filter-columns QC_overall_status country
+        --filter-query "QC_overall_status != 'bad' & country == 'USA'"
+
+s3_dst: s3://nextstrain-data/files/workflows/forecasts-ncov
