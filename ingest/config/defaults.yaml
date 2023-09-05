@@ -11,7 +11,7 @@ geo_resolutions:
   - usa
 
 gisaid:
-  s3_metadata: s3://nextstrain-ncov-private/metadata.tsv.gz
+  s3_metadata: s3://nextstrain-ncov-private/metadata.tsv.zst
   subset_columns:
     - strain
     - date
@@ -50,7 +50,7 @@ gisaid:
         --filter-query "QC_overall_status != 'bad' & country == 'USA'"
 
 open:
-  s3_metadata: s3://nextstrain-data/files/ncov/open/metadata.tsv.gz
+  s3_metadata: s3://nextstrain-data/files/ncov/open/metadata.tsv.zst
   subset_columns:
     - strain
     - date
