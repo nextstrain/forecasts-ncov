@@ -44,11 +44,30 @@ Within TSVs at the country resolution, the `location` column contains divisions 
 
 ## Running locally
 
-1. Create a conda environment named `nextstrain-counts`
+> **Note**
+> All command examples in this section assume you are within the ingest directory.
+> If running commands from the outer forecasts-ncov directory, please replace the `.` with `ingest`
+
+Please follow [installation instructions](https://docs.nextstrain.org/en/latest/install.html#installation-steps) for Nextstrain's software tools.
+
+[config/defaults.yaml](config/defaults.yaml) contains all of the default configuration parameters used for the ingest workflow.
+Use Snakemake's `--configfile`/`--config` options to override these default values.
+
+
+### Sequence Counts
+
+Running the workflow for sequence counts requires AWS credentials to download the metadata from AWS S3:
+- AWS_ACCESS_KEY_ID
+- AWS_SECRET_ACCESS_KEY
+
+To summarize the sequence counts locally run:
+
 ```
-mamba create -n nextstrain-counts -c bioconda "csvtk>=0.23.0" "pandas>=1.0.0" --yes
+nextstrain build . all_sequence_counts
 ```
-2. Activate the conda environment
+
+If you only want to run the sequence counts for a single data provenance (e.g. GISAID) run:
+
 ```
-conda activate nextstrain-counts
+nextstrain build . all_sequence_counts --config data_provenances="[gisaid]"
 ```

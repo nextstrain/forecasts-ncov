@@ -10,106 +10,52 @@ on:
       slack_channel:
         description: 'Slack channel to push update alerts. Default channel is nextstrain-counts-updates.'
         required: false
+        default: 'nextstrain-counts-updates'
       trial_name:
         description: 'Short name for a trial run. WARNING: without this we will overwrite files in s3://nextstrain-data/files/workflows/forecasts-ncov/gisaid'
         required: false
 
 jobs:
-  gisaid_clade_counts:
+  set_s3_dst:
     runs-on: ubuntu-latest
-    env:
-      SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-      SLACK_CHANNELS: ${{ github.event.inputs.slack_channel || 'nextstrain-counts-updates' }}
-    defaults:
-      run:
-        # Login shell is required to include changes by conda init bash.
-        shell: bash -l -eo pipefail {0}
     steps:
-    - uses: actions/checkout@v2
-    - uses: conda-incubator/setup-miniconda@v2
-      with:
-        python-version: "3.9"
-        miniforge-variant: Mambaforge
-        channels: conda-forge,bioconda
+      - id: s3_dst
+        run: |
+          S3_DST=s3://nextstrain-data/files/workflows/forecasts-ncov
 
-    - name: setup
-      run: mamba install "pandas>=1.0.0" "tsv-utils" --freeze-installed
+          if [[ "$TRIAL_NAME" ]]; then
+            S3_DST+=/trial/"$TRIAL_NAME"
+          fi
 
-    - name: download metadata
-      run: ./ingest/bin/download-from-s3 s3://nextstrain-ncov-private/metadata.tsv.gz metadata.tsv
-      env:
-        AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          echo "s3_dst=$S3_DST" >> "$GITHUB_OUTPUT"
+        env:
+          TRIAL_NAME: ${{ inputs.trial_name }}
+    outputs:
+      s3_dst: ${{ steps.s3_dst.outputs.s3_dst }}
 
-    - name: subset metadata columns
+  gisaid_clade_counts:
+    needs: [set_s3_dst]
+    permissions:
+      id-token: write
+    uses: nextstrain/.github/.github/workflows/pathogen-repo-build.yaml@master
+    secrets: inherit
+    with:
+      runtime: aws-batch
       run: |
-        tsv-select -H \
-          -f strain,date,country,division,QC_overall_status,clade_nextstrain,Nextclade_pango \
-          metadata.tsv > metadata_pruned.tsv
-
-        mv metadata_pruned.tsv metadata.tsv
-
-    - name: summarize global clade counts
-      run: |
-        ./ingest/bin/summarize-clade-sequence-counts \
-          --metadata metadata.tsv \
-          --clade-column clade_nextstrain \
-          --filter-columns QC_overall_status \
-          --filter-query "QC_overall_status != 'bad'" \
-          --output global_clade_counts.tsv
-
-    - name: summarize global lineage counts
-      run: |
-        ./ingest/bin/summarize-clade-sequence-counts \
-          --metadata metadata.tsv \
-          --clade-column Nextclade_pango \
-          --filter-columns QC_overall_status \
-          --filter-query "QC_overall_status != 'bad'" \
-          --output global_lineage_counts.tsv
-
-    - name: summarize us clade counts
-      run: |
-        ./ingest/bin/summarize-clade-sequence-counts \
-          --metadata metadata.tsv \
-          --location-column division \
-          --clade-column clade_nextstrain \
-          --filter-columns QC_overall_status country \
-          --filter-query "QC_overall_status != 'bad' & country == 'USA'" \
-          --output us_clade_counts.tsv
-
-    - name: summarize us lineage counts
-      run: |
-        ./ingest/bin/summarize-clade-sequence-counts \
-          --metadata metadata.tsv \
-          --location-column division \
-          --clade-column Nextclade_pango \
-          --filter-columns QC_overall_status country \
-          --filter-query "QC_overall_status != 'bad' & country == 'USA'" \
-          --output us_lineage_counts.tsv
-
-    - name: upload clade counts
-      run: |
-        S3_DST=s3://nextstrain-data/files/workflows/forecasts-ncov/gisaid
-        CLOUDFRONT_DOMAIN="data.nextstrain.org"
-
-        if [[ "$TRIAL_NAME" ]]; then
-          S3_DST+=/trial/"$TRIAL_NAME"
-        fi
-
-        ./ingest/bin/upload-to-s3 global_clade_counts.tsv "$S3_DST"/nextstrain_clades/global.tsv.gz "$CLOUDFRONT_DOMAIN"
-        ./ingest/bin/upload-to-s3 global_lineage_counts.tsv "$S3_DST"/pango_lineages/global.tsv.gz "$CLOUDFRONT_DOMAIN"
-        ./ingest/bin/upload-to-s3 us_clade_counts.tsv "$S3_DST"/nextstrain_clades/usa.tsv.gz "$CLOUDFRONT_DOMAIN"
-        ./ingest/bin/upload-to-s3 us_lineage_counts.tsv "$S3_DST"/pango_lineages/usa.tsv.gz "$CLOUDFRONT_DOMAIN"
-      env:
-        AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        TRIAL_NAME: ${{ github.event.inputs.trial_name }}
-
-    - name: notify_pipeline_failed
-      if: ${{ failure() }}
-      run: ./ingest/bin/notify-on-job-fail
+        nextstrain build \
+          --cpus 8 \
+          --memory 16gib \
+          --env AWS_ACCESS_KEY_ID \
+          --env AWS_SECRET_ACCESS_KEY \
+          --env SLACK_TOKEN \
+          --env SLACK_CHANNELS \
+          --env S3_DST \
+          ingest \
+          upload_all_sequence_counts \
+          --config data_provenances=["gisaid"] s3_dst="$S3_DST"
+      env: |
+        SLACK_CHANNELS: ${{ inputs.slack_channel }}
+        S3_DST: ${{ needs.set_s3_dst.outputs.s3_dst }}
 
   trigger_model_runs:
     needs: [gisaid_clade_counts]

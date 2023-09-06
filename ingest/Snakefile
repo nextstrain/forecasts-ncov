@@ -1,0 +1,25 @@
+
+configfile: "config/defaults.yaml"
+
+
+rule all_sequence_counts:
+    input:
+        clade_counts = expand(
+            "results/{data_provenance}/{variant_classification}/{geo_resolution}.tsv",
+            data_provenance=config["data_provenances"],
+            variant_classification=config["variant_classifications"],
+            geo_resolution=config["geo_resolutions"]
+        )
+
+
+rule upload_all_sequence_counts:
+    input:
+        uploads = expand(
+            "results/{data_provenance}/{variant_classification}/{geo_resolution}_upload.done",
+            data_provenance=config["data_provenances"],
+            variant_classification=config["variant_classifications"],
+            geo_resolution=config["geo_resolutions"]
+        )
+
+
+include: "rules/sequence_counts.smk"
