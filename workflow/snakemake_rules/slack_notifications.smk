@@ -3,8 +3,8 @@ This part of the workflow handles Slack notifications.
 """
 
 onstart:
-    shell("./bin/notify-on-job-start")
+    shell("./ingest/vendored/notify-on-job-start 'Run model' 'nextstrain/forecasts-ncov' '.' ")
 
 
 onerror:
-    shell("./bin/notify-on-job-fail")
+    shell("./ingest/vendored/notify-on-job-fail 'Run model' 'nextstrain/forecasts-ncov'")

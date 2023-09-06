@@ -55,4 +55,4 @@ jobs:
 
     - name: notify_pipeline_failed
       if: ${{ failure() }}
-      run: ./ingest/bin/notify-on-job-fail
+      run: ./ingest/vendored/notify-on-job-fail "Case counts ingest" "nextstrain/forecasts-ncov"

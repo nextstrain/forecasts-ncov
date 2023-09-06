@@ -2,7 +2,7 @@
 set -euo pipefail
 
 base="$(realpath "$(dirname "$0")/..")"
-ingest_bin="$base/ingest/bin"
+ingest_vendored="$base/ingest/vendored"
 
 main() {
     local quiet=0
@@ -31,7 +31,7 @@ main() {
     # the basename of the local file is used in combination with the remote URL in the final remote destination URL.
     local dst="$remote_url$(basename "$file_to_upload")"
 
-    if ! "$ingest_bin"/notify-slack "Updated $dst available."; then
+    if ! "$ingest_vendored"/notify-slack "Updated $dst available."; then
         echo "Notifying Slack failed, but exiting with success anyway."
     fi
 
