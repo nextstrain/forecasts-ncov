@@ -10,7 +10,6 @@ on:
       slack_channel:
         description: 'Slack channel to push update alerts. Default channel is nextstrain-counts-updates.'
         required: false
-        default: 'nextstrain-counts-updates'
       trial_name:
         description: 'Short name for a trial run. WARNING: without this we will overwrite files in s3://nextstrain-data/files/workflows/forecasts-ncov/gisaid'
         required: false
@@ -54,7 +53,7 @@ jobs:
           upload_all_sequence_counts \
           --config data_provenances=["gisaid"] s3_dst="$S3_DST"
       env: |
-        SLACK_CHANNELS: ${{ inputs.slack_channel }}
+        SLACK_CHANNELS: ${{ inputs.slack_channel || vars.SLACK_CHANNELS }}
         S3_DST: ${{ needs.set_s3_dst.outputs.s3_dst }}
 
   trigger_model_runs:
