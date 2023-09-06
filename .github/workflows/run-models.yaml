@@ -19,32 +19,17 @@ on:
 jobs:
   run_models:
     runs-on: ubuntu-latest
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      DATA_PROVENANCE: ${{ github.event.inputs.data_provenance || github.event.client_payload.data_provenance }}
-      GITHUB_RUN_ID: ${{ github.run_id }}
-      PAT_GITHUB_DISPATCH: ${{ secrets.GH_TOKEN_NEXTSTRAIN_BOT_WORKFLOW_DISPATCH }}
-      SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-      SLACK_CHANNELS: ${{ github.event.inputs.slack_channel || 'nextstrain-counts-updates' }}
-      TRIAL_NAME: ${{ github.event.inputs.trial_name }}
     steps:
     - uses: actions/checkout@v3
     - uses: nextstrain/.github/actions/setup-nextstrain-cli@master
+      with:
+        cli-version: ">=7.1.0"
 
     - name: install-pyyaml
       run: python3 -m pip install pyyaml
 
     - name: run_pipeline
       run: |
-        ./ingest/bin/write-envdir env.d \
-          AWS_DEFAULT_REGION \
-          GITHUB_RUN_ID \
-          SLACK_TOKEN \
-          SLACK_CHANNELS \
-          PAT_GITHUB_DISPATCH \
-
         # Need to edit the optional file with a script because we need to edit nested values
         if [[ "$TRIAL_NAME" ]]; then
           ./bin/set-trial-optional-config \
@@ -66,11 +51,22 @@ jobs:
           --image nextstrain/base:build-20230720T001758Z \
           --cpus 8 \
           --memory 16GiB \
-          --exec env \
+          --env AWS_DEFAULT_REGION \
+          --env AWS_ACCESS_KEY_ID \
+          --env AWS_SECRET_ACCESS_KEY \
+          --env GITHUB_RUN_ID \
+          --env SLACK_TOKEN \
+          --env SLACK_CHANNELS \
           . \
-            envdir env.d snakemake \
-              --configfile config/config.yaml optional.yaml \
-              --printshellcmds \
-              --cores 8 \
-              --keep-going \
-              "${override_config[@]}"
+            --configfile config/config.yaml optional.yaml \
+            --keep-going \
+            "${override_config[@]}"
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+        DATA_PROVENANCE: ${{ github.event.inputs.data_provenance || github.event.client_payload.data_provenance }}
+        GITHUB_RUN_ID: ${{ github.run_id }}
+        SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+        SLACK_CHANNELS: ${{ github.event.inputs.slack_channel || vars.SLACK_CHANNELS }}
+        TRIAL_NAME: ${{ github.event.inputs.trial_name }}
