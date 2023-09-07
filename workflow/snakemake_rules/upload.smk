@@ -11,11 +11,22 @@ be easily added as long as they follow the output pattern described above.
 """
 import os
 import yaml
+from pathlib import Path
 
 slack_envvars_defined = "SLACK_CHANNELS" in os.environ and "SLACK_TOKEN" in os.environ
 send_notifications = (
     config.get("send_slack_notifications", False) and slack_envvars_defined
 )
+
+def _get_s3_url(w, input_file):
+    s3_dst = config["s3_dst"].rstrip("/")
+    s3_path = Path(input_file).relative_to("results")
+
+    # The last part of the path should always be the model name
+    while s3_path.stem != w.model:
+        s3_path = s3_path.parent
+
+    return f"{s3_dst}/{s3_path}/"
 
 rule upload_model_results_to_s3:
     input:
@@ -24,12 +35,12 @@ rule upload_model_results_to_s3:
         touch("results/{data_provenance}/{variant_classification}/{geo_resolution}/{model}/{date}_results_s3_upload.done")
     params:
         quiet="" if send_notifications else "--quiet",
-        s3_dst=lambda wildcards: config["upload"].get(wildcards.data_provenance, {}).get("s3_dst", ""),
+        s3_url=lambda w, input: _get_s3_url(w, input.model_results),
     shell:
         """
         ./bin/nextstrain-remote-upload-with-slack-notification \
             {params.quiet} \
-            {params.s3_dst:q}/{wildcards.variant_classification:q}/{wildcards.geo_resolution:q}/{wildcards.model:q}/ \
+            {params.s3_url} \
             {input.model_results}
         """
 
@@ -50,11 +61,11 @@ rule upload_model_results_to_s3_as_latest:
         touch("results/{data_provenance}/{variant_classification}/{geo_resolution}/{model}/{date}_latest_results_s3_upload.done")
     params:
         quiet="" if send_notifications else "--quiet",
-        s3_dst=lambda wildcards: config["upload"].get(wildcards.data_provenance, {}).get("s3_dst", ""),
+        s3_url=lambda w, input: _get_s3_url(w, input.model_results),
     shell:
         """
         ./bin/nextstrain-remote-upload-with-slack-notification \
             {params.quiet} \
-            {params.s3_dst:q}/{wildcards.variant_classification:q}/{wildcards.geo_resolution:q}/{wildcards.model:q}/ \
+            {params.s3_url} \
             {input.model_results}
         """
