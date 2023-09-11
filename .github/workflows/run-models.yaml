@@ -17,48 +17,45 @@ on:
         required: false
 
 jobs:
-  run_models:
+  set_config_overrides:
     runs-on: ubuntu-latest
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      DATA_PROVENANCE: ${{ github.event.inputs.data_provenance || github.event.client_payload.data_provenance }}
-      GITHUB_RUN_ID: ${{ github.run_id }}
-      PAT_GITHUB_DISPATCH: ${{ secrets.GH_TOKEN_NEXTSTRAIN_BOT_WORKFLOW_DISPATCH }}
-      SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-      SLACK_CHANNELS: ${{ github.event.inputs.slack_channel || 'nextstrain-counts-updates' }}
-      TRIAL_NAME: ${{ github.event.inputs.trial_name }}
     steps:
-    - uses: actions/checkout@v3
-    - uses: nextstrain/.github/actions/setup-nextstrain-cli@master
+      - id: s3_dst
+        run: |
+          S3_DST=s3://nextstrain-data/files/workflows/forecasts-ncov
 
-    - name: install-pyyaml
-      run: python3 -m pip install pyyaml
+          if [[ -n "$TRIAL_NAME" ]]; then
+            S3_DST+=/trial/"$TRIAL_NAME"
+          fi
 
-    - name: run_pipeline
+          echo "s3_dst=$S3_DST" >> "$GITHUB_OUTPUT"
+        env:
+          TRIAL_NAME: ${{ inputs.trial_name }}
+
+      - id: data_provenances
+        run: |
+          DATA_PROVENANCES='["gisaid", "open"]'
+
+          if [[ -n "$INPUT_DATA_PROVENANCE" ]]; then
+            DATA_PROVENANCES="$INPUT_DATA_PROVENANCE"
+          fi
+
+          echo "data_provenances=$DATA_PROVENANCES" >> "$GITHUB_OUTPUT"
+        env:
+          INPUT_DATA_PROVENANCE: ${{ inputs.data_provenance }}
+    outputs:
+      s3_dst: ${{ steps.s3_dst.outputs.s3_dst }}
+      data_provenances: ${{ steps.data_provenances.outputs.data_provenances }}
+
+  run_models:
+    needs: [set_config_overrides]
+    permissions:
+      id-token: write
+    uses: nextstrain/.github/.github/workflows/pathogen-repo-build.yaml@master
+    secrets: inherit
+    with:
+      runtime: aws-batch
       run: |
-        ./ingest/bin/write-envdir env.d \
-          AWS_DEFAULT_REGION \
-          GITHUB_RUN_ID \
-          SLACK_TOKEN \
-          SLACK_CHANNELS \
-          PAT_GITHUB_DISPATCH \
-
-        # Need to edit the optional file with a script because we need to edit nested values
-        if [[ "$TRIAL_NAME" ]]; then
-          ./bin/set-trial-optional-config \
-            --config-yaml config/optional.yaml \
-            --s3-trial-prefix "$TRIAL_NAME" > optional.yaml
-        else
-          cat config/optional.yaml > optional.yaml
-        fi
-
-        declare -a override_config
-        if [[ "$DATA_PROVENANCE" ]]; then
-          override_config=(--config data_provenances="$DATA_PROVENANCE")
-        fi
-
         nextstrain build \
           --aws-batch \
           --detach \
@@ -66,11 +63,18 @@ jobs:
           --image nextstrain/base:build-20230720T001758Z \
           --cpus 8 \
           --memory 16GiB \
-          --exec env \
+          --env AWS_DEFAULT_REGION \
+          --env AWS_ACCESS_KEY_ID \
+          --env AWS_SECRET_ACCESS_KEY \
+          --env GITHUB_RUN_ID \
+          --env SLACK_TOKEN \
+          --env SLACK_CHANNELS \
           . \
-            envdir env.d snakemake \
-              --configfile config/config.yaml optional.yaml \
-              --printshellcmds \
-              --cores 8 \
-              --keep-going \
-              "${override_config[@]}"
+            --configfile config/config.yaml config/optional.yaml \
+            --config s3_dst="$S3_DST" data_provenances="$DATA_PROVENANCES" \
+            --keep-going
+      env: |
+        DATA_PROVENANCES: ${{ needs.set_config_overrides.outputs.data_provenances }}
+        GITHUB_RUN_ID: ${{ github.run_id }}
+        SLACK_CHANNELS: ${{ github.event.inputs.slack_channel || vars.SLACK_CHANNELS }}
+        S3_DST: ${{ needs.set_config_overrides.outputs.s3_dst }}

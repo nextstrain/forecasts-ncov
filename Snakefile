@@ -69,7 +69,7 @@ def _get_all_input(w):
             model=models_to_run,
             date=run_date
         ))
-        if config.get("upload"):
+        if config.get("s3_dst"):
             all_input.extend(expand(
                 [
                     "results/{data_provenance}/{variant_classification}/{geo_resolution}/{model}/{date}_results_s3_upload.done",
@@ -95,5 +95,5 @@ include: "workflow/snakemake_rules/models.smk"
 if config.get("send_slack_notifications"):
     include: "workflow/snakemake_rules/slack_notifications.smk"
 
-if config.get("upload"):
+if config.get("s3_dst"):
     include: "workflow/snakemake_rules/upload.smk"
