@@ -2,14 +2,12 @@
 
 > _This is a work in progress!_
 
-
 The web-app detailed here is currently running at [nextstrain.github.io/forecasts-ncov/](https://nextstrain.github.io/forecasts-ncov/) and will visualise the lates available model run.
 If you wish to visualise a local JSON file, it may be easiest to use [this drag-and-drop web app](https://nextstrain.github.io/forecasts-viz/).
 
+## Quickstart
 
-### Quickstart:
-
-```
+```bash
 npm ci
 npm run dev # open http://localhost:5173/forecasts-ncov/
 ```
@@ -17,7 +15,7 @@ npm run dev # open http://localhost:5173/forecasts-ncov/
 This (single-page) app exists to visualise the model outputs to both generate static images as well as help development of the underlying visualisation library.
 It is not intended to remain here long term; this will be added as a "normal" page of nextstrain.org once some technical hurdles are solved with that site.
 
-### Updating the viz library
+## Updating the viz library
 
 We are using our generalised [@nextstrain/evofr-viz library](https://github.com/nextstrain/forecasts-viz) which is packed and
 vendored here. To update the library:
@@ -27,11 +25,24 @@ vendored here. To update the library:
 3. `rm -rf node_modules package-lock.json`
 4. `npm install <path_to_tarball>`
 
-### Config
+## Config
 
 The [config file](./src/config.js) defines the variant colors, display names as well as the URLs where the model JSONs are fetched from.
 
-### Changing the styles of individual small-multiple graphs
+## Testing local data
+
+You can test data without having it uploaded to s3 by running a local HTTP server:
+
+```bash
+# running from the root of the repo
+npx serve@latest --cors --port 4238 results/
+```
+
+And setting the default URL in `./src/config.js` to `http://0.0.0.0:4238
+
+Then run `npm run dev` and open [http://localhost:5173/forecasts-ncov/](http://localhost:5173/forecasts-ncov/) in your browser.
+
+## Changing the styles of individual small-multiple graphs
 
 You can provide style overrides to the `<PanelDisplay>` component (`./src/App.jsx`) to change selected styles on a case-by-case basis, which avoids having to update the underlying library. For instance (using the defaults for the frequency panel):
 
@@ -40,9 +51,9 @@ You can provide style overrides to the `<PanelDisplay>` component (`./src/App.js
 + <PanelDisplay graphType="r_t" styles={{width: 250, height: 200, top: 5, right: 0, bottom: 20, left: 35}}/>
 ```
 
-### Static image generation
+## Static image generation
 
-```
+```bash
 # running from the viz directory
 npm run build
 node scripts/static-images.js
@@ -53,9 +64,7 @@ This is run via the `generate-static-model-viz` GitHub action of this repo.
 
 You can `open ./example-static-images.html` to see an example HTML page where different image sizes are selected based on your screen size.
 
-
-### Updating the GitHub pages site
+## Updating the GitHub pages site
 
 A [GitHub Action](https://github.com/nextstrain/forecasts-ncov/blob/main/.github/workflows/deploy-viz-app.yaml) will automatically re-deploy the site whenever changes to files in this directory (`viz`) are committed to the main branch.
 The GitHub pages site is available at [nextstrain.github.io/forecasts-ncov/](https://nextstrain.github.io/forecasts-ncov/).
-
