@@ -16,9 +16,10 @@ prepare_data:
     nextstrain_clades:
       global:
         included_days: 150
-        location_min_seq: 100
-        location_min_seq_days: 30
+        location_min_seq: 200
+        location_min_seq_days: 70
         excluded_locations: "defaults/global_excluded_locations.txt"
+        included_locations: "defaults/global_included_locations.txt"
         prune_seq_days: 12
         clade_min_seq: 5000
         clade_min_seq_days: 150
@@ -26,8 +27,9 @@ prepare_data:
       global:
         included_days: 150
         location_min_seq: 300
-        location_min_seq_days: 30
+        location_min_seq_days: 100
         excluded_locations: "defaults/global_excluded_locations.txt"
+        included_locations: "defaults/global_included_locations.txt"
         prune_seq_days: 12
         clade_min_seq: 1
         clade_min_seq_days: 150
