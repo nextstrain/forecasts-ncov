@@ -42,12 +42,9 @@ The latest results are stored as `latest_results.json` and previously uploaded r
 | open (GenBank)  | Nextstrain clades      |                       |        | `https://data.nextstrain.org/files/workflows/forecasts-ncov/open/nextstrain_clades/global/mlr/latest_results.json`   |
 |                 | Pango lineages         |                       |        | `https://data.nextstrain.org/files/workflows/forecasts-ncov/open/pango_lineages/global/mlr/latest_results.json`      |
 
-
 ## Installation
 
 Please follow [installation instructions](https://docs.nextstrain.org/en/latest/install.html#installation-steps) for Nextstrain's software tools.
-
-You need to additionally pip or (bio)conda install `pango_aliasor` (TODO: Add to docker/conda-base)
 
 ## Usage
 
