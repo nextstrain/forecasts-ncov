@@ -88,25 +88,17 @@ rule mlr_model:
             --data-name {wildcards.date} 2>&1 | tee {log}
         """
 
-
-ruleorder: post_process_model_output > skip_post_process_model_output
-
-rule skip_post_process_model_output:
-  input: "results/{data_provenance}/{variant_classification}/{geo_resolution}/{model}/model-outputs/{date}_results.json"
-  output: "results/{data_provenance}/{variant_classification}/{geo_resolution}/{model}/{date}_results.json"
-  shell:
-      """
-      mv {input} {output}
-      """
-
-rule post_process_model_output:
+rule post_process:
     """
-    Only applies to specific model runs at the moment (pango_lineages, MLR)
+    Potentially modifies/adds colours, display names, variant ordering
     """
-    input: "results/{data_provenance}/pango_lineages/{geo_resolution}/mlr/model-outputs/{date}_results.json"
-    output: "results/{data_provenance}/pango_lineages/{geo_resolution}/mlr/{date}_results.json"
-    log: "logs/{data_provenance}/pango_lineages/{geo_resolution}/mlr/{date}_post-processing.txt"
+    input: "results/{data_provenance}/{variant_classification}/{geo_resolution}/{model}/model-outputs/{date}_results.json"
+    output: "results/{data_provenance}/{variant_classification}/{geo_resolution}/{model}/{date}_results.json"
+    log: "logs/{data_provenance}/{variant_classification}/{geo_resolution}/{model}/{date}_post-processing.txt"
     shell:
-      """
-      python ./scripts/modify-lineage-colours-and-order.py {input} {output} 2>&1 | tee {log}
-      """
+        """
+        python ./scripts/modify-lineage-colours-and-order.py \
+            --input {input} \
+            --output {output} \
+            --variant-classification {wildcards.variant_classification} 2>&1 | tee {log}
+        """

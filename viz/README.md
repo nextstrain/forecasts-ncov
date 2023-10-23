@@ -15,6 +15,9 @@ npm run dev # open http://localhost:5173/forecasts-ncov/
 This (single-page) app exists to visualise the model outputs to both generate static images as well as help development of the underlying visualisation library.
 It is not intended to remain here long term; this will be added as a "normal" page of nextstrain.org once some technical hurdles are solved with that site.
 
+All colors, display names etc are set within the JSON itself (see `/../scripts/modify-lineage-colours-and-order.py`).
+
+
 ## Updating the viz library
 
 We are using our generalised [@nextstrain/evofr-viz library](https://github.com/nextstrain/forecasts-viz) which is packed and
@@ -25,20 +28,20 @@ vendored here. To update the library:
 3. `rm -rf node_modules package-lock.json`
 4. `npm install <path_to_tarball>`
 
-## Config
-
-The [config file](./src/config.js) defines the variant colors, display names as well as the URLs where the model JSONs are fetched from.
-
 ## Testing local data
 
 You can test data without having it uploaded to s3 by running a local HTTP server:
 
 ```bash
 # running from the root of the repo
-npx serve@latest --cors --port 4238 results/
+npx serve@latest --cors -p 4238 results/
 ```
 
-And setting the default URL in `./src/config.js` to `http://0.0.0.0:4238
+And changing the default URL in `./src/App.jsx`:
+```diff
+- const DATA_URL_PREFIX=`https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov`
++ const DATA_URL_PREFIX=`http://localhost:4238`
+```
 
 Then run `npm run dev` and open [http://localhost:5173/forecasts-ncov/](http://localhost:5173/forecasts-ncov/) in your browser.
 
@@ -51,7 +54,7 @@ You can provide style overrides to the `<PanelDisplay>` component (`./src/App.js
 + <PanelDisplay graphType="r_t" styles={{width: 250, height: 200, top: 5, right: 0, bottom: 20, left: 35}}/>
 ```
 
-## Static image generation
+## Static image generation (no longer used)
 
 ```bash
 # running from the viz directory

@@ -1,6 +1,15 @@
 import { PanelDisplay, useModelData } from '@nextstrain/evofr-viz';
 import '@nextstrain/evofr-viz/dist/index.css';
-import { mlrCladesConfig, mlrLineagesConfig } from "./config";
+
+const DATA_URL_PREFIX=`https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov`
+const mlrCladesConfig = {
+    modelName: "mlr_clades",
+    modelUrl: `${DATA_URL_PREFIX}/gisaid/nextstrain_clades/global/mlr/latest_results.json`,
+}
+const mlrLineagesConfig = {
+    modelName: "mlr_lineages",
+    modelUrl: `${DATA_URL_PREFIX}/gisaid/pango_lineages/global/mlr/latest_results.json`,
+}
 
 function App() {
 
