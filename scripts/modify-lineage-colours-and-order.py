@@ -5,25 +5,27 @@ import matplotlib as mpl
 import numpy as np
 
 """
-Nextstrain clades, with newest first, and the associated colour scales we want to use
-Clade maps taken from https://github.com/nextstrain/forecasts-ncov/blob/70bf78f459a3706dd817ae5f711af3b74887d7b1/viz/src/config.js#L11-L19
-NOTE 1: the actual clade name here is never exported, we use it to group lineages
-and associate them with a colour. So we may deliberately leave out a clade mapping here
-which will group members of that clade with the parent clade, and thus we can use fewer colour
-scales.
-NOTE 2: Using low start/stop values may result in washed out colours
-NOTE 3: following lineages don't get assigned a nextstrain clade (using lineage JSON from 2023-07-17)
-XBC.1 , XBC.1.6 , XBC.1.6.3 , XBF ,  XBL 
-NOTE 4: The ordered lineages are not cleanly partitioning into clades. For example, scanning
-the ordered lineages (L->R) we observe clades 22F -> 23A -> 22F -> 23B -> 22F
+A mapping between pango lineages, nextstrain clades, and colour ramps to use for child lineages 
+of these clades. This allows each individual lineage to have its own colour whilst being able
+to visually associate them back to their nextstrain clade.
+
+NOTES:
+* The colours for the clades model runs are defined in `../viz/src/config.js`
+* Summary of available colour ramps: <https://matplotlib.org/stable/gallery/color/colormap_reference.html>
+* Lineages are ordered (in the legend & for the GA estimates) alphabetically via their full
+  pango name. This doesn't map nicely onto nextstrain clade definitions, which is why an individual
+  colour scale defined here may appear in multiple parts of the graph.
+* Using low start/stop values may result in washed out colours
+* Lineages which are not a descendant of a clade-defining lineage will be greyscale.
 """
 CLADES = [
-    ['XBB.1.16', '23B', {'name': 'Reds',   'start': 0.7, 'stop': 1  }],
-    ['XBB.1.5',  '23A', {'name': 'Reds',   'start': 0.3, 'stop': 0.6}],
-    ['XBB',      '22F', {'name': 'YlOrRd', 'start': 0.2, 'stop': 0.5}], # in lineage ordering these 'flank' 23A/23B
-    ['BQ.1',     '22E', {'name': 'GnBu',   'start': 0.8, 'stop': 1.0}], 
-    ['BA.5',     '22B', {'name': 'GnBu',   'start': 0.5, 'stop': 0.8}], # BA.5 comes after BA.2* in the lineage ordering
-    ['BA.2.75',  '22D', {'name': 'GnBu',   'start': 0.3, 'stop': 0.5}],
+    ['EG.5.1',   '23F', {'name': 'YlOrRd',   'start': 0.7, 'stop': 0.8  }],
+    ['XBB.2.3',  '23E', {'name': 'YlOrRd',   'start': 0.5, 'stop': 0.6  }],
+    ['XBB.1.9',  '23D', {'name': 'YlOrRd',   'start': 0.2, 'stop': 0.4  }],
+    ['CH.1.1',   '23C', {'name': 'Greens',   'start': 0.4, 'stop': 0.7  }],
+    ['XBB.1.16', '23B', {'name': 'YlGnBu',   'start': 0.3, 'stop': 0.5  }],
+    ['XBB',      '22F', {'name': 'Blues',    'start': 0.4, 'stop': 0.8  }],
+
 ]
 # Define a colour scale for pango lineages which do not have a clade (see NOTE 3 above)
 MISSING_COLOUR_SCALE =  {'name': 'Greys',  'start': 0.3, 'stop': 0.6}
