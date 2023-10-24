@@ -3,46 +3,35 @@ import argparse
 from pango_aliasor.aliasor import Aliasor
 import matplotlib as mpl
 import numpy as np
+import colorsys
 
 """
-A mapping between pango lineages, nextstrain clades, and colour ramps to use for child lineages 
-of these clades. This allows each individual lineage to have its own colour whilst being able
-to visually associate them back to their nextstrain clade.
+A mapping between nextstrain clades, defining pango lineages and clade colours.
+Colours will be assigned to pango lineages by first associating it with its
+corresponding nextstrain clade and then interpolating colours close to the
+clade's colour; this allows each individual lineage to have its own colour
+whilst being able to visually associate them back to their nextstrain clade.
 
-The order in the list must be heirarchical w.r.t pango lineages, i.e. XBB.1.9 must appear _before_ XBB
-
-Keys:
-    - defining_lineage: the pango lineage which defines the nextstrain clade
-    - clade: the nextstrain clade
-    - display_name: clade name to use when visualising the clades model outputs
-    - color: the hex value to use for the clade (in the clades model output)
-    - cmap: colourmap details to construct colours for the lineages associated with the clade
+The order in the list must be heirarchical w.r.t pango lineages, i.e. XBB.1.9
+must appear _before_ XBB
 
 NOTES:
-    * Summary of available colour ramps: <https://matplotlib.org/stable/gallery/color/colormap_reference.html>
-    * Lineages are ordered (in the legend & for the GA estimates) alphabetically via their full
-    pango name. This doesn't map nicely onto nextstrain clade definitions, which is why an individual
-    colour scale defined here may appear in multiple parts of the graph.
-    * Using low start/stop values may result in washed out colours
-    * Lineages which are not a descendant of a clade-defining lineage will be greyscale.
+* Lineages are ordered (in the legend & for the GA estimates) alphabetically
+  via their full pango name. This doesn't map nicely onto nextstrain clade
+  definitions, which is why an individual colour scale defined here may appear
+  in multiple parts of the graph.
+* Lineages which are not a descendant of a clade-defining lineage will be
+  grouped as 'other'
 """
 CLADES = [
-    {'defining_lineage': 'EG.5.1',   'clade': '23F', 'display_name': "23F (EG.5.1)",
-        'color': '#DC2F24', 'cmap': {'name': 'YlOrRd',   'start': 0.7, 'stop': 0.8  }},
-    {'defining_lineage': 'XBB.2.3',  'clade': '23E', 'display_name': "23E (XBB.2.3)",
-        'color': '#E68133', 'cmap': {'name': 'YlOrRd',   'start': 0.5, 'stop': 0.6  }},
-    {'defining_lineage': 'XBB.1.9',  'clade': '23D', 'display_name': "23D (XBB.1.9)",
-        'color': '#D4B13F', 'cmap': {'name': 'YlOrRd',   'start': 0.2, 'stop': 0.4  }},
-    {'defining_lineage': 'CH.1.1',   'clade': '23C', 'display_name': "23C (CH.1.1)",
-        'color': '#A6BE55', 'cmap': {'name': 'Greens',   'start': 0.4, 'stop': 0.7  }},
-    {'defining_lineage': 'XBB.1.16', 'clade': '23B', 'display_name': "23B (XBB.1.16)",
-        'color': '#75B681', 'cmap': {'name': 'YlGnBu',   'start': 0.3, 'stop': 0.5  }},
-    {'defining_lineage': 'XBB',      'clade': '22F', 'display_name': "22F (XBB)",
-        'color': '#3F63CF', 'cmap': {'name': 'Blues',    'start': 0.4, 'stop': 0.8  }},
-    {'defining_lineage': 'XBB.1.5',  'clade': '23A', 'display_name': "23A (XBB.1.5)",
-        'color': '#529AB6', 'cmap': {'name': 'cool',    'start': 0.1, 'stop': 0.2  }},
-    {'defining_lineage': None,      'clade': 'other', 'display_name': "other",
-        'color': '#777777', 'cmap': {'name': 'Greys',  'start': 0.5, 'stop': 0.8}},
+    {'clade': '23F',   'display_name': "23F (EG.5.1)",   'defining_lineage': 'EG.5.1',   'color': '#DC2F24'},
+    {'clade': '23E',   'display_name': "23E (XBB.2.3)",  'defining_lineage': 'XBB.2.3',  'color': '#E68133'},
+    {'clade': '23D',   'display_name': "23D (XBB.1.9)",  'defining_lineage': 'XBB.1.9',  'color': '#D4B13F'},
+    {'clade': '23C',   'display_name': "23C (CH.1.1)",   'defining_lineage': 'CH.1.1',   'color': '#A6BE55'},
+    {'clade': '23B',   'display_name': "23B (XBB.1.16)", 'defining_lineage': 'XBB.1.16', 'color': '#75B681'},
+    {'clade': '22F',   'display_name': "22F (XBB)",      'defining_lineage': 'XBB',      'color': '#3F63CF'},
+    {'clade': '23A',   'display_name': "23A (XBB.1.5)",  'defining_lineage': 'XBB.1.5',  'color': '#529AB6'},
+    {'clade': 'other', 'display_name': "other",          'defining_lineage': None,       'color': '#777777'},
 ]
 
 def order_lineages(lineages, aliasor):
@@ -88,6 +77,25 @@ def clade_display_names(variants):
     return [[name, display_names[name] if name in display_names else name]
             for name in variants]
 
+def colour_range(anchor, n):
+    """
+    Create a range of `n` colours centred around the provided `anchor`.
+    This currently involves simple manipulations in HLS space, but
+    the outputs aren't going to be as good as they could be if we did it in
+    a perceptually uniform space (e.g lab space). For the purposes of this viz
+    I don't think it's a dealbreaker, and in our current setup it's hard to use
+    python libraries which aren't already available in our various runtimes.
+    """
+    anchor_rgb = tuple(int(anchor.lstrip('#')[i:i+2], 16) for i in (0, 2, 4))
+    anchor_hls = colorsys.rgb_to_hls(*anchor_rgb)
+    hrange = np.linspace(anchor_hls[0]*0.85, anchor_hls[0]*1.25, n)
+    lrange = np.linspace(anchor_hls[1]*1.2, anchor_hls[1], n)
+    srange = np.linspace(anchor_hls[2]*0.7, anchor_hls[2]*1.1, n)
+    rgb_range = [colorsys.hls_to_rgb(*hls) for hls in zip(hrange, lrange, srange)]
+    def clamp(x): 
+        return int(max(0, min(x, 255)))
+    return [f"#{clamp(rgb[0]):02x}{clamp(rgb[1]):02x}{clamp(rgb[2]):02x}" for rgb in rgb_range]
+
 def colourise(lineages, aliasor):
     """
     Produces an array of arrays associating observed lineages with a colour hex. Example output:
@@ -104,11 +112,9 @@ def colourise(lineages, aliasor):
     for clade in list(set(clades.values())):
         matching_lineages = [l for l in lineages if clades[l]==clade] # will be ordered
         print(f"{clade:<10}n={len(matching_lineages)} lineages")
-        details = [x['cmap'] for x in CLADES if x['clade']==clade][0]
-        cmap = mpl.colormaps[details['name']]
-
-        for (lineage, pt) in zip(matching_lineages, np.linspace(details['start'], details['stop'], len(matching_lineages))):
-            colours.append([lineage, mpl.colors.to_hex(cmap(pt))])
+        color_hex = [x['color'] for x in CLADES if x['clade']==clade][0]
+        for pair in zip(matching_lineages, colour_range(color_hex, len(matching_lineages))):
+            colours.append(pair)
     return colours
 
 
