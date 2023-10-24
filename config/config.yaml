@@ -74,3 +74,54 @@ models:
 mlr_config: "config/mlr-config.yaml"
 # don't run renewal model by default
 #renewal_config: "config/renewal-config.yaml"
+
+
+# A mapping between nextstrain clades, defining pango lineages and clade colours.
+# Colours will be assigned to pango lineages by first associating it with its
+# corresponding nextstrain clade and then interpolating colours close to the
+# clade's colour; this allows each individual lineage to have its own colour
+# whilst being able to visually associate them back to their nextstrain clade.
+#
+# The order in the list must be hierarchical w.r.t pango lineages, i.e. XBB.1.9
+# must appear _before_ XBB
+#
+# NOTES:
+# * Lineages are ordered (in the legend & for the GA estimates) alphabetically
+#   via their full pango name. This doesn't map nicely onto nextstrain clade
+#   definitions, which is why an individual colour scale defined here may appear
+#   in multiple parts of the graph.
+# * Lineages which are not a descendant of a clade-defining lineage will be
+#   grouped as 'other'
+clade_definitions:
+  - clade: "23F"
+    display_name: "23F (EG.5.1)"
+    defining_lineage: "EG.5.1"
+    color: '#DC2F24'
+  - clade: "23E"
+    display_name: "23E (XBB.2.3)"
+    defining_lineage: "XBB.2.3"
+    color: '#E68133'
+  - clade: "23D"
+    display_name: "23D (XBB.1.9)"
+    defining_lineage: "XBB.1.9"
+    color: '#D4B13F'
+  - clade: "23C"
+    display_name: "23C (CH.1.1)"
+    defining_lineage: "CH.1.1"
+    color: '#A6BE55'
+  - clade: "23B"
+    display_name: "23B (XBB.1.1)"
+    defining_lineage: "XBB.1.1"
+    color: '#75B681'
+  - clade: "22F"
+    display_name: "22F (XBB)"
+    defining_lineage: "XBB"
+    color: '#3F63CF'
+  - clade: "23A"
+    display_name: "23A (XBB.1.5)"
+    defining_lineage: "XBB.1.5"
+    color: '#529AB6'
+  - clade: "other"
+    display_name: "other"
+    defining_lineage: False
+    color: '#777777'

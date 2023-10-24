@@ -2,6 +2,8 @@
 This part of the workflow runs the model scripts.
 """
 
+import json
+
 def _get_sequence_counts_input(wildcards):
     if wildcards.variant_classification == 'pango_lineages':
         return "data/{data_provenance}/{variant_classification}/{geo_resolution}/collapsed_seq_counts.tsv"
@@ -94,11 +96,13 @@ rule post_process:
     """
     input: "results/{data_provenance}/{variant_classification}/{geo_resolution}/{model}/model-outputs/{date}_results.json"
     output: "results/{data_provenance}/{variant_classification}/{geo_resolution}/{model}/{date}_results.json"
+    params: json.dumps(config.get("clade_definitions"))
     log: "logs/{data_provenance}/{variant_classification}/{geo_resolution}/{model}/{date}_post-processing.txt"
     shell:
         """
         python ./scripts/modify-lineage-colours-and-order.py \
             --input {input} \
             --output {output} \
+            --config {params:q} \
             --variant-classification {wildcards.variant_classification} 2>&1 | tee {log}
         """

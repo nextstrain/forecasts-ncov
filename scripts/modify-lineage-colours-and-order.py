@@ -5,35 +5,6 @@ import matplotlib as mpl
 import numpy as np
 import colorsys
 
-"""
-A mapping between nextstrain clades, defining pango lineages and clade colours.
-Colours will be assigned to pango lineages by first associating it with its
-corresponding nextstrain clade and then interpolating colours close to the
-clade's colour; this allows each individual lineage to have its own colour
-whilst being able to visually associate them back to their nextstrain clade.
-
-The order in the list must be heirarchical w.r.t pango lineages, i.e. XBB.1.9
-must appear _before_ XBB
-
-NOTES:
-* Lineages are ordered (in the legend & for the GA estimates) alphabetically
-  via their full pango name. This doesn't map nicely onto nextstrain clade
-  definitions, which is why an individual colour scale defined here may appear
-  in multiple parts of the graph.
-* Lineages which are not a descendant of a clade-defining lineage will be
-  grouped as 'other'
-"""
-CLADES = [
-    {'clade': '23F',   'display_name': "23F (EG.5.1)",   'defining_lineage': 'EG.5.1',   'color': '#DC2F24'},
-    {'clade': '23E',   'display_name': "23E (XBB.2.3)",  'defining_lineage': 'XBB.2.3',  'color': '#E68133'},
-    {'clade': '23D',   'display_name': "23D (XBB.1.9)",  'defining_lineage': 'XBB.1.9',  'color': '#D4B13F'},
-    {'clade': '23C',   'display_name': "23C (CH.1.1)",   'defining_lineage': 'CH.1.1',   'color': '#A6BE55'},
-    {'clade': '23B',   'display_name': "23B (XBB.1.16)", 'defining_lineage': 'XBB.1.16', 'color': '#75B681'},
-    {'clade': '22F',   'display_name': "22F (XBB)",      'defining_lineage': 'XBB',      'color': '#3F63CF'},
-    {'clade': '23A',   'display_name': "23A (XBB.1.5)",  'defining_lineage': 'XBB.1.5',  'color': '#529AB6'},
-    {'clade': 'other', 'display_name': "other",          'defining_lineage': None,       'color': '#777777'},
-]
-
 def order_lineages(lineages, aliasor):
     """
     Order input lineages by using their full uncompressed lineage & converting to a sortable form
@@ -49,9 +20,9 @@ def order_lineages(lineages, aliasor):
     return sorted(lineages,key=_lineage_sortable)
 
 
-def lineage_to_clade(lineage, aliasor, fallback):
+def lineage_to_clade(lineage, aliasor, fallback, clade_definitions):
     lineage_full = aliasor.uncompress(lineage)
-    for clade_data in CLADES:
+    for clade_data in clade_definitions:
         if clade_data['clade']=='other':
             continue
         comparison_lineage = aliasor.uncompress(clade_data['defining_lineage'])
@@ -59,8 +30,8 @@ def lineage_to_clade(lineage, aliasor, fallback):
             return clade_data['clade']
     return fallback
 
-def clade_colors(variants):
-    colors = {c['clade']: c['color'] for c in CLADES}
+def clade_colors(variants, clade_definitions):
+    colors = {c['clade']: c['color'] for c in clade_definitions}
     missing = set()
     defs = []
     for v in variants:
@@ -72,8 +43,8 @@ def clade_colors(variants):
     assert len(missing) == 0, f"Missing definitions for the following clades: {', '.join(missing)}"
     return defs
 
-def clade_display_names(variants):
-    display_names = {c['clade']: c['display_name'] for c in CLADES}
+def clade_display_names(variants, clade_definitions):
+    display_names = {c['clade']: c['display_name'] for c in clade_definitions}
     return [[name, display_names[name] if name in display_names else name]
             for name in variants]
 
@@ -96,7 +67,7 @@ def colour_range(anchor, n):
         return int(max(0, min(x, 255)))
     return [f"#{clamp(rgb[0]):02x}{clamp(rgb[1]):02x}{clamp(rgb[2]):02x}" for rgb in rgb_range]
 
-def colourise(lineages, aliasor):
+def colourise(lineages, aliasor, clade_definitions):
     """
     Produces an array of arrays associating observed lineages with a colour hex. Example output:
         [
@@ -104,7 +75,7 @@ def colourise(lineages, aliasor):
             ...
         ]
     """
-    clades = {lineage: lineage_to_clade(lineage, aliasor, 'other')
+    clades = {lineage: lineage_to_clade(lineage, aliasor, 'other', clade_definitions)
               for lineage in lineages}
     
     colours = []
@@ -112,7 +83,7 @@ def colourise(lineages, aliasor):
     for clade in list(set(clades.values())):
         matching_lineages = [l for l in lineages if clades[l]==clade] # will be ordered
         print(f"{clade:<10}n={len(matching_lineages)} lineages")
-        color_hex = [x['color'] for x in CLADES if x['clade']==clade][0]
+        color_hex = [x['color'] for x in clade_definitions if x['clade']==clade][0]
         for pair in zip(matching_lineages, colour_range(color_hex, len(matching_lineages))):
             colours.append(pair)
     return colours
@@ -123,15 +94,17 @@ if __name__ == "__main__":
     parser.add_argument("--input", required=True, metavar="JSON")
     parser.add_argument("--output", required=True, metavar="JSON")
     parser.add_argument("--variant-classification", required=True, help="Data will be modified for 'nextstrain_clades' or 'pango_lineages'")
+    parser.add_argument("--config", required=True, metavar="JSON string", help="clade definitions")
     parser.add_argument("--pango-alias", help="[optional] pango alias JSON", default=None)
     args = parser.parse_args()
 
     with open(args.input, 'r') as fh:
         data = json.load(fh)
+    clade_definitions = json.loads(args.config)
 
     if (args.variant_classification=='nextstrain_clades'):
-        data['metadata']['variantColors'] = clade_colors(data['metadata']['variants']) # will exit if not all variants are defined
-        data['metadata']['variantDisplayNames'] = clade_display_names(data['metadata']['variants'])
+        data['metadata']['variantColors'] = clade_colors(data['metadata']['variants'], clade_definitions)
+        data['metadata']['variantDisplayNames'] = clade_display_names(data['metadata']['variants'], clade_definitions)
 
     elif (args.variant_classification=='pango_lineages'):
         aliasor = Aliasor(args.pango_alias)
@@ -141,11 +114,11 @@ if __name__ == "__main__":
 
         print("---- Lineages to associated clades -----")
         for lineage in data['metadata']['variants']:
-            print(f"{lineage:<20}{lineage_to_clade(lineage, aliasor, 'other')}")
+            print(f"{lineage:<20}{lineage_to_clade(lineage, aliasor, 'other', clade_definitions)}")
         print()
 
         print("---- Generating colours for each observed lineage -----")
-        data['metadata']['variantColors'] = colourise(data['metadata']['variants'], aliasor)
+        data['metadata']['variantColors'] = colourise(data['metadata']['variants'], aliasor, clade_definitions)
 
     else:
         print(f"Variant classification of {args.variant_classification}: no post-processing of JSON")
