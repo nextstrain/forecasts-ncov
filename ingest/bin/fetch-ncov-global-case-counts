@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Fetch CSV from Our World in Data
 curl https://covid.ourworldindata.org/data/owid-covid-data.csv \
-    --fail --silent --show-error \
+    --fail --silent --show-error --location \
     --header 'User-Agent: https://github.com/nextstrain/counts (hello@nextstrain.org)' |
     # Only keep the date, location, and new_cases columns
     csvtk cut -f location,date,new_cases |
