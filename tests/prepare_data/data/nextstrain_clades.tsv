@@ -130,8 +130,8 @@ USA	21L	2022-01-08	25
 USA	21L	2022-01-09	21
 USA	21L	2022-01-10	27
 USA	21M	2022-01-02	1
-USA	recombinant	2022-01-02	1
-USA	recombinant	2022-01-10	1
+USA	other	2022-01-02	1
+USA	other	2022-01-10	1
 United Kingdom	19A	2022-01-03	4
 United Kingdom	20I	2022-01-08	1
 United Kingdom	20I	2022-01-09	1
@@ -173,4 +173,4 @@ United Kingdom	21L	2022-01-10	103
 United Kingdom	21M	2022-01-02	1
 United Kingdom	21M	2022-01-04	1
 United Kingdom	21M	2022-01-07	1
-United Kingdom	recombinant	2022-01-07	1
+United Kingdom	other	2022-01-07	1

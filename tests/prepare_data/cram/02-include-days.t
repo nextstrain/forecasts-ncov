@@ -17,7 +17,7 @@ The outputs should be subsets of the variants counts and case counts.
   Setting min date (inclusive) as '2022-01-06'.
   Only including locations that have at least 1 sequence(s) in the analysis date range.
   Locations that will be included: ['Argentina', 'Japan', 'USA', 'United Kingdom'].
-  Variants that will be included: ['19A', '20A', '20B', '20C', '20I', '21A', '21I', '21J', '21K', '21L', '21M', 'recombinant'].
+  Variants that will be included: ['19A', '20A', '20B', '20C', '20I', '21A', '21I', '21J', '21K', '21L', '21M', 'other'].
 
 Verify that the output variants counts is a subset with expected locations, variants, and dates.
 
@@ -26,7 +26,7 @@ Verify that the output variants counts is a subset with expected locations, vari
   $ echo $(tsv-select -H -f location "$TMP/prepared_seq_counts.tsv" | tsv-uniq -H | tail -n +2 | sort)
   Argentina Japan USA United Kingdom
   $ echo $(tsv-select -H -f variant "$TMP/prepared_seq_counts.tsv" | tsv-uniq -H | tail -n +2 | sort)
-  19A 20A 20B 20C 20I 21A 21I 21J 21K 21L 21M recombinant
+  19A 20A 20B 20C 20I 21A 21I 21J 21K 21L 21M other
   $ echo $(tsv-select -H -f date "$TMP/prepared_seq_counts.tsv" | tsv-uniq -H | tail -n +2 | sort | tsv-summarize --first 1 --last 1)
   2022-01-06 2022-01-10
 
