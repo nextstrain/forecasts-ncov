@@ -125,3 +125,7 @@ clade_definitions:
     display_name: "other"
     defining_lineage: False
     color: '#777777'
+  - clade: "recombinant"
+    display_name: "recombinant"
+    defining_lineage: False
+    color: '#515151'
