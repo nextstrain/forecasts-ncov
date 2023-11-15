@@ -1,21 +1,59 @@
 # Visualisation of model outputs
 
-> _This is a work in progress!_
-
 The web-app detailed here is currently running at [nextstrain.github.io/forecasts-ncov/](https://nextstrain.github.io/forecasts-ncov/) and will visualise the lates available model run.
 If you wish to visualise a local JSON file, it may be easiest to use [this drag-and-drop web app](https://nextstrain.github.io/forecasts-viz/).
 
-## Quickstart
+## Prerequisites
+
+The only software requirement is [Node.js](https://nodejs.org).
+There are many ways to install this, but a common way is to use conda:
 
 ```bash
-npm ci
-npm run dev # open http://localhost:5173/forecasts-ncov/
+conda create -y -n node -c conda-forge nodejs
+conda activate node
+```
+
+## Quickstart using "live" data from our S3 bucket
+
+```bash
+npm ci           # install JS dependencies
+npm run build    # build the JS code
+npm run preview  # open http://localhost:5173/forecasts-ncov/
 ```
 
 This (single-page) app exists to visualise the model outputs to both generate static images as well as help development of the underlying visualisation library.
 It is not intended to remain here long term; this will be added as a "normal" page of nextstrain.org once some technical hurdles are solved with that site.
 
 All colors, display names etc are set within the JSON itself (see `/../scripts/modify-lineage-colours-and-order.py`).
+
+
+## Using local JSONs
+
+To begin with, ensure the quickstart (above) using live data is working as expected.
+
+You will need two JSON files representing the clades and lineages analyses, and these will need to be located within the top-level results directory.
+The paths to these files, relative to the results directory, are provided via the environment variables `VITE_CLADES_PATH` and `VITE_LINEAGES_PATH`. See `../README.md` for how to run the model pipeline which will be produce these files within `../results/`.
+
+The command `npm run start:local` will both serve the website and provide access to the two JSON files defined via the env variables. For instance, using the default file paths produced by the model-run pipeline:
+
+
+```bash
+VITE_CLADES_PATH="gisaid/nextstrain_clades/global/mlr/YYYY-MM-DD_results.json" \
+  VITE_LINEAGES_PATH="gisaid/pango_lineages/global/mlr/YYYY-MM-DD_results.json" \
+  npm run start:local
+```
+
+Or, if your JSONs are `results/clades.json` and `results/lineages.json` then the command is:
+```bash
+VITE_CLADES_PATH="clades.json" VITE_LINEAGES_PATH="lineages.json" npm run start:local
+```
+
+## Development mode
+
+Development mode is slightly slower than production mode but allows on-the-fly editing of the JavaScript code.
+
+If you are using live (S3) data, run `npm run dev`.
+If you are using local data, replace `npm run start:local` with `npm run start:local:dev`.
 
 
 ## Updating the viz library
@@ -27,23 +65,6 @@ vendored here. To update the library:
 2. Move the tarball to this folder (`./viz`) so it will be committed, and remove the old one if necessary
 3. `rm -rf node_modules package-lock.json`
 4. `npm install <path_to_tarball>`
-
-## Testing local data
-
-You can test data without having it uploaded to s3 by running a local HTTP server:
-
-```bash
-# running from the root of the repo
-npx serve@latest --cors -p 4238 results/
-```
-
-And changing the default URL in `./src/App.jsx`:
-```diff
-- const DATA_URL_PREFIX=`https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov`
-+ const DATA_URL_PREFIX=`http://localhost:4238`
-```
-
-Then run `npm run dev` and open [http://localhost:5173/forecasts-ncov/](http://localhost:5173/forecasts-ncov/) in your browser.
 
 ## Changing the styles of individual small-multiple graphs
 
