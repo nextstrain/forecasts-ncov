@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start:local": "bash ./scripts/run-local.sh production",
+    "start:local:dev": "bash ./scripts/run-local.sh"
   },
   "dependencies": {
     "@nextstrain/evofr-viz": "file:nextstrain-evofr-viz-0.1.0.tgz",
@@ -19,6 +21,8 @@
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react": "^3.1.0",
+    "concurrently": "^8.2.2",
+    "serve": "^14.2.1",
     "vite": "^4.2.0"
   }
 }
