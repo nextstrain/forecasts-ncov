@@ -5,6 +5,11 @@ import matplotlib as mpl
 import numpy as np
 import colorsys
 
+
+# Color for clades that lack clade definition, but we don't want to group with 'other'
+DEFAULT_CLADE_COLOR = '#474747'
+
+
 def order_lineages(lineages, aliasor):
     """
     Order input lineages by using their full uncompressed lineage & converting to a sortable form
@@ -40,7 +45,15 @@ def clade_colors(variants, clade_definitions):
         except KeyError:
             if v!='other':
                 missing.add(v)
-    assert len(missing) == 0, f"Missing definitions for the following clades: {', '.join(missing)}"
+                defs.append([v, DEFAULT_CLADE_COLOR])
+
+    # TODO: Emit this to output file so it can be sent thru Slack notifications
+    if len(missing) > 0:
+        print(
+            f"Missing definitions for the following clades: {', '.join(missing)}.",
+            f"They have been assigned the default color {DEFAULT_CLADE_COLOR!r}"
+        )
+
     return defs
 
 def clade_display_names(variants, clade_definitions):
