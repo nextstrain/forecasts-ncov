@@ -5,6 +5,11 @@ import matplotlib as mpl
 import numpy as np
 import colorsys
 
+
+# Color for clades that lack clade definition, but we don't want to group with 'other'
+DEFAULT_CLADE_COLOR = '#474747'
+
+
 def order_lineages(lineages, aliasor):
     """
     Order input lineages by using their full uncompressed lineage & converting to a sortable form
@@ -40,7 +45,15 @@ def clade_colors(variants, clade_definitions):
         except KeyError:
             if v!='other':
                 missing.add(v)
-    assert len(missing) == 0, f"Missing definitions for the following clades: {', '.join(missing)}"
+                defs.append([v, DEFAULT_CLADE_COLOR])
+
+    # TODO: Emit this to output file so it can be sent thru Slack notifications
+    if len(missing) > 0:
+        print(
+            f"Missing definitions for the following clades: {', '.join(missing)}.",
+            f"They have been assigned the default color {DEFAULT_CLADE_COLOR!r}"
+        )
+
     return defs
 
 def clade_display_names(variants, clade_definitions):
@@ -63,7 +76,7 @@ def colour_range(anchor, n):
     lrange = np.linspace(anchor_hls[1]*1.2, anchor_hls[1], n)
     srange = np.linspace(anchor_hls[2]*0.7, anchor_hls[2]*1.1, n)
     rgb_range = [colorsys.hls_to_rgb(*hls) for hls in zip(hrange, lrange, srange)]
-    def clamp(x): 
+    def clamp(x):
         return int(max(0, min(x, 255)))
     return [f"#{clamp(rgb[0]):02x}{clamp(rgb[1]):02x}{clamp(rgb[2]):02x}" for rgb in rgb_range]
 
@@ -77,7 +90,7 @@ def colourise(lineages, aliasor, clade_definitions):
     """
     clades = {lineage: lineage_to_clade(lineage, aliasor, 'other', clade_definitions)
               for lineage in lineages}
-    
+
     colours = []
 
     for clade in list(set(clades.values())):
