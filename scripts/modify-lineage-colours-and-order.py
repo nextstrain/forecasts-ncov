@@ -63,7 +63,7 @@ def colour_range(anchor, n):
     lrange = np.linspace(anchor_hls[1]*1.2, anchor_hls[1], n)
     srange = np.linspace(anchor_hls[2]*0.7, anchor_hls[2]*1.1, n)
     rgb_range = [colorsys.hls_to_rgb(*hls) for hls in zip(hrange, lrange, srange)]
-    def clamp(x): 
+    def clamp(x):
         return int(max(0, min(x, 255)))
     return [f"#{clamp(rgb[0]):02x}{clamp(rgb[1]):02x}{clamp(rgb[2]):02x}" for rgb in rgb_range]
 
@@ -77,7 +77,7 @@ def colourise(lineages, aliasor, clade_definitions):
     """
     clades = {lineage: lineage_to_clade(lineage, aliasor, 'other', clade_definitions)
               for lineage in lineages}
-    
+
     colours = []
 
     for clade in list(set(clades.values())):
