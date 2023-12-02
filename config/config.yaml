@@ -110,8 +110,8 @@ clade_definitions:
     defining_lineage: "CH.1.1"
     color: '#A6BE55'
   - clade: "23B"
-    display_name: "23B (XBB.1.1)"
-    defining_lineage: "XBB.1.1"
+    display_name: "23B (XBB.1.16)"
+    defining_lineage: "XBB.1.16"
     color: '#75B681'
   - clade: "22F"
     display_name: "22F (XBB)"
