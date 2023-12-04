@@ -21,7 +21,7 @@ model:
   prior_seq_dispersion: 100.0 # Ignored if using Multinomial
   k: 12 # Number of spline knots to use
   order: 4 # Order of spline to use
-  pivot: "22B"
+  pivot: "23A"
   generation_time: # Specify mean and standard deviation for generation time
     Delta:
       name: "Delta"
@@ -78,6 +78,26 @@ model:
       mean: 3.1
       sd: 1.2
       family: "Gamma" # Options: Gamma and LogNormal
+    O23C:
+      name: "23C"
+      mean: 3.1
+      sd: 1.2
+      family: "Gamma" # Options: Gamma and LogNormal
+    O23D:
+      name: "23D"
+      mean: 3.1
+      sd: 1.2
+      family: "Gamma" # Options: Gamma and LogNormal
+    O23E:
+      name: "23E"
+      mean: 3.1
+      sd: 1.2
+      family: "Gamma" # Options: Gamma and LogNormal
+    O23F:
+      name: "23F"
+      mean: 3.1
+      sd: 1.2
+      family: "Gamma" # Options: Gamma and LogNormal
     recombinant:
       name: "recombinant"
       mean: 3.1
@@ -98,5 +118,5 @@ inference:
   method: "NUTS"
   iters: 50000 # Number of iterations for SVI
   lr: 4e-4 # Learning rate for the model
-  num_warmup: 200
+  num_warmup: 1500
   num_samples: 200

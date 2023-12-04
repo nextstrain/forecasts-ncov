@@ -5,10 +5,10 @@ set -euo pipefail
 curl https://covid.ourworldindata.org/data/owid-covid-data.csv \
     --fail --silent --show-error --location \
     --header 'User-Agent: https://github.com/nextstrain/counts (hello@nextstrain.org)' |
-    # Only keep the date, location, and new_cases columns
-    csvtk cut -f location,date,new_cases |
-    # Rename new_cases to cases
-    csvtk rename -f new_cases -n cases |
+    # Only keep the date, location, and weekly_hosp_admissions columns
+    csvtk cut -f location,date,weekly_hosp_admissions |
+    # Rename weekly_hosp_admissions to cases
+    csvtk rename -f weekly_hosp_admissions -n cases |
     # Only keep rows that have more than 0 cases
     csvtk filter -f "cases>0" |
     # Remove decimals from case counts
