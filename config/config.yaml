@@ -13,20 +13,20 @@ prepare_data:
   gisaid:
     nextstrain_clades:
       global:
-        included_days: 500
-        location_min_seq: 12000
-        location_min_seq_days: 500
+        included_days: 670
+        location_min_seq: 20000
+        location_min_seq_days: 670
         excluded_locations: "defaults/global_excluded_locations.txt"
         prune_seq_days: 12
         clade_min_seq: 5000
-        clade_min_seq_days: 500
+        clade_min_seq_days: 670
 
 # Params for the model run scripts
 models:
   gisaid:
     nextstrain_clades:
       global:
-        pivot: "'21K (Omicron)'"
+        pivot: "21K"
 
 # Model configs
 mlr_config: "config/mlr-config.yaml"
