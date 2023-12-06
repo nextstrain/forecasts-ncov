@@ -96,43 +96,43 @@ clade_definitions:
   - clade: "23I"
     display_name: "23I (BA.2.86)"
     defining_lineage: "BA.2.86"
-    color: '#8E82BE'
+    color: '#DC2F24'
   - clade: "23H"
     display_name: "23H (HK.3)"
     defining_lineage: "HK.3"
-    color: '#E55B4D'
+    color: '#E56C2F'
   - clade: "23G"
     display_name: "23G (XBB.1.5.70)"
     defining_lineage: "XBB.1.5.70"
-    color: '#6BA4C9'
+    color: '#E39B39'
   - clade: "23F"
     display_name: "23F (EG.5.1)"
     defining_lineage: "EG.5.1"
-    color: '#DC2F24'
+    color: '#CEB541'
   - clade: "23E"
     display_name: "23E (XBB.2.3)"
     defining_lineage: "XBB.2.3"
-    color: '#E68133'
+    color: '#ADBD51'
   - clade: "23D"
     display_name: "23D (XBB.1.9)"
     defining_lineage: "XBB.1.9"
-    color: '#D4B13F'
+    color: '#88BB6C'
   - clade: "23C"
     display_name: "23C (CH.1.1)"
     defining_lineage: "CH.1.1"
-    color: '#A6BE55'
+    color: '#69B091'
   - clade: "23B"
     display_name: "23B (XBB.1.16)"
     defining_lineage: "XBB.1.16"
-    color: '#75B681'
+    color: '#5199B7'
   - clade: "22F"
     display_name: "22F (XBB)"
     defining_lineage: "XBB"
-    color: '#3F63CF'
+    color: '#4042C7'
   - clade: "23A"
     display_name: "23A (XBB.1.5)"
     defining_lineage: "XBB.1.5"
-    color: '#529AB6'
+    color: '#4274CE'
   - clade: "other"
     display_name: "other"
     defining_lineage: False
