@@ -93,6 +93,18 @@ mlr_config: "config/mlr-config.yaml"
 # * Lineages which are not a descendant of a clade-defining lineage will be
 #   grouped as 'other'
 clade_definitions:
+  - clade: "23I"
+    display_name: "23I (BA.2.86)"
+    defining_lineage: "BA.2.86"
+    color: '#8E82BE'
+  - clade: "23H"
+    display_name: "23H (HK.3)"
+    defining_lineage: "HK.3"
+    color: '#E55B4D'
+  - clade: "23G"
+    display_name: "23G (XBB.1.5.70)"
+    defining_lineage: "XBB.1.5.70"
+    color: '#6BA4C9'
   - clade: "23F"
     display_name: "23F (EG.5.1)"
     defining_lineage: "EG.5.1"
