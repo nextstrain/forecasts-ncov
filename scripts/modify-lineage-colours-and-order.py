@@ -31,7 +31,7 @@ def lineage_to_clade(lineage, aliasor, fallback, clade_definitions):
         if clade_data['clade']=='other':
             continue
         comparison_lineage = aliasor.uncompress(clade_data['defining_lineage'])
-        if lineage_full == comparison_lineage or f"{lineage_full}.".startswith(comparison_lineage + "."):
+        if lineage_full == comparison_lineage or lineage_full.startswith(comparison_lineage + "."):
             return clade_data['clade']
     return fallback
 
