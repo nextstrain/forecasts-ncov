@@ -87,3 +87,4 @@ open:
         --filter-query "QC_overall_status != 'bad' & country == 'USA'"
 
 s3_dst: s3://nextstrain-data/files/workflows/forecasts-ncov
+cloudfront_domain: 'data.nextstrain.org'

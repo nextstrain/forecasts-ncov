@@ -63,10 +63,11 @@ rule upload_sequence_count:
         clade_seq_counts = "results/{data_provenance}/{variant_classification}/{geo_resolution}.tsv"
     output: touch("results/{data_provenance}/{variant_classification}/{geo_resolution}_upload.done")
     params:
-        s3_url = lambda w, input: _get_s3_url(w, input[0])
+        s3_url = lambda w, input: _get_s3_url(w, input[0]),
+        cloudfront_domain = config["cloudfront_domain"]
     benchmark:
         "benchmarks/{data_provenance}/{variant_classification}/{geo_resolution}/upload_sequence_counts.txt"
     shell:
         """
-        ./vendored/upload-to-s3 {input.clade_seq_counts} {params.s3_url:q}
+        ./vendored/upload-to-s3 {input.clade_seq_counts} {params.s3_url:q} {params.cloudfront_domain:q}
         """
