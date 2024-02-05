@@ -26,7 +26,7 @@ jobs:
       run: python3 -m pip install cram
 
     - name: Install pandas and tsv-utils
-      run: mamba install "pandas>=1.0.0" "tsv-utils" "pango_aliasor>=0.3.0"
+      run: mamba install "pandas>=1.0.0,<2.2.0" "tsv-utils" "pango_aliasor>=0.3.0"
 
     - name: Run Cram tests
       run: cram --shell=/bin/bash tests/
