@@ -54,23 +54,25 @@ if __name__ == '__main__':
              "This is useful to exclude sequence counts for recent days that are overly enriched for variants.")
     parser.add_argument("--location-min-seq", type=positive_int, default=1,
         help="The mininum number of sequences a location must have within the "
-             "days-min-seq to be included in analysis.\n"
+             "location-min-seq-days to be included in analysis.\n"
              "(default: %(default)s)")
     parser.add_argument("--location-min-seq-days", type=positive_int,
         help="The number of days (counting back from the cutoff date) to use as the date range "
              "for counting the number of sequences per location to determine if a location is included in analysis.\n"
              "If not provided, will count sequences from all dates included in analysis date range.")
     parser.add_argument("--excluded-locations",
-        help="File with a list locations to exclude from analysis.")
+        help="File with a list locations to always exclude from analysis.")
+    parser.add_argument("--included-locations",
+        help="File with a list locations to always include in analysis.")
     parser.add_argument("--clade-min-seq", type=positive_int,
-        help="The minimum number of sequences a clades must have to be included as it's own variant.\n"
+        help="The minimum number of sequences a clades must have to be included as its own variant.\n"
              "All clades with less than the minimum will be collapsed as 'other'.")
     parser.add_argument("--clade-min-seq-days", type=positive_int,
-        help="The number fo days (counting back from the cutoff date) to use as the date range "
+        help="The number of days (counting back from the cutoff date) to use as the date range "
              "for counting the number of sequences per clade to determine if a clade is included as its own variant.\n"
              "If not provided, will count sequences from all dates included in analysis date range.")
     parser.add_argument("--force-include-clades", nargs="*",
-        help="Clades to force include in the output regardless of sequences counts. " +
+        help="Clades to force include in the output regardless of sequence counts. " +
              "Must be formatted as <clade_name>=<variant_name>")
     parser.add_argument("--output-seq-counts", required=True,
         help="Path to output TSV file for the prepared variants data.")
@@ -131,6 +133,7 @@ if __name__ == '__main__':
 
     # Get a set of locations that meet the location_min_seq requirement
     locations_with_min_seq = set(seqs_per_location.loc[seqs_per_location['sequences'] >= args.location_min_seq, 'location'])
+    locations_with_min_tenth_seq = set(seqs_per_location.loc[seqs_per_location['sequences'] >= args.location_min_seq / 10, 'location'])
 
     # Load manually annotated excluded locations if provided
     excluded_locations = set()
@@ -140,8 +143,16 @@ if __name__ == '__main__':
 
         print(f"Excluding the following requested locations: {sorted(excluded_locations)}.")
 
+    # Load manually annotated excluded locations if provided
+    included_locations = set()
+    if args.included_locations:
+        with open(args.included_locations, 'r') as f:
+            included_locations = {line.rstrip() for line in f} & locations_with_min_tenth_seq
+
+        print(f"Including the following requested locations: {sorted(included_locations)}.")
+
     # Remove excluded-locations from the set of locations to include in analysis
-    locations_to_include = locations_with_min_seq - excluded_locations
+    locations_to_include = locations_with_min_seq - excluded_locations | included_locations
     print(f"Locations that will be included: {sorted(locations_to_include)}.")
 
     assert len(locations_to_include) > 0, \
