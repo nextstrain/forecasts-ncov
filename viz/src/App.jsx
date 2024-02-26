@@ -64,8 +64,8 @@ function App() {
         <h2>Lineage growth advantage</h2>
         <p>
           These plots show the estimated growth advantage for given Pango lineages relative to
-          lineage XBB.1.5. This describes how many more secondary infections a variant causes
-          on average relative to lineage XBB.1.5. Vertical bars show the 95% HPD.
+          lineage JN.1. This describes how many more secondary infections a variant causes
+          on average relative to lineage JN.1. Vertical bars show the 95% HPD.
           The "hierarchical" panel shows pooled estimate of growth rates across different locations.
           Results last updated {mlrLineagesData?.modelData?.get('updated') || 'loading'}.
         </p>
