@@ -58,14 +58,14 @@ models:
   gisaid:
     nextstrain_clades:
       global:
-        pivot: "23A"
+        pivot: "23I"
     pango_lineages:
       global:
         pivot: "JN.1"
   open:
     nextstrain_clades:
       global:
-        pivot: "23A"
+        pivot: "23I"
     pango_lineages:
       global:
         pivot: "JN.1"
