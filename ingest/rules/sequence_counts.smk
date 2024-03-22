@@ -3,39 +3,26 @@ This part of the workflow summarizes sequence counts from existing metadata for 
 data provenance, variant classification system, and geo-resolution.
 """
 
-rule fetch_metadata:
-    output:
-        metadata = temp("data/{data_provenance}/metadata.tsv")
-    params:
-        s3_src = lambda w: config[w.data_provenance]["s3_metadata"]
-    benchmark:
-        "benchmarks/{data_provenance}/fetch_metadata.txt"
-    shell:
-        """
-        ./vendored/download-from-s3 {params.s3_src:q} {output.metadata}
-        """
-
-
 rule subset_metadata:
-    input:
-        metadata = "data/{data_provenance}/metadata.tsv"
     output:
-        subset_metadata = "data/{data_provenance}/subset_metadata.tsv"
+        subset_metadata = "data/{data_provenance}/subset_metadata.tsv.zst"
     params:
-        subset_columns = lambda w: ",".join(config[w.data_provenance]["subset_columns"])
+        s3_src = lambda w: config[w.data_provenance]["s3_metadata"],
+        subset_columns = lambda w: ",".join(config[w.data_provenance]["subset_columns"]),
     benchmark:
         "benchmarks/{data_provenance}/subset_metadata.txt"
     shell:
         """
-        tsv-select -H \
-            -f {params.subset_columns:q} \
-            {input.metadata} > {output.subset_metadata}
+        aws s3 cp {params.s3_src:q} - \
+            | zstd -c -d \
+            | tsv-select -H -f {params.subset_columns:q} \
+            | zstd -c > {output.subset_metadata}
         """
 
 
 rule summarize_clade_sequence_counts:
     input:
-        subset_metadata = "data/{data_provenance}/subset_metadata.tsv"
+        subset_metadata = "data/{data_provenance}/subset_metadata.tsv.zst"
     output:
         clade_seq_counts = "results/{data_provenance}/{variant_classification}/{geo_resolution}.tsv"
     params:
