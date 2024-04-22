@@ -59,6 +59,7 @@ rule prepare_clade_data:
         included_days = lambda wildcards: _get_prepare_data_option(wildcards, 'included_days'),
         location_min_seq = lambda wildcards: _get_prepare_data_option(wildcards, 'location_min_seq'),
         location_min_seq_days = lambda wildcards: _get_prepare_data_option(wildcards, 'location_min_seq_days'),
+        included_locations = lambda wildcards: _get_prepare_data_option(wildcards, 'included_locations'),
         excluded_locations = lambda wildcards: _get_prepare_data_option(wildcards, 'excluded_locations'),
         prune_seq_days = lambda wildcards: _get_prepare_data_option(wildcards, 'prune_seq_days'),
         clade_min_seq = lambda wildcards: _get_prepare_data_option(wildcards, 'clade_min_seq'),
@@ -74,6 +75,7 @@ rule prepare_clade_data:
             {params.location_min_seq} \
             {params.location_min_seq_days} \
             {params.excluded_locations} \
+            {params.included_locations} \
             {params.prune_seq_days} \
             {params.clade_min_seq} \
             {params.clade_min_seq_days} \
