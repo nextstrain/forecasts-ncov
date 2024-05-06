@@ -20,7 +20,7 @@ prepare_data:
         location_min_seq_days: 30
         excluded_locations: "defaults/global_excluded_locations.txt"
         prune_seq_days: 12
-        clade_min_seq: 5000
+        clade_min_seq: 2000
         clade_min_seq_days: 150
     pango_lineages:
       global:
@@ -40,7 +40,7 @@ prepare_data:
         location_min_seq_days: 30
         excluded_locations: "defaults/global_excluded_locations.txt"
         prune_seq_days: 12
-        clade_min_seq: 5000
+        clade_min_seq: 2000
         clade_min_seq_days: 150
     pango_lineages:
       global:
