@@ -45,8 +45,6 @@ jobs:
         nextstrain build \
           --cpus 8 \
           --memory 16gib \
-          --env AWS_ACCESS_KEY_ID \
-          --env AWS_SECRET_ACCESS_KEY \
           --env SLACK_TOKEN \
           --env SLACK_CHANNELS \
           --env S3_DST \
