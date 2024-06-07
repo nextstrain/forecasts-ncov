@@ -13,46 +13,36 @@ on:
         required: false
 
 jobs:
-  case_counts:
+  set_s3_dst:
     runs-on: ubuntu-latest
-    env:
-      SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-      SLACK_CHANNELS: ${{ github.event.inputs.slack_channel || 'nextstrain-counts-updates' }}
-    defaults:
-      run:
-        # Login shell is required to include changes by conda init bash.
-        shell: bash -l -eo pipefail {0}
     steps:
-    - uses: actions/checkout@v4
-    - uses: conda-incubator/setup-miniconda@v3
-      with:
-        python-version: "3.9"
-        miniforge-variant: Mambaforge
-        channels: conda-forge,bioconda
+      - id: s3_dst
+        run: |
+          S3_DST=s3://nextstrain-data/files/workflows/forecasts-ncov
 
-    - name: setup
-      run: mamba install "csvtk>=0.23.0"
+          if [[ "$TRIAL_NAME" ]]; then
+            S3_DST+=/trial/"$TRIAL_NAME"
+          fi
 
-    - name: download case counts
+          echo "s3_dst=$S3_DST" >> "$GITHUB_OUTPUT"
+        env:
+          TRIAL_NAME: ${{ inputs.trial_name }}
+    outputs:
+      s3_dst: ${{ steps.s3_dst.outputs.s3_dst }}
+
+  case_counts:
+    needs: [set_s3_dst]
+    permissions:
+      id-token: write
+    uses: nextstrain/.github/.github/workflows/pathogen-repo-build.yaml@master
+    secrets: inherit
+    with:
+      runtime: docker
       run: |
-        ./ingest/bin/fetch-ncov-global-case-counts > global_case_counts.tsv
-
-    - name: upload to S3
-      run: |
-        S3_DST=s3://nextstrain-data/files/workflows/forecasts-ncov/cases
-        CLOUDFRONT_DOMAIN="data.nextstrain.org"
-
-        if [[ "$TRIAL_NAME" ]]; then
-          S3_DST+=/trial/"$TRIAL_NAME"
-        fi
-
-        ./ingest/vendored/upload-to-s3 global_case_counts.tsv "$S3_DST"/global.tsv.gz $CLOUDFRONT_DOMAIN
-      env:
-        AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        TRIAL_NAME: ${{ github.event.inputs.trial_name }}
-
-    - name: notify_pipeline_failed
-      if: ${{ failure() }}
-      run: ./ingest/vendored/notify-on-job-fail "Case counts ingest" "nextstrain/forecasts-ncov"
+        nextstrain build \
+          ingest \
+          upload_all_case_counts \
+          --config s3_dst="$S3_DST"
+      env: |
+        SLACK_CHANNELS: ${{ inputs.slack_channel || vars.SLACK_CHANNELS }}
+        S3_DST: ${{ needs.set_s3_dst.outputs.s3_dst }}
