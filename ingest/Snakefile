@@ -22,4 +22,10 @@ rule upload_all_sequence_counts:
         )
 
 
+rule upload_all_case_counts:
+    input:
+        "results/upload_global_case_counts.done"
+
+
 include: "rules/sequence_counts.smk"
+include: "rules/case_counts.smk"
