@@ -2,13 +2,15 @@
 # coding: utf-8
 
 import argparse
+import json
+import os
+from datetime import date
+
+import evofr as ef
 import numpy as np
 import pandas as pd
-import os
 import yaml
-import json
-import evofr as ef
-from datetime import date
+
 
 def parse_with_default(cf, var, dflt):
     if var in cf:
@@ -394,7 +396,7 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--time-varying",  action='store_true', default=False,
-        help="Whether to run the model as time-varaying."
+        help="Whether to run the model as time-varaying. Overrides model.time_varying in config."
         + "Default is false if unspecified."
     )
 
@@ -411,7 +413,11 @@ if __name__ == "__main__":
     if args.hier:
         override_hier = args.hier
 
-    mlr_model, hier, time_varying = config.load_model(override_hier=override_hier)
+    override_time_varying = None
+    if args.time_varying:
+        override_time_varying = args.time_varying
+
+    mlr_model, hier, time_varying = config.load_model(override_hier=override_hier, override_time_varying=override_time_varying)
     print("Model created.")
 
     inference_method = config.load_optim()
