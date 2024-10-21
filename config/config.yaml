@@ -93,26 +93,34 @@ mlr_config: "config/mlr-config.yaml"
 # * Lineages which are not a descendant of a clade-defining lineage will be
 #   grouped as 'other'
 clade_definitions:
+  - clade: "24G"
+    display_name: "24G (KP.2.3)"
+    defining_lineage: "KP.2.3"
+    color: '#DC2F24'
+  - clade: "24F"
+    display_name: "24F (XEC)"
+    defining_lineage: "XEC"
+    color: '#E68133'
   - clade: "24E"
     display_name: "24E (KP.3.1.1)"
     defining_lineage: "KP.3.1.1"
-    color: '#E68133'
+    color: '#D4B13F'
   - clade: "24D"
     display_name: "24D (XDV.1)"
     defining_lineage: "XDV.1"
-    color: '#CDB642'
+    color: '#A6BE55'
   - clade: "24C"
     display_name: "24C (KP.3)"
     defining_lineage: "KP.3"
-    color: '#94BD61'
+    color: '#75B681'
   - clade: "24B"
     display_name: "24B (JN.1.11.1)"
     defining_lineage: "JN.1.11.1"
-    color: '#61AB9D'
+    color: '#529AB6'
   - clade: "24A"
     display_name: "24A (JN.1)"
     defining_lineage: "JN.1"
-    color: '#4377CD'
+    color: '#3F63CF'
   - clade: "other"
     display_name: "other"
     defining_lineage: False
