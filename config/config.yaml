@@ -93,6 +93,14 @@ mlr_config: "config/mlr-config.yaml"
 # * Lineages which are not a descendant of a clade-defining lineage will be
 #   grouped as 'other'
 clade_definitions:
+  - clade: "24I"
+    display_name: "24I (MV.1)"
+    defining_lineage: "MV.1"
+    color: '#DC2F24'
+  - clade: "24H"
+    display_name: "24H (LF.7)"
+    defining_lineage: "LF.7"
+    color: '#DC2F24'
   - clade: "24G"
     display_name: "24G (KP.2.3)"
     defining_lineage: "KP.2.3"
