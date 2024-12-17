@@ -60,7 +60,7 @@ jobs:
           --aws-batch \
           --detach \
           --no-download \
-          --image nextstrain/base:build-20241120T183024Z \
+          --image nextstrain/base \
           --cpus 8 \
           --memory 16GiB \
           --env AWS_DEFAULT_REGION \
