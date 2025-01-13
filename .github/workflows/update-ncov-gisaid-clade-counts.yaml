@@ -56,7 +56,9 @@ jobs:
 
   trigger_model_runs:
     needs: [gisaid_clade_counts]
-    if: ${{ !github.event.inputs.trial_name }}
+    # Temporarily disable the run-models workflow due to
+    # <https://github.com/nextstrain/forecasts-ncov/issues/117>
+    if: false
     runs-on: ubuntu-latest
     steps:
       - run: gh workflow run run-models.yaml --repo nextstrain/forecasts-ncov -f data_provenance=gisaid
