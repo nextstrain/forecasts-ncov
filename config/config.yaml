@@ -92,42 +92,43 @@ clade_definitions:
   - clade: "25A"
     display_name: "25A (LP.8.1)"
     defining_lineage: "LP.8.1"
+    color: '#DC2F24'
   - clade: "24I"
     display_name: "24I (MV.1)"
     defining_lineage: "MV.1"
-    color: '#DC2F24'
+    color: '#E56C2F'
   - clade: "24H"
     display_name: "24H (LF.7)"
     defining_lineage: "LF.7"
-    color: '#E67231'
+    color: '#E39B39'
   - clade: "24G"
     display_name: "24G (KP.2.3)"
     defining_lineage: "KP.2.3"
-    color: '#E0A23A'
+    color: '#CEB541'
   - clade: "24F"
     display_name: "24F (XEC)"
     defining_lineage: "XEC"
-    color: '#C5B945'
+    color: '#ADBD51'
   - clade: "24E"
     display_name: "24E (KP.3.1.1)"
     defining_lineage: "KP.3.1.1"
-    color: '#9EBE5A'
+    color: '#88BB6C'
   - clade: "24D"
     display_name: "24D (XDV.1)"
     defining_lineage: "XDV.1"
-    color: '#78B67E'
+    color: '#69B091'
   - clade: "24C"
     display_name: "24C (KP.3)"
     defining_lineage: "KP.3"
-    color: '#5AA4A8'
+    color: '#5199B7'
   - clade: "24B"
     display_name: "24B (JN.1.11.1)"
     defining_lineage: "JN.1.11.1"
-    color: '#4681C9'
+    color: '#4274CE'
   - clade: "24A"
     display_name: "24A (JN.1)"
     defining_lineage: "JN.1"
-    color: '#3F4DCB'
+    color: '#4042C7'
   - clade: "other"
     display_name: "other"
     defining_lineage: False
