@@ -89,6 +89,9 @@ mlr_config: "config/mlr-config.yaml"
 # * Lineages which are not a descendant of a clade-defining lineage will be
 #   grouped as 'other'
 clade_definitions:
+  - clade: "25A"
+    display_name: "25A (LP.8.1)"
+    defining_lineage: "LP.8.1"
   - clade: "24I"
     display_name: "24I (MV.1)"
     defining_lineage: "MV.1"
