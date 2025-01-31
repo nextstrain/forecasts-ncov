@@ -354,6 +354,22 @@ def export_results(multi_posterior, ps, path, data_name, hier, pivot):
     # Add hard-coded pivot data if a pivot is provided
     if pivot:
         results["metadata"]["pivot"] = pivot
+        # Mirroring the ps keys generated within evofr
+        # <https://github.com/blab/evofr/blob/e883784dc397805c50bbcd56b083f4f232b03e17/evofr/posterior/posterior_helpers.py#L296C5-L299C54>
+        ps_keys = ["median"]
+        for p in ps:
+            ps_keys.append(f"HDI_{round(p * 100)}_upper")
+            ps_keys.append(f"HDI_{round(p * 100)}_lower")
+
+        for location, _ in multi_posterior.locator.items():
+            for ps_key in ps_keys:
+                results["data"].append({
+                    "location": location,
+                    "site": "ga",
+                    "variant": pivot,
+                    "value": 1.0,
+                    "ps": ps_key
+                })
 
     ef.save_json(results, path=f"{path}/{data_name}_results.json")
 
