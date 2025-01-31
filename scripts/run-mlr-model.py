@@ -276,7 +276,7 @@ def make_raw_freq_tidy(data, location):
     return {"metadata": metadata, "data": entries}
 
 
-def export_results(multi_posterior, ps, path, data_name, hier):
+def export_results(multi_posterior, ps, path, data_name, hier, pivot):
     EXPORT_SITES = ["freq", "ga", "freq_forecast"]
     EXPORT_DATED = [True, False, True]
     EXPORT_FORECASTS = [False, False, True]
@@ -350,6 +350,11 @@ def export_results(multi_posterior, ps, path, data_name, hier):
 
     results = ef.posterior.combine_sites_tidy(results)
     results["metadata"]["updated"] = pd.to_datetime(date.today())
+
+    # Add hard-coded pivot data if a pivot is provided
+    if pivot:
+        results["metadata"]["pivot"] = pivot
+
     ef.save_json(results, path=f"{path}/{data_name}_results.json")
 
 
@@ -451,4 +456,4 @@ if __name__ == "__main__":
             config.config["settings"], "ps", dflt=[0.5, 0.8, 0.95]
         )
         data_name = args.data_name or config.config["data"]["name"]
-        export_results(multi_posterior, ps, export_path, data_name, hier)
+        export_results(multi_posterior, ps, export_path, data_name, hier, pivot)
