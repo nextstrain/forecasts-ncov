@@ -390,7 +390,7 @@ if __name__ == "__main__":
     print(f"Config loaded: {config.path}")
 
     raw_seq, locations = config.load_data(args.seq_path)
-    print("Data loaded sucessfuly")
+    print("Data loaded successfully")
 
     override_hier = None
     if args.hier:
