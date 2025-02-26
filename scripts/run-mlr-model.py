@@ -276,7 +276,7 @@ def make_raw_freq_tidy(data, location):
     return {"metadata": metadata, "data": entries}
 
 
-def export_results(multi_posterior, ps, path, data_name, hier, pivot):
+def export_results(multi_posterior, ps, path, data_name, hier, pivot, ga_inclusion_threshold, variant_location_counts):
     EXPORT_SITES = ["freq", "ga", "freq_forecast"]
     EXPORT_DATED = [True, False, True]
     EXPORT_FORECASTS = [False, False, True]
@@ -329,17 +329,33 @@ def export_results(multi_posterior, ps, path, data_name, hier, pivot):
                 )
             )
         else:
-            results.append(
-                ef.posterior.get_sites_variants_tidy(
-                    posterior.samples,
-                    posterior.data,
-                    EXPORT_SITES,
-                    EXPORT_DATED,
-                    EXPORT_FORECASTS,
-                    ps,
-                    location,
-                )
+            site_variants_data = ef.posterior.get_sites_variants_tidy(
+                posterior.samples,
+                posterior.data,
+                EXPORT_SITES,
+                EXPORT_DATED,
+                EXPORT_FORECASTS,
+                ps,
+                location,
             )
+
+            # Apply filtering on ga values
+            filtered_data = []
+            for entry in site_variants_data["data"]:
+                if entry["site"] == "ga":
+                    variant = entry["variant"]
+
+                    # Lookup the total sequence count for this (location, variant)
+                    variant_count = variant_location_counts.get((location, variant), 0)
+
+                    # print(f"Location: {location}, Variant: {variant}, Count: {variant_count}")
+
+                    if variant_count < ga_inclusion_threshold:
+                        continue  # Skip this entry
+                filtered_data.append(entry)
+
+            site_variants_data["data"] = filtered_data
+            results.append(site_variants_data)
 
     # Add raw frequencies
     for location, posterior in multi_posterior.locator.items():
@@ -373,6 +389,16 @@ def export_results(multi_posterior, ps, path, data_name, hier, pivot):
 
     ef.save_json(results, path=f"{path}/{data_name}_results.json")
 
+def positive_int(value):
+    """
+    Custom argparse type function to verify only
+    positive integers are provided as arguments
+    """
+    int_value = int(value)
+    if int_value <= 0:
+        print(f"ERROR: {int_value} is not a positive integer.", file=sys.stderr)
+        sys.exit(1)
+    return int_value
 
 if __name__ == "__main__":
 
@@ -403,14 +429,27 @@ if __name__ == "__main__":
         help="Whether to run the model as hierarchical. Overrides model.hierarchical in config. "
         + "Default is false if unspecified."
     )
+
+    parser.add_argument(
+        "--location-ga-inclusion-threshold", type=positive_int, default=0,
+        help="Mininum number of sequences that need to be observed for a specific "
+        + "location x variant combination."
+    )
+
     args = parser.parse_args()
 
     # Load configuration, data, and create model
     config = MLRConfig(args.config)
     print(f"Config loaded: {config.path}")
 
+    # Load sequence data for evofr
     raw_seq, locations = config.load_data(args.seq_path)
     print("Data loaded successfully")
+
+    # Calculate variant x location sequence counts
+    seq_data = pd.read_csv(args.seq_path, sep="\t")
+    variant_location_counts = seq_data.groupby(["location", "variant"])["sequences"].sum().to_dict()
+    print("variant_location_counts:", variant_location_counts)
 
     override_hier = None
     if args.hier:
@@ -472,4 +511,4 @@ if __name__ == "__main__":
             config.config["settings"], "ps", dflt=[0.5, 0.8, 0.95]
         )
         data_name = args.data_name or config.config["data"]["name"]
-        export_results(multi_posterior, ps, export_path, data_name, hier, pivot)
+        export_results(multi_posterior, ps, export_path, data_name, hier, pivot, args.location_ga_inclusion_threshold, variant_location_counts)

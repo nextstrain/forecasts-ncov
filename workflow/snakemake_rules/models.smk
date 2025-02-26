@@ -77,7 +77,8 @@ rule mlr_model:
     params:
         renewal_config = config.get("mlr_config"),
         export_path = lambda w: f"results/{w.data_provenance}/{w.variant_classification}/{w.geo_resolution}/mlr/model-outputs",
-        pivot = lambda wildcards: _get_models_option(wildcards, 'pivot')
+        pivot = lambda wildcards: _get_models_option(wildcards, 'pivot'),
+        location_ga_inclusion_threshold = lambda wildcards: _get_models_option(wildcards, 'location_ga_inclusion_threshold')
     resources:
         mem_mb=4000
     shell:
@@ -87,6 +88,7 @@ rule mlr_model:
             --seq-path {input.sequence_counts} \
             --export-path {params.export_path} \
             {params.pivot} \
+            {params.location_ga_inclusion_threshold} \
             --data-name {wildcards.date} 2>&1 | tee {log}
         """
 
