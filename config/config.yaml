@@ -55,16 +55,20 @@ models:
     nextstrain_clades:
       global:
         pivot: "24F"
+        location_ga_inclusion_threshold: 25
     pango_lineages:
       global:
         pivot: "XEC"
+        location_ga_inclusion_threshold: 25
   open:
     nextstrain_clades:
       global:
         pivot: "24F"
+        location_ga_inclusion_threshold: 25
     pango_lineages:
       global:
         pivot: "XEC"
+        location_ga_inclusion_threshold: 25
 
 # Model configs
 mlr_config: "config/mlr-config.yaml"
