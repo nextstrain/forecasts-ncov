@@ -389,15 +389,14 @@ def export_results(multi_posterior, ps, path, data_name, hier, pivot, ga_inclusi
 
     ef.save_json(results, path=f"{path}/{data_name}_results.json")
 
-def positive_int(value):
+def nonnegative_int(value):
     """
     Custom argparse type function to verify only
     positive integers are provided as arguments
     """
     int_value = int(value)
     if int_value <= 0:
-        print(f"ERROR: {int_value} is not a positive integer.", file=sys.stderr)
-        sys.exit(1)
+        raise argparse.ArgumentTypeError(f"{int_value} is not a positive integer.")
     return int_value
 
 if __name__ == "__main__":
@@ -431,9 +430,10 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--location-ga-inclusion-threshold", type=positive_int, default=0,
+        "--location-ga-inclusion-threshold", type=nonnegative_int, default=0,
         help="Mininum number of sequences that need to be observed for a specific "
-        + "location x variant combination."
+        + "location x variant combination. Default is 0, ie including all combinations "
+        + "even if there isn't data for a particular combination."
     )
 
     args = parser.parse_args()
@@ -447,8 +447,7 @@ if __name__ == "__main__":
     print("Data loaded successfully")
 
     # Calculate variant x location sequence counts
-    seq_data = pd.read_csv(args.seq_path, sep="\t")
-    variant_location_counts = seq_data.groupby(["location", "variant"])["sequences"].sum().to_dict()
+    variant_location_counts = raw_seq.groupby(["location", "variant"])["sequences"].sum().to_dict()
     print("variant_location_counts:", variant_location_counts)
 
     override_hier = None
