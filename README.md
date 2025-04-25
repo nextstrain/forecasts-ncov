@@ -57,7 +57,7 @@ nextstrain build .
 To run the pipeline for specific data provenance, variant classification and geo resolution (e.g. gisaid, nextstrain_clades and global only):
 
 ```bash
-nextstrain build . --configfile config/config.yaml --config data_provenances=gisaid variant_classification=nextstrain_clades geo_resolutions=global
+nextstrain build . --configfile config/config.yaml --config data_provenances=gisaid variant_classifications=nextstrain_clades geo_resolutions=global
 ```
 
 ### Optional uploads
