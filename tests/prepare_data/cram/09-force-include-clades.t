@@ -11,6 +11,12 @@ Collapse clades that have less than 50 sequences in the last 3 days into 'other'
 Force include the clades 21A, 21I, 21J as Delta variant.
 The outputs should be subsets of the clade counts and case counts.
 
+  $ cat >"$TMP/included_clades.txt" <<~~
+  > 21A=Delta
+  > 21I=Delta
+  > 21J=Delta
+  > ~~
+
   $ python3 ../../../scripts/prepare-data.py \
   > --seq-counts ../data/nextstrain_clades.tsv \
   > --cases ../data/cases.tsv \
@@ -22,7 +28,7 @@ The outputs should be subsets of the clade counts and case counts.
   > --excluded-locations ../data/excluded_locations.txt \
   > --clade-min-seq 50 \
   > --clade-min-seq-days 3 \
-  > --force-include-clades "21A=Delta" "21I=Delta" "21J=Delta" \
+  > --force-include-clades "$TMP/included_clades.txt" \
   > --output-seq-counts "$TMP/prepared_seq_counts.tsv" \
   > --output-cases "$TMP/prepared_cases.tsv"
   Setting max date (inclusive) as '2022-01-10'.
@@ -30,7 +36,7 @@ The outputs should be subsets of the clade counts and case counts.
   Only including locations that have at least 5000 sequence(s) in the last 2 days of the analysis date range.
   Excluding the following requested locations: ['Japan', 'United Kingdom'].
   Locations that will be included: ['USA'].
-  Force including the following clades/variants: ['21A=Delta', '21I=Delta', '21J=Delta']
+  Force including the following clades: ['21A', '21I', '21J']
   Collapsing clades that have less than 50 sequence(s) in the last 3 days of the analysis date range into a single 'other' variant.
   Pruning variants counts in the last 1 day(s) to exclude recent dates that may be overly enriched for variants.
   Variants that will be included: ['21K', '21L', 'Delta', 'other'].

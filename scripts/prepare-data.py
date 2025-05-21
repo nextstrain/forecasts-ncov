@@ -69,9 +69,9 @@ if __name__ == '__main__':
         help="The number fo days (counting back from the cutoff date) to use as the date range "
              "for counting the number of sequences per clade to determine if a clade is included as its own variant.\n"
              "If not provided, will count sequences from all dates included in analysis date range.")
-    parser.add_argument("--force-include-clades", nargs="*",
-        help="Clades to force include in the output regardless of sequences counts. " +
-             "Must be formatted as <clade_name>=<variant_name>")
+    parser.add_argument("--force-include-clades",
+        help="File with a list of clades to force include in the output regardless of sequences counts. " +
+             "Each line in the file must be formatted as <clade_name>=<variant_name>")
     parser.add_argument("--output-seq-counts", required=True,
         help="Path to output TSV file for the prepared variants data.")
     parser.add_argument("--output-cases", required=True,
@@ -158,17 +158,18 @@ if __name__ == '__main__':
     # Keep track of clades that are force included so that they can bypass the sequence counts check
     force_included_clades = set()
     if args.force_include_clades:
-        for force_include_clade in args.force_include_clades:
-            force_include = force_include_clade.split('=')
-            if len(force_include) != 2:
-                print(f"ERROR: Unable to parse force include clade {force_include_clade!r}.")
-                sys.exit(1)
+        with open(args.force_include_clades, 'r') as f:
+            for force_include_clade in f:
+                force_include = force_include_clade.rstrip().split('=')
+                if len(force_include) != 2:
+                    print(f"ERROR: Unable to parse force include clade {force_include_clade!r}.")
+                    sys.exit(1)
 
-            clade, variant = force_include
-            seq_counts.loc[seq_counts['clade'] == clade, 'variant'] = variant
-            force_included_clades.add(clade)
+                clade, variant = force_include
+                seq_counts.loc[seq_counts['clade'] == clade, 'variant'] = variant
+                force_included_clades.add(clade)
 
-        print(f"Force including the following clades/variants: {args.force_include_clades}")
+        print(f"Force including the following clades: {sorted(force_included_clades)}")
 
     # Collapse small clades into "other" if clades-min-seq is provided
     if args.clade_min_seq:

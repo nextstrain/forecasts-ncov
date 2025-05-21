@@ -52,6 +52,7 @@ def _get_config_files_for_prepare_data(wildcards):
     """
     option_names_with_files = [
         "excluded_locations",
+        "force_include_clades",
     ]
     config_files = []
     for option_name in option_names_with_files:
