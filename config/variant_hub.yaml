@@ -1,0 +1,2 @@
+# The variant hub defines all past and current modeling tasks in a single JSON.
+tasks_url: https://github.com/reichlab/variant-nowcast-hub/raw/refs/heads/main/hub-config/tasks.json
