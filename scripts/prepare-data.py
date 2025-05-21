@@ -61,7 +61,7 @@ if __name__ == '__main__':
              "for counting the number of sequences per location to determine if a location is included in analysis.\n"
              "If not provided, will count sequences from all dates included in analysis date range.")
     parser.add_argument("--excluded-locations",
-        help="File with a list locations to exclude from analysis.")
+        help="File with a list of locations to exclude from analysis.")
     parser.add_argument("--clade-min-seq", type=positive_int,
         help="The minimum number of sequences a clades must have to be included as it's own variant.\n"
              "All clades with less than the minimum will be collapsed as 'other'.")
