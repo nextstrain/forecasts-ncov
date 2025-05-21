@@ -43,12 +43,35 @@ def _get_prepare_data_option(wildcards, option_name):
 
     return ''
 
+def _get_config_files_for_prepare_data(wildcards):
+    """Return file paths associated with specific configuration parameters for
+    preparing data. This list of file paths allows the rule for preparing clade
+    data to check for the existence of these files and either fail when they are
+    missing or run rules that can produce those files.
+
+    """
+    option_names_with_files = [
+        "excluded_locations",
+    ]
+    config_files = []
+    for option_name in option_names_with_files:
+        option_value = config.get('prepare_data', {}) \
+                            .get(wildcards.data_provenance, {}) \
+                            .get(wildcards.variant_classification, {}) \
+                            .get(wildcards.geo_resolution, {}) \
+                            .get(option_name)
+
+        if option_value:
+            config_files.append(option_value)
+
+    return config_files
 
 rule prepare_clade_data:
     """Preparing clade counts for analysis"""
     input:
         cases = "data/cases/{geo_resolution}.tsv.gz",
-        sequence_counts = "data/{data_provenance}/{variant_classification}/{geo_resolution}.tsv.gz"
+        sequence_counts = "data/{data_provenance}/{variant_classification}/{geo_resolution}.tsv.gz",
+        config_files = _get_config_files_for_prepare_data,
     output:
         cases = "data/{data_provenance}/{variant_classification}/{geo_resolution}/prepared_cases.tsv",
         sequence_counts = "data/{data_provenance}/{variant_classification}/{geo_resolution}/prepared_seq_counts.tsv"
