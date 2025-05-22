@@ -23,7 +23,7 @@ rule prepare_hub_submission:
     input:
         tasks="hub/tasks.json",
         model="results/{data_provenance}/{variant_classification}/{geo_resolution}/mlr/model-outputs/{date}_results.json",
-        state_to_abbreviation_map="config/state_to_abbreviation_map.tsv",
+        state_to_abbreviation_map="config/state_to_abbreviation_map.csv",
     output:
         submission="hub/model-output/{date}/{hub_team_name}/{data_provenance}/{variant_classification}/{geo_resolution}/mlr.parquet",
     params:
