@@ -93,46 +93,38 @@ mlr_config: "config/mlr-config.yaml"
 # * Lineages which are not a descendant of a clade-defining lineage will be
 #   grouped as 'other'
 clade_definitions:
+  - clade: "25B"
+    display_name: "25B (NB.1.8.1)"
+    defining_lineage: "NB.1.8.1"
+    color: '#E1502A'
   - clade: "25A"
     display_name: "25A (LP.8.1)"
     defining_lineage: "LP.8.1"
-    color: '#DC2F24'
+    color: '#E29D39'
   - clade: "24I"
     display_name: "24I (MV.1)"
     defining_lineage: "MV.1"
-    color: '#E56C2F'
+    color: '#BBBC49'
   - clade: "24H"
     display_name: "24H (LF.7)"
     defining_lineage: "LF.7"
-    color: '#E39B39'
-  - clade: "24G"
-    display_name: "24G (KP.2.3)"
-    defining_lineage: "KP.2.3"
-    color: '#CEB541'
+    color: '#84BA6F'
   - clade: "24F"
     display_name: "24F (XEC)"
     defining_lineage: "XEC"
-    color: '#ADBD51'
+    color: '#59A3AA'
   - clade: "24E"
     display_name: "24E (KP.3.1.1)"
     defining_lineage: "KP.3.1.1"
-    color: '#88BB6C'
-  - clade: "24D"
-    display_name: "24D (XDV.1)"
-    defining_lineage: "XDV.1"
-    color: '#69B091'
+    color: '#416DCE'
   - clade: "24C"
     display_name: "24C (KP.3)"
     defining_lineage: "KP.3"
-    color: '#5199B7'
-  - clade: "24B"
-    display_name: "24B (JN.1.11.1)"
-    defining_lineage: "JN.1.11.1"
-    color: '#4274CE'
+    color: '#555555'
   - clade: "24A"
     display_name: "24A (JN.1)"
     defining_lineage: "JN.1"
-    color: '#4042C7'
+    color: '#666666'
   - clade: "other"
     display_name: "other"
     defining_lineage: False
