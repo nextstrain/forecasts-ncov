@@ -5,9 +5,10 @@ tasks_url: https://github.com/reichlab/variant-nowcast-hub/raw/refs/heads/main/h
 # metadata.
 hub_team_name: blab
 
-# Define list models to submit to the hub.
+# Define model parameters indexed by model abbreviations to use for hub
+# submission.
 hub_models:
-  - data_provenance: gisaid
+  gisaid_mlr:
+    data_provenance: gisaid
     variant_classification: nextstrain_clades
     geo_resolution: usa
-    model: mlr
