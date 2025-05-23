@@ -12,3 +12,7 @@ hub_models:
     data_provenance: gisaid
     variant_classification: nextstrain_clades
     geo_resolution: usa
+
+# Submit model results to the hub through a fork of the official GitHub
+# repository.
+hub_github_fork_url: https://github.com/blab/variant-nowcast-hub
