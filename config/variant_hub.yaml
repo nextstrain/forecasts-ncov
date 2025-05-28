@@ -15,4 +15,4 @@ hub_models:
 
 # Submit model results to the hub through a fork of the official GitHub
 # repository.
-hub_github_fork_url: https://github.com/nextstrain/variant-nowcast-hub
+hub_github_fork_url: github.com/nextstrain/variant-nowcast-hub

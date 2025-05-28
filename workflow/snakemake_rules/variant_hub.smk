@@ -1,3 +1,8 @@
+envvars:
+    "GIT_AUTHOR_EMAIL",
+    "GIT_AUTHOR_NAME",
+    "GITHUB_TOKEN",
+
 rule download_tasks:
     output:
         tasks="hub/tasks.json",
@@ -85,11 +90,17 @@ rule push_all_hub_submissions:
         date=config.get("run_date", get_todays_date()),
     shell:
         r"""
+        git config --global user.email "${{GIT_AUTHOR_EMAIL}}";
+        git config --global user.name "${{GIT_AUTHOR_NAME}}";
+
         rm -rf {params.hub_github_directory};
-        git clone --depth=1 {params.hub_github_fork_url:q} {params.hub_github_directory};
+        git clone --no-tags --depth=1 https://${{GITHUB_TOKEN}}@{params.hub_github_fork_url:q} {params.hub_github_directory};
+
         cp -R hub/model-output/* {params.hub_github_directory}/model-output/;
         cd {params.hub_github_directory};
+
         git checkout -b {params.hub_team_name}-{params.date};
         git add -A model-output/;
         git commit -m "Add {params.hub_team_name} models for {params.date}";
+        git push origin {params.hub_team_name}-{params.date};
         """
