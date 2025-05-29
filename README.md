@@ -136,3 +136,25 @@ If running pipeline with Slack notifications, the following environment variable
 - `SLACK_TOKEN`
 
 [nextstrain/ncov-ingest]: https://github.com/nextstrain/ncov-ingest
+
+## USA-specific models
+
+Using a modified version of this workflow, we produce USA-specific clade frequency estimates to contribute to [the SARS-CoV-2 variant nowcast hub](https://github.com/reichlab/variant-nowcast-hub/).
+To run this version of the workflow, provide the additional `config/variant_hub.yaml` configuration file as shown below and specify the `push_all_hub_submission` workflow target.
+These additional configuration details tell the workflow to run models for states in the USA, produce a parquet file with posterior samples of clade frequencies per location and date, and push the resulting file to a new branch in [the Nextstrain organization's fork of the variant-nowcast-hub repository](https://github.com/nextstrain/variant-nowcast-hub/).
+The example command below specifies an `envdir` which includes three additional required environment variables of `GIT_AUTHOR_EMAIL`, `GIT_AUTHOR_NAME`, and `GITHUB_TOKEN`.
+
+``` bash
+nextstrain build \
+    --envdir ~/envs/nextstrain \
+    --docker \
+    . \
+    --configfile config/config.yaml config/variant_hub.yaml \
+    -p \
+    --forceall
+    push_all_hub_submissions
+```
+
+You can run this USA-specific workflow locally or through a GitHub Action that is either triggered manually or on a schedule (e.g., every Wednesday morning PT).
+When running the workflow locally, define the additional environment variables mentioned above where the `GITHUB_TOKEN` is a personal access token with write permissions to the `variant-nowcast-hub` fork.
+When running the workflow in GitHub Actions, we use the nextstrain-bot's Git credentials.
