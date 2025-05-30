@@ -1,6 +1,8 @@
 envvars:
     "GIT_AUTHOR_EMAIL",
     "GIT_AUTHOR_NAME",
+    "GIT_COMMITTER_EMAIL",
+    "GIT_COMMITTER_NAME",
     "GITHUB_TOKEN",
 
 rule download_tasks:
@@ -90,9 +92,6 @@ rule push_all_hub_submissions:
         date=config.get("run_date", get_todays_date()),
     shell:
         r"""
-        git config --global user.email "${{GIT_AUTHOR_EMAIL}}";
-        git config --global user.name "${{GIT_AUTHOR_NAME}}";
-
         rm -rf {params.hub_github_directory};
         git clone --no-tags --depth=1 https://${{GITHUB_TOKEN}}@{params.hub_github_fork_url:q} {params.hub_github_directory};
 

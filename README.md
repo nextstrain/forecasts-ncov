@@ -142,7 +142,7 @@ If running pipeline with Slack notifications, the following environment variable
 Using a modified version of this workflow, we produce USA-specific clade frequency estimates to contribute to [the SARS-CoV-2 variant nowcast hub](https://github.com/reichlab/variant-nowcast-hub/).
 To run this version of the workflow, provide the additional `config/variant_hub.yaml` configuration file as shown below and specify the `push_all_hub_submission` workflow target.
 These additional configuration details tell the workflow to run models for states in the USA, produce a parquet file with posterior samples of clade frequencies per location and date, and push the resulting file to a new branch in [the Nextstrain organization's fork of the variant-nowcast-hub repository](https://github.com/nextstrain/variant-nowcast-hub/).
-The example command below specifies an `envdir` which includes three additional required environment variables of `GIT_AUTHOR_EMAIL`, `GIT_AUTHOR_NAME`, and `GITHUB_TOKEN`.
+The example command below specifies an `envdir` which includes three additional required environment variables of `GIT_AUTHOR_EMAIL`, `GIT_AUTHOR_NAME`, `GIT_COMMITTER_EMAIL`, `GIT_COMMITTER_NAME`, and `GITHUB_TOKEN`.
 
 ``` bash
 nextstrain build \
