@@ -13,10 +13,10 @@ rule parse_required_clades:
     input:
         tasks="hub/tasks.json",
     output:
-        clades="hub/included_clades.txt",
+        clades="hub/included_clades.tsv",
     shell:
         r"""
-        jq -r '.rounds[-1].model_tasks[0].task_ids.clade.required | map([., .]) | map(join("=")) | .[]' {input.tasks:q} > {output.clades:q}
+        jq -r '.rounds[-1].model_tasks[0].task_ids.clade.required | map([., .]) | map(join("\t")) | .[]' {input.tasks:q} > {output.clades:q}
         """
 
 def _get_model_json_for_model_abbr(wildcards):

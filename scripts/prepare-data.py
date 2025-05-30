@@ -70,8 +70,8 @@ if __name__ == '__main__':
              "for counting the number of sequences per clade to determine if a clade is included as its own variant.\n"
              "If not provided, will count sequences from all dates included in analysis date range.")
     parser.add_argument("--force-include-clades",
-        help="File with a list of clades to force include in the output regardless of sequences counts. " +
-             "Each line in the file must be formatted as <clade_name>=<variant_name>")
+        help="TSV file with a list of clade/variant pairs to force include in the output regardless of sequences counts. " +
+             "Each line in the file must be formatted as '<clade_name>\t<variant_name>'")
     parser.add_argument("--output-seq-counts", required=True,
         help="Path to output TSV file for the prepared variants data.")
     parser.add_argument("--output-cases", required=True,
@@ -160,7 +160,7 @@ if __name__ == '__main__':
     if args.force_include_clades:
         with open(args.force_include_clades, 'r') as f:
             for force_include_clade in f:
-                force_include = force_include_clade.rstrip().split('=')
+                force_include = force_include_clade.rstrip().split('\t')
                 if len(force_include) != 2:
                     print(f"ERROR: Unable to parse force include clade {force_include_clade!r}.")
                     sys.exit(1)

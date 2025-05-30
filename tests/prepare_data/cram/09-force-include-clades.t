@@ -11,10 +11,10 @@ Collapse clades that have less than 50 sequences in the last 3 days into 'other'
 Force include the clades 21A, 21I, 21J as Delta variant.
 The outputs should be subsets of the clade counts and case counts.
 
-  $ cat >"$TMP/included_clades.txt" <<~~
-  > 21A=Delta
-  > 21I=Delta
-  > 21J=Delta
+  $ cat >"$TMP/included_clades.tsv" <<~~
+  > 21A	Delta
+  > 21I	Delta
+  > 21J	Delta
   > ~~
 
   $ python3 ../../../scripts/prepare-data.py \
@@ -28,7 +28,7 @@ The outputs should be subsets of the clade counts and case counts.
   > --excluded-locations ../data/excluded_locations.txt \
   > --clade-min-seq 50 \
   > --clade-min-seq-days 3 \
-  > --force-include-clades "$TMP/included_clades.txt" \
+  > --force-include-clades "$TMP/included_clades.tsv" \
   > --output-seq-counts "$TMP/prepared_seq_counts.tsv" \
   > --output-cases "$TMP/prepared_cases.tsv"
   Setting max date (inclusive) as '2022-01-10'.
