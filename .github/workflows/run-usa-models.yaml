@@ -1,0 +1,37 @@
+name: Run USA models
+
+on: workflow_dispatch
+
+jobs:
+  run_models:
+    permissions:
+      id-token: write
+    uses: nextstrain/.github/.github/workflows/pathogen-repo-build.yaml@master
+    secrets: inherit
+    with:
+      runtime: aws-batch
+      run: |
+        nextstrain build \
+          --aws-batch \
+          --detach \
+          --no-download \
+          --image nextstrain/base \
+          --cpus 8 \
+          --memory 16GiB \
+          --env AWS_DEFAULT_REGION \
+          --env GITHUB_RUN_ID \
+          --env GIT_AUTHOR_EMAIL \
+          --env GIT_AUTHOR_NAME \
+          --env GIT_COMMITTER_EMAIL \
+          --env GIT_COMMITTER_NAME \
+          --env GITHUB_TOKEN \
+          . \
+            push_all_hub_submissions \
+            --configfile config/config.yaml config/variant_hub.yaml
+      env: |
+        GITHUB_RUN_ID: ${{ github.run_id }}
+        GIT_AUTHOR_EMAIL: ${{ vars.GIT_USER_EMAIL_NEXTSTRAIN_BOT }}
+        GIT_AUTHOR_NAME: ${{ vars.GIT_USER_NAME_NEXTSTRAIN_BOT }}
+        GIT_COMMITTER_EMAIL: ${{ vars.GIT_USER_EMAIL_NEXTSTRAIN_BOT }}
+        GIT_COMMITTER_NAME: ${{ vars.GIT_USER_NAME_NEXTSTRAIN_BOT }}
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN_NEXTSTRAIN_BOT_REPO }}

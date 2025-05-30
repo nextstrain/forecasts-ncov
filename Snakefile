@@ -97,3 +97,6 @@ if config.get("send_slack_notifications"):
 
 if config.get("s3_dst"):
     include: "workflow/snakemake_rules/upload.smk"
+
+if config.get("tasks_url"):
+    include: "workflow/snakemake_rules/variant_hub.smk"

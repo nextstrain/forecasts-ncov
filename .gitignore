@@ -3,6 +3,7 @@ data/
 logs/
 results/
 benchmarks/
+hub/
 
 # Errors from tests
 *.err
