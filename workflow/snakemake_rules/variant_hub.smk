@@ -1,10 +1,3 @@
-envvars:
-    "GIT_AUTHOR_EMAIL",
-    "GIT_AUTHOR_NAME",
-    "GIT_COMMITTER_EMAIL",
-    "GIT_COMMITTER_NAME",
-    "GITHUB_TOKEN",
-
 rule download_tasks:
     output:
         tasks="hub/tasks.json",
@@ -93,7 +86,7 @@ rule push_all_hub_submissions:
     shell:
         r"""
         rm -rf {params.hub_github_directory};
-        git clone --no-tags --depth=1 https://${{GITHUB_TOKEN}}@{params.hub_github_fork_url:q} {params.hub_github_directory};
+        git clone --no-tags --depth=1 {params.hub_github_fork_url:q} {params.hub_github_directory};
 
         cp -R hub/model-output/* {params.hub_github_directory}/model-output/;
         cd {params.hub_github_directory};
