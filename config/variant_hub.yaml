@@ -1,0 +1,18 @@
+# The variant hub defines all past and current modeling tasks in a single JSON.
+tasks_url: https://github.com/reichlab/variant-nowcast-hub/raw/refs/heads/main/hub-config/tasks.json
+
+# These fields must match our official registration details in the hub's
+# metadata.
+hub_team_name: blab
+
+# Define model parameters indexed by model abbreviations to use for hub
+# submission.
+hub_models:
+  gisaid_mlr:
+    data_provenance: gisaid
+    variant_classification: nextstrain_clades
+    geo_resolution: usa
+
+# Submit model results to the hub through a fork of the official GitHub
+# repository.
+hub_github_fork_url: https://github.com/nextstrain/variant-nowcast-hub

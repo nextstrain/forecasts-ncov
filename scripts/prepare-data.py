@@ -61,7 +61,7 @@ if __name__ == '__main__':
              "for counting the number of sequences per location to determine if a location is included in analysis.\n"
              "If not provided, will count sequences from all dates included in analysis date range.")
     parser.add_argument("--excluded-locations",
-        help="File with a list locations to exclude from analysis.")
+        help="File with a list of locations to exclude from analysis.")
     parser.add_argument("--clade-min-seq", type=positive_int,
         help="The minimum number of sequences a clades must have to be included as it's own variant.\n"
              "All clades with less than the minimum will be collapsed as 'other'.")
@@ -69,9 +69,9 @@ if __name__ == '__main__':
         help="The number fo days (counting back from the cutoff date) to use as the date range "
              "for counting the number of sequences per clade to determine if a clade is included as its own variant.\n"
              "If not provided, will count sequences from all dates included in analysis date range.")
-    parser.add_argument("--force-include-clades", nargs="*",
-        help="Clades to force include in the output regardless of sequences counts. " +
-             "Must be formatted as <clade_name>=<variant_name>")
+    parser.add_argument("--force-include-clades",
+        help="TSV file with a list of clade/variant pairs to force include in the output regardless of sequences counts. " +
+             "Each line in the file must be formatted as '<clade_name>\t<variant_name>'")
     parser.add_argument("--output-seq-counts", required=True,
         help="Path to output TSV file for the prepared variants data.")
     parser.add_argument("--output-cases", required=True,
@@ -158,17 +158,18 @@ if __name__ == '__main__':
     # Keep track of clades that are force included so that they can bypass the sequence counts check
     force_included_clades = set()
     if args.force_include_clades:
-        for force_include_clade in args.force_include_clades:
-            force_include = force_include_clade.split('=')
-            if len(force_include) != 2:
-                print(f"ERROR: Unable to parse force include clade {force_include_clade!r}.")
-                sys.exit(1)
+        with open(args.force_include_clades, 'r') as f:
+            for force_include_clade in f:
+                force_include = force_include_clade.rstrip().split('\t')
+                if len(force_include) != 2:
+                    print(f"ERROR: Unable to parse force include clade {force_include_clade!r}.")
+                    sys.exit(1)
 
-            clade, variant = force_include
-            seq_counts.loc[seq_counts['clade'] == clade, 'variant'] = variant
-            force_included_clades.add(clade)
+                clade, variant = force_include
+                seq_counts.loc[seq_counts['clade'] == clade, 'variant'] = variant
+                force_included_clades.add(clade)
 
-        print(f"Force including the following clades/variants: {args.force_include_clades}")
+        print(f"Force including the following clades: {sorted(force_included_clades)}")
 
     # Collapse small clades into "other" if clades-min-seq is provided
     if args.clade_min_seq:
@@ -204,8 +205,9 @@ if __name__ == '__main__':
         # Replace variant with 'other' if they are not force included and do not meet the clade_min_seq requirement
         seq_counts.loc[~seq_counts['clade'].isin(force_included_clades | clades_with_min_seq), 'variant'] = 'other'
 
-    # Replace 'recombinant' clade with 'other'
-    seq_counts.loc[seq_counts['clade'].isin(['recombinant']), 'variant'] = 'other'
+    # Replace 'recombinant' clade with 'other' if it hasn't been explicitly force-included.
+    if "recombinant" not in force_included_clades:
+        seq_counts.loc[seq_counts['clade'].isin(['recombinant']), 'variant'] = 'other'
 
     # Add clades with unknown variants to 'other' variant group
     seq_counts.loc[pd.isna(seq_counts['variant']), 'variant'] = 'other'
