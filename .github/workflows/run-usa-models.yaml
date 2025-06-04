@@ -9,29 +9,49 @@ jobs:
     uses: nextstrain/.github/.github/workflows/pathogen-repo-build.yaml@master
     secrets: inherit
     with:
-      runtime: aws-batch
+      runtime: docker
       run: |
         nextstrain build \
-          --aws-batch \
-          --detach \
-          --no-download \
           --image nextstrain/base \
-          --cpus 8 \
-          --memory 16GiB \
           --env AWS_DEFAULT_REGION \
           --env GITHUB_RUN_ID \
-          --env GIT_AUTHOR_EMAIL \
-          --env GIT_AUTHOR_NAME \
-          --env GIT_COMMITTER_EMAIL \
-          --env GIT_COMMITTER_NAME \
-          --env GITHUB_TOKEN \
           . \
-            push_all_hub_submissions \
+            prepare_all_hub_submissions \
             --configfile config/config.yaml config/variant_hub.yaml
       env: |
         GITHUB_RUN_ID: ${{ github.run_id }}
-        GIT_AUTHOR_EMAIL: ${{ vars.GIT_USER_EMAIL_NEXTSTRAIN_BOT }}
-        GIT_AUTHOR_NAME: ${{ vars.GIT_USER_NAME_NEXTSTRAIN_BOT }}
-        GIT_COMMITTER_EMAIL: ${{ vars.GIT_USER_EMAIL_NEXTSTRAIN_BOT }}
-        GIT_COMMITTER_NAME: ${{ vars.GIT_USER_NAME_NEXTSTRAIN_BOT }}
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN_NEXTSTRAIN_BOT_REPO }}
+      artifact-name: model-outputs
+      artifact-paths: |
+        hub/submissions.txt
+        hub/model-output/
+        !results/
+  upload_models:
+    needs: [run_models]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract model outputs
+        uses: actions/download-artifact@v4
+        with:
+          name: model-outputs
+      - name: Clone fork of variant nowcast hub
+        uses: actions/checkout@v4
+        with:
+          repository: nextstrain/variant-nowcast-hub
+          path: variant-nowcast-hub
+          token: ${{ secrets.GH_TOKEN_NEXTSTRAIN_BOT_REPO }}
+      - name: Upload model outputs to hub fork
+        run: |
+          rsync -arvz --files-from=hub/submissions.txt hub/ variant-nowcast-hub/
+
+          cd variant-nowcast-hub
+          export DATE="$(date "+%Y-%m-%d")"
+          git switch -c blab-${DATE}
+          git add --pathspec-from-file=../hub/submissions.txt
+          git commit -m "Add blab models for ${DATE}"
+          git push origin blab-${DATE}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN_NEXTSTRAIN_BOT_REPO }}
+          GIT_AUTHOR_EMAIL: ${{ vars.GIT_USER_EMAIL_NEXTSTRAIN_BOT }}
+          GIT_AUTHOR_NAME: ${{ vars.GIT_USER_NAME_NEXTSTRAIN_BOT }}
+          GIT_COMMITTER_EMAIL: ${{ vars.GIT_USER_EMAIL_NEXTSTRAIN_BOT }}
+          GIT_COMMITTER_NAME: ${{ vars.GIT_USER_NAME_NEXTSTRAIN_BOT }}

@@ -1,3 +1,5 @@
+from pathlib import Path
+
 rule download_tasks:
     output:
         tasks="hub/tasks.json",
@@ -72,27 +74,14 @@ def _get_all_hub_submissions(wildcards):
 rule prepare_all_hub_submissions:
     input:
         submissions=_get_all_hub_submissions,
-
-rule push_all_hub_submissions:
-    input:
-        submissions=_get_all_hub_submissions,
     output:
-        submission_flag=touch("hub/submission_pushed.txt"),
+        submissions="hub/submissions.txt",
     params:
-        hub_github_fork_url=config["hub_github_fork_url"],
-        hub_github_directory="hub/variant-nowcast-hub",
-        hub_team_name=config["hub_team_name"],
-        date=config.get("run_date", get_todays_date()),
+        relative_submissions=lambda wildcards, input: [Path(submission).relative_to("hub").as_posix() for submission in input.submissions],
     shell:
         r"""
-        rm -rf {params.hub_github_directory};
-        git clone --no-tags --depth=1 {params.hub_github_fork_url:q} {params.hub_github_directory};
-
-        cp -R hub/model-output/* {params.hub_github_directory}/model-output/;
-        cd {params.hub_github_directory};
-
-        git checkout -b {params.hub_team_name}-{params.date};
-        git add -A model-output/;
-        git commit -m "Add {params.hub_team_name} models for {params.date}";
-        git push origin {params.hub_team_name}-{params.date};
+        for submission in {params.relative_submissions};
+        do
+            echo ${{submission}};
+        done > {output.submissions}
         """
