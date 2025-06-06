@@ -101,6 +101,10 @@ mlr_config: "config/mlr-config.yaml"
 # * Lineages which are not a descendant of a clade-defining lineage will be
 #   grouped as 'other'
 clade_definitions:
+  - clade: "25C"
+    display_name: "25C (XFG)"
+    defining_lineage: "XFG"
+    color: '#DC2F24'
   - clade: "25B"
     display_name: "25B (NB.1.8.1)"
     defining_lineage: "NB.1.8.1"
