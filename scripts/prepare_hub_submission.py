@@ -166,5 +166,10 @@ if __name__ == '__main__':
     all_frequencies = records.groupby(["output_type_id", "target_date"])["value"].sum().values
     assert np.allclose(all_frequencies, np.ones(all_frequencies.shape))
 
+    # Convert date columns to pandas date type and then to the parquet date type
+    # required for our hub submissions.
+    for date_column in ("nowcast_date", "target_date"):
+        records[date_column] = pd.to_datetime(records[date_column], utc=True).astype("date32[pyarrow]")
+
     # Save estimates to a parquet file.
     records.to_parquet(args.output)
