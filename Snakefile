@@ -25,6 +25,11 @@ if config.get("send_slack_notifications"):
         sys.exit(1)
 
 wildcard_constraints:
+    # These constraints are to prevent '"PeriodicWildcardError in rule post_process'
+    model="[^/]+",
+    variant_classification="[^/]+",
+    geo_resolution="[^/]+",
+    data_provenance="gisaid|open",
     date = r"\d{4}-\d{2}-\d{2}"
 
 def get_todays_date():
