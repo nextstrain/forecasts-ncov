@@ -4,13 +4,6 @@ This part of the workflow runs the model scripts.
 
 import json
 
-# These constraints are to prevent '"PeriodicWildcardError in rule post_process'
-wildcard_constraints:
-    model="[^/]+",
-    variant_classification="[^/]+",
-    geo_resolution="[^/]+",
-    data_provenance="gisaid|open",
-
 def _get_sequence_counts_input(wildcards):
     if wildcards.variant_classification == 'pango_lineages':
         return "data/{data_provenance}/{variant_classification}/{geo_resolution}/collapsed_seq_counts.tsv"
