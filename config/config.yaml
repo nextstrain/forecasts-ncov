@@ -108,27 +108,23 @@ clade_definitions:
   - clade: "25B"
     display_name: "25B (NB.1.8.1)"
     defining_lineage: "NB.1.8.1"
-    color: '#E1502A'
+    color: '#E0A23A'
   - clade: "25A"
     display_name: "25A (LP.8.1)"
     defining_lineage: "LP.8.1"
-    color: '#E29D39'
-  - clade: "24I"
-    display_name: "24I (MV.1)"
-    defining_lineage: "MV.1"
-    color: '#BBBC49'
+    color: '#9EBE5A'
   - clade: "24H"
     display_name: "24H (LF.7)"
     defining_lineage: "LF.7"
-    color: '#84BA6F'
+    color: '#5AA4A8'
   - clade: "24F"
     display_name: "24F (XEC)"
     defining_lineage: "XEC"
-    color: '#59A3AA'
+    color: '#3F4DCB'
   - clade: "24E"
     display_name: "24E (KP.3.1.1)"
     defining_lineage: "KP.3.1.1"
-    color: '#416DCE'
+    color: '#333333'
   - clade: "24C"
     display_name: "24C (KP.3)"
     defining_lineage: "KP.3"
@@ -136,7 +132,7 @@ clade_definitions:
   - clade: "24A"
     display_name: "24A (JN.1)"
     defining_lineage: "JN.1"
-    color: '#666666'
+    color: '#777777'
   - clade: "other"
     display_name: "other"
     defining_lineage: False
