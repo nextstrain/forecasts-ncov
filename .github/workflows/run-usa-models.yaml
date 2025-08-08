@@ -1,6 +1,10 @@
 name: Run USA models
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  schedule:
+    # Run every Wednesday at 10am PT which is 5pm (17:00) UTC.
+    - cron: '0 17 * * 3'
 
 jobs:
   run_models:
