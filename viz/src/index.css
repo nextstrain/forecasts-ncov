@@ -84,3 +84,9 @@
 .App .panelDisplay {
   margin-bottom: 50px;
 }
+
+.warningContainer {
+  background-color: #FFF1D1;
+  display: flex;
+  align-items: stretch;
+}

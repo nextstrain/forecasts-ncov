@@ -30,6 +30,13 @@ function App() {
   return (
     <div className="App">
 
+      <div className="warningContainer">
+        <h2>
+          Warning: The GISAID EpiCoV API has not been updated since Sept 27, 2025.
+          The analysis is no longer up-to-date.
+        </h2>
+      </div>
+
       <div id="mainPanelsContainer">
         <h2>Clade frequencies over time</h2>
         <p>
