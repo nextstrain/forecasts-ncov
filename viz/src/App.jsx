@@ -32,8 +32,9 @@ function App() {
 
       <div className="warningContainer">
         <h2>
-          Warning: The GISAID EpiCoV API has not been updated since Sept 27, 2025.
-          The analysis is no longer up-to-date.
+          On Oct 1, 2025, we received an email from GISAID stating that they will no longer be updating the flat file
+          of EpiCoV data they've historically provisioned to Nextstrain since Feb 2020. Updates to these analyses are on
+          hold while we sort out alternative strategies to pull in new data from GISAID.
         </h2>
       </div>
 
