@@ -8,7 +8,7 @@ hub_team_name: blab
 # Define model parameters indexed by model abbreviations to use for hub
 # submission.
 hub_models:
-  gisaid_hier_mlr:
-    data_provenance: gisaid
+  open_hier_mlr:
+    data_provenance: open
     variant_classification: nextstrain_clades
     geo_resolution: usa

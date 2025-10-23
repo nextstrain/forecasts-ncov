@@ -44,6 +44,11 @@ prepare_data:
         excluded_locations: "defaults/global_excluded_locations.txt"
         clade_min_seq: 500
         clade_min_seq_days: 150
+      usa:
+        included_days: 150
+        location_min_seq: 100
+        location_min_seq_days: 100
+        force_include_clades: "hub/included_clades.tsv"
     pango_lineages:
       global:
         included_days: 150
