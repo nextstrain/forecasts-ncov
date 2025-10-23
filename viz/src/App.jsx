@@ -43,7 +43,7 @@ function App() {
         <h2>Clade frequencies over time</h2>
         <p>
           Each line represents the estimated frequency of a particular clade through time. Equivalent Pango lineage is given
-          in parenthesis, eg clade 23A (lineage XBB.1.5). Only locations with more than 1000 sequences from samples collected
+          in parenthesis, eg clade 23A (lineage XBB.1.5). Only locations with more than 200 sequences from samples collected
           in the previous 150 days are included. Results last updated {mlrCladesData?.modelData?.get('updated') || 'loading'}.
         </p>
         <div id="cladeFrequenciesPanel" class="panelDisplay"> {/* surrounding div(s) used for static-images.js script */}
@@ -65,7 +65,7 @@ function App() {
         <h2>Lineage frequencies over time</h2>
         <p>
           Each line represents the estimated frequency of a particular Pango lineage through time. Lineages with fewer
-          than 350 observations are collapsed into parental lineage. Only locations with more than 1000 sequences from
+          than 200 observations are collapsed into parental lineage. Only locations with more than 200 sequences from
           samples collected in the previous 150 days are included. Results last updated
           {mlrLineagesData?.modelData?.get('updated') || 'loading'}.
         </p>
