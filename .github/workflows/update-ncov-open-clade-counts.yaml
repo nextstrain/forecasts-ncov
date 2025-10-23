@@ -57,9 +57,7 @@ jobs:
 
   trigger_model_runs:
     needs: [open_clade_counts]
-    # Disable the run-model workflow due to low sequence counts
-    # <https://github.com/nextstrain/forecasts-ncov/issues/119>
-    if: false
+    if: ${{ !github.event.inputs.trial_name }}
     runs-on: ubuntu-latest
     steps:
       - run: gh workflow run run-models.yaml --repo nextstrain/forecasts-ncov -f data_provenance=open
