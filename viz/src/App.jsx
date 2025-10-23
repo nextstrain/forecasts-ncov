@@ -6,13 +6,13 @@ const mlrCladesConfig = {
     modelName: "mlr_clades",
     modelUrl: customAddress ?
       `${import.meta.env.VITE_DATA_HOST}/${import.meta.env.VITE_CLADES_PATH}` :
-      `https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/global/mlr/latest_results.json`,
+      `https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/open/nextstrain_clades/global/mlr/latest_results.json`,
 }
 const mlrLineagesConfig = {
     modelName: "mlr_lineages",
     modelUrl: customAddress ?
       `${import.meta.env.VITE_DATA_HOST}/${import.meta.env.VITE_LINEAGES_PATH}` :
-      `https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/gisaid/pango_lineages/global/mlr/latest_results.json`,
+      `https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/open/pango_lineages/global/mlr/latest_results.json`,
 }
 
 function App() {
@@ -32,9 +32,10 @@ function App() {
 
       <div className="warningContainer">
         <h2>
-          On Oct 1, 2025, we received an email from GISAID stating that they will no longer be updating the flat file
-          of EpiCoV data they've historically provisioned to Nextstrain since Feb 2020. Updates to these analyses are on
-          hold while we sort out alternative strategies to pull in new data from GISAID.
+          On Oct 1, 2025, we received an email from GISAID stating that they will no longer be updating the flat file of
+          EpiCoV data they've historically provisioned to Nextstrain since Feb 2020. Updates to GISAID-based analyses are
+          currently on hold. Please use this analysis based on open data instead, updates to which are continuing at their
+          regular weekly cadence.
         </h2>
       </div>
 
