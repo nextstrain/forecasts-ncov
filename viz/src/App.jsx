@@ -6,13 +6,13 @@ const mlrCladesConfig = {
     modelName: "mlr_clades",
     modelUrl: customAddress ?
       `${import.meta.env.VITE_DATA_HOST}/${import.meta.env.VITE_CLADES_PATH}` :
-      `https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/gisaid/nextstrain_clades/global/mlr/latest_results.json`,
+      `https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/open/nextstrain_clades/global/mlr/latest_results.json`,
 }
 const mlrLineagesConfig = {
     modelName: "mlr_lineages",
     modelUrl: customAddress ?
       `${import.meta.env.VITE_DATA_HOST}/${import.meta.env.VITE_LINEAGES_PATH}` :
-      `https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/gisaid/pango_lineages/global/mlr/latest_results.json`,
+      `https://nextstrain-data.s3.amazonaws.com/files/workflows/forecasts-ncov/open/pango_lineages/global/mlr/latest_results.json`,
 }
 
 function App() {
@@ -32,9 +32,10 @@ function App() {
 
       <div className="warningContainer">
         <h2>
-          On Oct 1, 2025, we received an email from GISAID stating that they will no longer be updating the flat file
-          of EpiCoV data they've historically provisioned to Nextstrain since Feb 2020. Updates to these analyses are on
-          hold while we sort out alternative strategies to pull in new data from GISAID.
+          On Oct 1, 2025, we received an email from GISAID stating that they will no longer be updating the flat file of
+          EpiCoV data they've historically provisioned to Nextstrain since Feb 2020. Updates to GISAID-based analyses are
+          currently on hold. Please use this analysis based on open data instead, updates to which are continuing at their
+          regular weekly cadence.
         </h2>
       </div>
 
@@ -42,7 +43,7 @@ function App() {
         <h2>Clade frequencies over time</h2>
         <p>
           Each line represents the estimated frequency of a particular clade through time. Equivalent Pango lineage is given
-          in parenthesis, eg clade 23A (lineage XBB.1.5). Only locations with more than 1000 sequences from samples collected
+          in parenthesis, eg clade 23A (lineage XBB.1.5). Only locations with more than 200 sequences from samples collected
           in the previous 150 days are included. Results last updated {mlrCladesData?.modelData?.get('updated') || 'loading'}.
         </p>
         <div id="cladeFrequenciesPanel" class="panelDisplay"> {/* surrounding div(s) used for static-images.js script */}
@@ -64,7 +65,7 @@ function App() {
         <h2>Lineage frequencies over time</h2>
         <p>
           Each line represents the estimated frequency of a particular Pango lineage through time. Lineages with fewer
-          than 350 observations are collapsed into parental lineage. Only locations with more than 1000 sequences from
+          than 200 observations are collapsed into parental lineage. Only locations with more than 200 sequences from
           samples collected in the previous 150 days are included. Results last updated
           {mlrLineagesData?.modelData?.get('updated') || 'loading'}.
         </p>

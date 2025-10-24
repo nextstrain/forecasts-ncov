@@ -38,8 +38,8 @@ The command `npm run start:local` will both serve the website and provide access
 
 
 ```bash
-VITE_CLADES_PATH="gisaid/nextstrain_clades/global/mlr/YYYY-MM-DD_results.json" \
-  VITE_LINEAGES_PATH="gisaid/pango_lineages/global/mlr/YYYY-MM-DD_results.json" \
+VITE_CLADES_PATH="open/nextstrain_clades/global/mlr/YYYY-MM-DD_results.json" \
+  VITE_LINEAGES_PATH="open/pango_lineages/global/mlr/YYYY-MM-DD_results.json" \
   npm run start:local
 ```
 
