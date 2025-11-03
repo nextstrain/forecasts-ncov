@@ -34,7 +34,7 @@ jobs:
 
       - id: data_provenances
         run: |
-          DATA_PROVENANCES='["gisaid", "open"]'
+          DATA_PROVENANCES='["open"]'
 
           if [[ -n "$INPUT_DATA_PROVENANCE" ]]; then
             DATA_PROVENANCES="$INPUT_DATA_PROVENANCE"
