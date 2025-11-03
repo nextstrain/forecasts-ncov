@@ -64,23 +64,23 @@ models:
   gisaid:
     nextstrain_clades:
       global:
-        pivot: "24F"
+        pivot: "25C"
         location_ga_inclusion_threshold: 25
       usa:
-        pivot: "24F"
+        pivot: "25C"
         location_ga_inclusion_threshold: 25
     pango_lineages:
       global:
-        pivot: "XEC"
+        pivot: "XFG"
         location_ga_inclusion_threshold: 25
   open:
     nextstrain_clades:
       global:
-        pivot: "24F"
+        pivot: "25C"
         location_ga_inclusion_threshold: 25
     pango_lineages:
       global:
-        pivot: "XEC"
+        pivot: "XFG"
         location_ga_inclusion_threshold: 25
 
 # Model configs
