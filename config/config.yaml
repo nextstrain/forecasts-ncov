@@ -71,7 +71,7 @@ models:
         location_ga_inclusion_threshold: 25
     pango_lineages:
       global:
-        pivot: "XEC"
+        pivot: "XFG"
         location_ga_inclusion_threshold: 25
   open:
     nextstrain_clades:
@@ -80,7 +80,7 @@ models:
         location_ga_inclusion_threshold: 25
     pango_lineages:
       global:
-        pivot: "XEC"
+        pivot: "XFG"
         location_ga_inclusion_threshold: 25
 
 # Model configs
