@@ -38,7 +38,7 @@ jobs:
         with:
           name: model-outputs
       - name: Clone fork of variant nowcast hub
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: nextstrain/variant-nowcast-hub
           path: variant-nowcast-hub

@@ -15,7 +15,7 @@ jobs:
         # Login shell is required to include changes by conda init bash.
         shell: bash -l -eo pipefail {0}
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: "3.9"
