@@ -41,7 +41,7 @@ prepare_data:
         location_min_seq: 200
         location_min_seq_days: 150
         excluded_locations: "defaults/global_excluded_locations.txt"
-        clade_min_seq: 200
+        clade_min_seq: 150
         clade_min_seq_days: 150
       usa:
         included_days: 150
@@ -57,7 +57,7 @@ prepare_data:
         excluded_locations: "defaults/global_excluded_locations.txt"
         clade_min_seq: 1
         clade_min_seq_days: 150
-        collapse_threshold: 200
+        collapse_threshold: 150
 
 # Params for the model run scripts
 models:
@@ -106,38 +106,38 @@ mlr_config: "config/mlr-config.yaml"
 # * Lineages which are not a descendant of a clade-defining lineage will be
 #   grouped as 'other'
 clade_definitions:
+  - clade: "25I"
+    display_name: "25I (BA.3.2)"
+    defining_lineage: "BA.3.2"
+    color: '#DC2F24'
+  - clade: "25H"
+    display_name: "25H (XFJ)"
+    defining_lineage: "XFJ"
+    color: '#E68133'
+  - clade: "25G"
+    display_name: "25G (XFC)"
+    defining_lineage: "XFC"
+    color: '#D4B13F'
+  - clade: "25F"
+    display_name: "25F (NW.1.2)"
+    defining_lineage: "NW.1.2"
+    color: '#A6BE55'
   - clade: "25C"
     display_name: "25C (XFG)"
     defining_lineage: "XFG"
-    color: '#DC2F24'
+    color: '#75B681'
   - clade: "25B"
     display_name: "25B (NB.1.8.1)"
     defining_lineage: "NB.1.8.1"
-    color: '#E0A23A'
+    color: '#529AB6'
   - clade: "25A"
     display_name: "25A (LP.8.1)"
     defining_lineage: "LP.8.1"
-    color: '#9EBE5A'
+    color: '#3F63CF'
   - clade: "24H"
     display_name: "24H (LF.7)"
     defining_lineage: "LF.7"
-    color: '#5AA4A8'
-  - clade: "24F"
-    display_name: "24F (XEC)"
-    defining_lineage: "XEC"
-    color: '#3F4DCB'
-  - clade: "24E"
-    display_name: "24E (KP.3.1.1)"
-    defining_lineage: "KP.3.1.1"
-    color: '#333333'
-  - clade: "24C"
-    display_name: "24C (KP.3)"
-    defining_lineage: "KP.3"
-    color: '#555555'
-  - clade: "24A"
-    display_name: "24A (JN.1)"
-    defining_lineage: "JN.1"
-    color: '#777777'
+    color: '#999999'
   - clade: "other"
     display_name: "other"
     defining_lineage: False
