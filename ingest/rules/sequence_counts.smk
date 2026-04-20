@@ -56,5 +56,5 @@ rule upload_sequence_count:
         "benchmarks/{data_provenance}/{variant_classification}/{geo_resolution}/upload_sequence_counts.txt"
     shell:
         """
-        ./vendored/upload-to-s3 {input.clade_seq_counts} {params.s3_url:q} {params.cloudfront_domain:q}
+        ./vendored/scripts/upload-to-s3 {input.clade_seq_counts} {params.s3_url:q} {params.cloudfront_domain:q}
         """
