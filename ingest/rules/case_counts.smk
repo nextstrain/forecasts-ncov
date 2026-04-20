@@ -24,7 +24,7 @@ rule upload_global_case_counts:
         cloudfront_domain = config["cloudfront_domain"],
     shell:
         """
-        ./vendored/upload-to-s3 \
+        ./vendored/scripts/upload-to-s3 \
             {input.global_case_counts} \
             {params.s3_dst}/cases/global.tsv.gz \
             {params.cloudfront_domain:q} 2>&1 | tee {output.upload_flag}
