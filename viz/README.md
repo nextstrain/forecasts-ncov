@@ -75,19 +75,6 @@ You can provide style overrides to the `<PanelDisplay>` component (`./src/App.js
 + <PanelDisplay graphType="r_t" styles={{width: 250, height: 200, top: 5, right: 0, bottom: 20, left: 35}}/>
 ```
 
-## Static image generation (no longer used)
-
-```bash
-# running from the viz directory
-npm run build
-node scripts/static-images.js
-# images will be in ./figures
-```
-
-This is run via the `generate-static-model-viz` GitHub action of this repo.
-
-You can `open ./example-static-images.html` to see an example HTML page where different image sizes are selected based on your screen size.
-
 ## Updating the GitHub pages site
 
 A [GitHub Action](https://github.com/nextstrain/forecasts-ncov/blob/main/.github/workflows/deploy-viz-app.yaml) will automatically re-deploy the site whenever changes to files in this directory (`viz`) are committed to the main branch.

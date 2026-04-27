@@ -46,7 +46,7 @@ function App() {
           in parenthesis, eg clade 23A (lineage XBB.1.5). Only locations with more than 200 sequences from samples collected
           in the previous 150 days are included. Results last updated {mlrCladesData?.modelData?.get('updated') || 'loading'}.
         </p>
-        <div id="cladeFrequenciesPanel" class="panelDisplay"> {/* surrounding div(s) used for static-images.js script */}
+        <div id="cladeFrequenciesPanel" class="panelDisplay">
           <PanelDisplay data={mlrCladesData} locations={cladesLocationsFiltered} params={{preset: "frequency"}}/>
         </div>
 
