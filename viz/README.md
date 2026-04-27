@@ -59,12 +59,27 @@ If you are using local data, replace `npm run start:local` with `npm run start:l
 ## Updating the viz library
 
 We are using our generalised [@nextstrain/evofr-viz library](https://github.com/nextstrain/forecasts-viz) which is packed and
-vendored here. To update the library:
+vendored here. To bump the version this app ships with:
 
 1. In the library repo itself run `npm pack` to create a tarball
 2. Move the tarball to this folder (`./viz`) so it will be committed, and remove the old one if necessary
-3. `rm -rf node_modules package-lock.json`
-4. `npm install <path_to_tarball>`
+3. Update the `@nextstrain/evofr-viz` filename in `package.json` if the version changed
+4. `rm -rf node_modules package-lock.json && npm install`
+
+### Developing the viz library alongside this app
+
+To edit the library and see changes hot-reload here without any
+`npm pack` round-trip, check out
+[nextstrain/forecasts-viz](https://github.com/nextstrain/forecasts-viz)
+as a sibling of this repo (so it lives at `../forecasts-viz`) and run:
+
+```bash
+LOCAL_LIB=1 npm run dev
+```
+
+`vite.config.js` then redirects `@nextstrain/evofr-viz` imports to
+`../../forecasts-viz/src/lib/`, so saving a file in the library updates
+the running app immediately with React Fast Refresh.
 
 ## Changing the styles of individual small-multiple graphs
 
