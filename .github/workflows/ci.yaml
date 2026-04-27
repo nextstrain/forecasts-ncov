@@ -16,7 +16,7 @@ jobs:
         shell: bash -l -eo pipefail {0}
     steps:
     - uses: actions/checkout@v6
-    - uses: conda-incubator/setup-miniconda@v3
+    - uses: conda-incubator/setup-miniconda@v4
       with:
         python-version: "3.9"
         miniforge-version: latest
