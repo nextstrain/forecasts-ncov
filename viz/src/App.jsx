@@ -1,4 +1,4 @@
-import { PanelDisplay, useModelData } from '@nextstrain/evofr-viz';
+import { PanelDisplay, useModelData, ControlsProvider } from '@nextstrain/evofr-viz';
 import '@nextstrain/evofr-viz/dist/index.css';
 
 const customAddress = !!import.meta.env.VITE_DATA_HOST;
@@ -24,70 +24,69 @@ function App() {
   const mlrCladesPivot = mlrCladesData?.modelData?.get('variantDisplayNames')?.get(mlrCladesPivotRaw) || mlrCladesPivotRaw;
   const mlrLineagesPivot = mlrLineagesData?.modelData?.get('pivot') || "loading";
 
-  const cladesLocationsFiltered = mlrCladesData?.modelData?.get('locations')?.filter((loc)=>loc!=='hierarchical') || [];
-  const lineagesLocationsFiltered = mlrLineagesData?.modelData?.get('locations')?.filter((loc)=>loc!=='hierarchical') || [];
-
   return (
-    <div className="App">
-
-      <div className="warningContainer">
-        <h2>
-          On Oct 1, 2025, we received an email from GISAID stating that they will no longer be updating the flat file of
-          EpiCoV data they've historically provisioned to Nextstrain since Feb 2020. Updates to GISAID-based analyses are
-          currently on hold. Please use this analysis based on open data instead, updates to which are continuing at their
-          regular weekly cadence.
-        </h2>
+    <ControlsProvider>
+      <div className="App">
+  
+        <div className="warningContainer">
+          <h2>
+            On Oct 1, 2025, we received an email from GISAID stating that they will no longer be updating the flat file of
+            EpiCoV data they've historically provisioned to Nextstrain since Feb 2020. Updates to GISAID-based analyses are
+            currently on hold. Please use this analysis based on open data instead, updates to which are continuing at their
+            regular weekly cadence.
+          </h2>
+        </div>
+  
+        <div id="mainPanelsContainer">
+          <h2>Clade frequencies over time</h2>
+          <p>
+            Each line represents the estimated frequency of a particular clade through time. Equivalent Pango lineage is given
+            in parenthesis, eg clade 23A (lineage XBB.1.5). Only locations with more than 200 sequences from samples collected
+            in the previous 150 days are included. Results last updated {mlrCladesData?.modelData?.get('updated') || 'loading'}.
+          </p>
+          <div id="cladeFrequenciesPanel" class="panelDisplay">
+            <PanelDisplay data={mlrCladesData} params={{preset: "frequency"}}/>
+          </div>
+  
+          <h2>Clade growth advantage</h2>
+          <p>
+            These plots show the estimated growth advantage for given clades relative to clade {mlrCladesPivot}. This
+            describes how many more secondary infections a variant causes on average relative to clade {mlrCladesPivot}.
+            Vertical bars show the 95% HPD. The "hierarchical" panel shows pooled estimate of growth rates across different
+            locations. Not all clades circulate in all locations and only estimates for clades with at least 25 observations
+            in a location are shown. Results last updated {mlrCladesData?.modelData?.get('updated') || 'loading'}.
+          </p>
+          <div id="cladeGrowthAdvantagePanel" class="panelDisplay">
+            <PanelDisplay data={mlrCladesData} params={{preset: "growthAdvantage"}}/>
+          </div>
+  
+          <h2>Lineage frequencies over time</h2>
+          <p>
+            Each line represents the estimated frequency of a particular Pango lineage through time. Lineages with fewer
+            than 200 observations are collapsed into parental lineage. Only locations with more than 200 sequences from
+            samples collected in the previous 150 days are included. Results last updated
+            {mlrLineagesData?.modelData?.get('updated') || 'loading'}.
+          </p>
+          <div id="lineageFrequenciesPanel" class="panelDisplay">
+            <PanelDisplay data={mlrLineagesData} params={{preset: "frequency"}}/>
+          </div>
+  
+          <h2>Lineage growth advantage</h2>
+          <p>
+            These plots show the estimated growth advantage for given Pango lineages relative to lineage {mlrLineagesPivot}.
+            This describes how many more secondary infections a variant causes on average relative to lineage
+            {mlrLineagesPivot}. Vertical bars show the 95% HPD. The "hierarchical" panel shows pooled estimate of growth
+            rates across different locations. Not all lineages circulate in all locations and only estimates for lineages with
+            at least 25 observations in a location are shown. Results last updated
+            {mlrLineagesData?.modelData?.get('updated') || 'loading'}.
+          </p>
+          <div id="lineageGrowthAdvantagePanel" class="panelDisplay">
+            <PanelDisplay data={mlrLineagesData} params={{preset: "growthAdvantage"}}/>
+          </div>
+  
+        </div>
       </div>
-
-      <div id="mainPanelsContainer">
-        <h2>Clade frequencies over time</h2>
-        <p>
-          Each line represents the estimated frequency of a particular clade through time. Equivalent Pango lineage is given
-          in parenthesis, eg clade 23A (lineage XBB.1.5). Only locations with more than 200 sequences from samples collected
-          in the previous 150 days are included. Results last updated {mlrCladesData?.modelData?.get('updated') || 'loading'}.
-        </p>
-        <div id="cladeFrequenciesPanel" class="panelDisplay">
-          <PanelDisplay data={mlrCladesData} locations={cladesLocationsFiltered} params={{preset: "frequency"}}/>
-        </div>
-
-        <h2>Clade growth advantage</h2>
-        <p>
-          These plots show the estimated growth advantage for given clades relative to clade {mlrCladesPivot}. This
-          describes how many more secondary infections a variant causes on average relative to clade {mlrCladesPivot}.
-          Vertical bars show the 95% HPD. The "hierarchical" panel shows pooled estimate of growth rates across different
-          locations. Not all clades circulate in all locations and only estimates for clades with at least 25 observations
-          in a location are shown. Results last updated {mlrCladesData?.modelData?.get('updated') || 'loading'}.
-        </p>
-        <div id="cladeGrowthAdvantagePanel" class="panelDisplay">
-          <PanelDisplay data={mlrCladesData} params={{preset: "growthAdvantage"}}/>
-        </div>
-
-        <h2>Lineage frequencies over time</h2>
-        <p>
-          Each line represents the estimated frequency of a particular Pango lineage through time. Lineages with fewer
-          than 200 observations are collapsed into parental lineage. Only locations with more than 200 sequences from
-          samples collected in the previous 150 days are included. Results last updated
-          {mlrLineagesData?.modelData?.get('updated') || 'loading'}.
-        </p>
-        <div id="lineageFrequenciesPanel" class="panelDisplay">
-          <PanelDisplay data={mlrLineagesData} locations={lineagesLocationsFiltered} params={{preset: "frequency"}}/>
-        </div>
-
-        <h2>Lineage growth advantage</h2>
-        <p>
-          These plots show the estimated growth advantage for given Pango lineages relative to lineage {mlrLineagesPivot}.
-          This describes how many more secondary infections a variant causes on average relative to lineage
-          {mlrLineagesPivot}. Vertical bars show the 95% HPD. The "hierarchical" panel shows pooled estimate of growth
-          rates across different locations. Not all lineages circulate in all locations and only estimates for lineages with
-          at least 25 observations in a location are shown. Results last updated
-          {mlrLineagesData?.modelData?.get('updated') || 'loading'}.
-        </p>
-        <div id="lineageGrowthAdvantagePanel" class="panelDisplay">
-          <PanelDisplay data={mlrLineagesData} params={{preset: "growthAdvantage"}}/>
-        </div>
-
-      </div>
-    </div>
+    </ControlsProvider>
   )
 }
 
