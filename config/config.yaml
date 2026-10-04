@@ -106,34 +106,42 @@ mlr_config: "config/mlr-config.yaml"
 # * Lineages which are not a descendant of a clade-defining lineage will be
 #   grouped as 'other'
 clade_definitions:
+  - clade: "26B"
+    display_name: "26B (XFG.3.4.1)"
+    defining_lineage: "XFG.3.4.1"
+    color: '#DB2823'
+  - clade: "26A"
+    display_name: "26A (XFG.1.1)"
+    defining_lineage: "XFG.1.1"
+    color: '#E56A2F'
   - clade: "25I"
     display_name: "25I (BA.3.2)"
     defining_lineage: "BA.3.2"
-    color: '#DC2F24'
+    color: '#E29D39'
   - clade: "25H"
     display_name: "25H (XFJ)"
     defining_lineage: "XFJ"
-    color: '#E68133'
+    color: '#CBB742'
   - clade: "25G"
     display_name: "25G (XFC)"
     defining_lineage: "XFC"
-    color: '#D4B13F'
+    color: '#A6BE55'
   - clade: "25F"
     display_name: "25F (NW.1.2)"
     defining_lineage: "NW.1.2"
-    color: '#A6BE55'
+    color: '#80B974'
   - clade: "25C"
     display_name: "25C (XFG)"
     defining_lineage: "XFG"
-    color: '#75B681'
+    color: '#60AA9E'
   - clade: "25B"
     display_name: "25B (NB.1.8.1)"
     defining_lineage: "NB.1.8.1"
-    color: '#529AB6'
+    color: '#4A8CC2'
   - clade: "25A"
     display_name: "25A (LP.8.1)"
     defining_lineage: "LP.8.1"
-    color: '#3F63CF'
+    color: '#3E5DD0'
   - clade: "24H"
     display_name: "24H (LF.7)"
     defining_lineage: "LF.7"

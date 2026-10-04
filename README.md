@@ -109,7 +109,7 @@ Model JSONs are post processed by `./scripts/modify-lineage-colours-and-order.py
 For `nextstrain_clades` this sets the colours and display names.
 For `pango_lineages` this orders lineages based on their full (unaliased) pango designation, and sets colours based on the associated nextstrain clade.
 
-When new clades are added please modify the `CLADES` definitions in the script accordingly.
+When new clades are added please modify the `clade_definitions` in `config/config.yaml` accordingly.
 
 ### Environment variables
 
