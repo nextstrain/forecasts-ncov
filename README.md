@@ -96,6 +96,13 @@ The current available options for `geo_resolutions` are
 The `prepare_data` params in `config/config.yaml` are used to subset the full
 case counts and clades counts data to specific date range, locations, and clades.
 
+A location is included in the global analyses only if it has at least
+`location_min_seq` sequences in the trailing `location_min_seq_days` window. This
+is currently set to `location_min_seq: 100` over 150 days for all global analyses
+(gisaid and open, clades and lineages). This value was chosen from a +30-day
+forecast backtest that trades off country coverage against forecast skill — see
+[`analyses/location-min-seq/README.md`](analyses/location-min-seq/README.md).
+
 ### Model configurations
 
 The specific model configurations are housed in separate config YAML files or each model.

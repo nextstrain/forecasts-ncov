@@ -15,7 +15,7 @@ prepare_data:
     nextstrain_clades:
       global:
         included_days: 150
-        location_min_seq: 1000
+        location_min_seq: 100
         location_min_seq_days: 150
         excluded_locations: "defaults/global_excluded_locations.txt"
         clade_min_seq: 500
@@ -28,7 +28,7 @@ prepare_data:
     pango_lineages:
       global:
         included_days: 150
-        location_min_seq: 1000
+        location_min_seq: 100
         location_min_seq_days: 150
         excluded_locations: "defaults/global_excluded_locations.txt"
         clade_min_seq: 1
@@ -38,7 +38,7 @@ prepare_data:
     nextstrain_clades:
       global:
         included_days: 150
-        location_min_seq: 200
+        location_min_seq: 100
         location_min_seq_days: 150
         excluded_locations: "defaults/global_excluded_locations.txt"
         clade_min_seq: 150
@@ -52,7 +52,7 @@ prepare_data:
     pango_lineages:
       global:
         included_days: 150
-        location_min_seq: 200
+        location_min_seq: 100
         location_min_seq_days: 150
         excluded_locations: "defaults/global_excluded_locations.txt"
         clade_min_seq: 1
