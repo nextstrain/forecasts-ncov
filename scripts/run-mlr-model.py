@@ -139,8 +139,13 @@ class MLRConfig:
 
 
 
-def fit_models(rs, locations, model, inference_method, hier, path, save, pivot=None):
+def fit_models(rs, locations, model, inference_method, hier, path, save, pivot=None, as_of_date=None):
     multi_posterior = ef.MultiPosterior()
+
+    # Anchor the forecast horizon to `as_of_date` (default: today). Setting it to a
+    # historical data cutoff makes the model forecast from the cutoff rather than from
+    # wall-clock today, which is required for retrospective backtests.
+    present = pd.to_datetime(as_of_date) if as_of_date else pd.to_datetime(date.today())
 
     if hier:
         # Subset data to locations of interest
@@ -151,7 +156,7 @@ def fit_models(rs, locations, model, inference_method, hier, path, save, pivot=N
         posterior = inference_method.fit(model, data, name="hierarchical")
 
         # Forecast frequencies
-        n_days_to_present = (pd.to_datetime(date.today()) - data.dates[-1]).days
+        n_days_to_present = (present - data.dates[-1]).days
         n_days_to_forecast = n_days_to_present + model.forecast_L
         model.forecast_frequencies(posterior.samples, forecast_L=n_days_to_forecast)
 
@@ -175,7 +180,7 @@ def fit_models(rs, locations, model, inference_method, hier, path, save, pivot=N
             posterior = inference_method.fit(model, data, name=location)
 
             # Forecast frequencies
-            n_days_to_present = (pd.to_datetime(date.today()) - data.dates[-1]).days
+            n_days_to_present = (present - data.dates[-1]).days
             n_days_to_forecast = n_days_to_present + model.forecast_L
             model.forecast_frequencies(posterior.samples, forecast_L=n_days_to_forecast)
 
@@ -276,7 +281,7 @@ def make_raw_freq_tidy(data, location):
     return {"metadata": metadata, "data": entries}
 
 
-def export_results(multi_posterior, ps, path, data_name, hier, pivot, ga_inclusion_threshold, variant_location_counts):
+def export_results(multi_posterior, ps, path, data_name, hier, pivot, ga_inclusion_threshold, variant_location_counts, as_of_date=None):
     EXPORT_SITES = ["freq", "ga", "freq_forecast"]
     EXPORT_DATED = [True, False, True]
     EXPORT_FORECASTS = [False, False, True]
@@ -365,7 +370,7 @@ def export_results(multi_posterior, ps, path, data_name, hier, pivot, ga_inclusi
             )
 
     results = ef.posterior.combine_sites_tidy(results)
-    results["metadata"]["updated"] = pd.to_datetime(date.today())
+    results["metadata"]["updated"] = pd.to_datetime(as_of_date) if as_of_date else pd.to_datetime(date.today())
 
     # Add hard-coded pivot data if a pivot is provided
     if pivot:
@@ -436,6 +441,14 @@ if __name__ == "__main__":
         + "even if there isn't data for a particular combination."
     )
 
+    parser.add_argument(
+        "--as-of-date", default=None,
+        help="Date (YYYY-MM-DD) to treat as 'today' when anchoring the forecast horizon "
+        + "and the metadata 'updated' field. Defaults to the current date. Set this to a "
+        + "historical data cutoff for retrospective backtests so that the model forecasts "
+        + "forward from the cutoff rather than from wall-clock today."
+    )
+
     args = parser.parse_args()
 
     # Load configuration, data, and create model
@@ -489,7 +502,8 @@ if __name__ == "__main__":
             hier,
             export_path,
             save,
-            pivot=pivot
+            pivot=pivot,
+            as_of_date=args.as_of_date
         )
     elif load:
         print("Loading results")
@@ -510,4 +524,4 @@ if __name__ == "__main__":
             config.config["settings"], "ps", dflt=[0.5, 0.8, 0.95]
         )
         data_name = args.data_name or config.config["data"]["name"]
-        export_results(multi_posterior, ps, export_path, data_name, hier, pivot, args.location_ga_inclusion_threshold, variant_location_counts)
+        export_results(multi_posterior, ps, export_path, data_name, hier, pivot, args.location_ga_inclusion_threshold, variant_location_counts, as_of_date=args.as_of_date)

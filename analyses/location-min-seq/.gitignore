@@ -1,0 +1,4 @@
+# Large intermediates — regenerate with run-backtest.py / score-backtest.py
+prepared/
+model-outputs/
+logs/
